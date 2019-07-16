@@ -1,0 +1,13 @@
+apply plugin: 'maven-publish'
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'jacoco'
+apply plugin: 'java'
+
+version=samplesVersion
+
+dependencies {
+ 	testCompile 'junit:junit:4.11'  
+}
+
+
+

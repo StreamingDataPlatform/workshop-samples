@@ -1,0 +1,72 @@
+/*
+ * Copyright (c) 2017 Dell Inc., or its subsidiaries. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ */
+
+apply plugin: 'java'
+apply plugin: 'distribution'
+
+
+sourceCompatibility = 1.8
+archivesBaseName = 'operational'
+
+
+dependencies {
+    compile project(':common')
+    compile "io.pravega:pravega-client:${pravegaVersion}"
+    runtime files ('../common/lib/pravega-keycloak-credentials-0.5.0-2299.8779f22-0.9.0-026.4b08238-shadow.jar')
+}
+// Build examples
+
+task scriptScopeCreator(type: CreateStartScripts) {
+    outputDir = file('build/scripts')
+    mainClassName = 'com.dellemc.oe.operations.ScopeCreator'
+    applicationName = 'scopeCreator'
+    classpath = files(jar.archivePath) + sourceSets.main.runtimeClasspath
+}
+
+task scriptStreamCreator(type: CreateStartScripts) {
+    outputDir = file('build/scripts')
+    mainClassName = 'com.dellemc.oe.operations.StreamCreator'
+    applicationName = 'streamCreator'
+    classpath = files(jar.archivePath) + sourceSets.main.runtimeClasspath
+}
+
+task startScopeCreator(type: JavaExec) {
+    main = "com.dellemc.oe.operations.ScopeCreator"
+    classpath = sourceSets.main.runtimeClasspath
+    if(System.getProperty("exec.args") != null) {
+        args System.getProperty("exec.args").split()
+    }
+}
+
+task startStreamCreator(type: JavaExec) {
+    main = "com.dellemc.oe.operations.StreamCreator"
+    classpath = sourceSets.main.runtimeClasspath
+    if(System.getProperty("exec.args") != null) {
+        args System.getProperty("exec.args").split()
+    }
+}
+
+distributions {
+    main {
+        baseName = archivesBaseName
+        contents {
+            into('bin') {
+                from project.scriptScopeCreator
+                from project.scriptStreamCreator
+            }
+            into('lib') {
+                from(jar)
+                from(project.configurations.runtime)
+            }
+        }
+    }
+}
+
