@@ -4,12 +4,13 @@
 External connectivity enabled Nautilus cluster required to perform these samples.
 
 ## Running the Samples
-1. Create a project workshop-samples in Nautilus UI
-1. Get the keycloak.json by executing this command
+1. Create a project `workshop-samples` in Nautilus UI
+    1. This will automatically create a scope `workshop-samples`
+1. Get the `keycloak.json` file by executing this command
 ```
 kubectl get secret workshop-samples-pravega -n workshop-samples -o jsonpath="{.data.keycloak\.json}" |base64 -d | jq .
 ```
-    output:
+  output:
 ```
 {
   "realm": "nautilus",
