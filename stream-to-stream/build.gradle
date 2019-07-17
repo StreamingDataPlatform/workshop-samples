@@ -53,8 +53,8 @@ dependencies {
     compile "org.apache.flink:flink-streaming-java_2.11:${flinkVersion}"
     compile "org.apache.flink:flink-streaming-scala_2.11:${flinkVersion}"
     compile "org.apache.flink:flink-ml_2.11:${flinkVersion}"
-    compile "org.apache.flink:flink-table_2.11:${flinkVersion}"
-    compile 'org.apache.flink:flink-runtime-web:0.10.2-hadoop1'
+    //compile "org.apache.flink:flink-table_2.11:${flinkVersion}"
+    //compile 'org.apache.flink:flink-runtime-web:0.10.2-hadoop1'
 
      // common-library dependencies
     compile "com.google.guava:guava:20.0"

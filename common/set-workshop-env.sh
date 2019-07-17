@@ -3,7 +3,7 @@ export PRAVEGA_CLIENT_AUTH_METHOD=Bearer
 echo 'PRAVEGA_CLIENT_AUTH_METHOD :' $PRAVEGA_CLIENT_AUTH_METHOD
 export PRAVEGA_CLIENT_AUTH_LOADDYNAMIC=true
 echo 'PRAVEGA_CLIENT_AUTH_LOADDYNAMIC :' $PRAVEGA_CLIENT_AUTH_LOADDYNAMIC
-export KEYCLOAK_SERVICE_ACCOUNT_FILE="/mnt/c/Projects/Nautilus/samples/workshop-samples/auth-demo/keycloak.json"
+export KEYCLOAK_SERVICE_ACCOUNT_FILE="/mnt/c/Projects/Nautilus/samples/beta1/workshop-samples/common/keycloak.json"
 echo 'KEYCLOAK_SERVICE_ACCOUNT_FILE : ' $KEYCLOAK_SERVICE_ACCOUNT_FILE
 
 # workshop Properties
