@@ -38,11 +38,6 @@ public class EventWriter {
     }
 
     public void run(String routingKey, String message)  {
-        StreamManager streamManager = StreamManager.create(controllerURI);
-        final boolean scopeIsNew = streamManager.createScope(scope);
-
-        StreamConfiguration streamConfig = StreamConfiguration.builder().scalingPolicy(ScalingPolicy.fixed(1)).build();
-        final boolean streamIsNew = streamManager.createStream(scope, streamName, streamConfig);
 
         try (ClientFactory clientFactory = ClientFactory.withScope(scope, controllerURI);
              EventStreamWriter<String> writer = clientFactory.createEventWriter(streamName,
@@ -57,8 +52,6 @@ public class EventWriter {
 						 final CompletableFuture writeFuture = writer.writeEvent(routingKey, message);
                 
             }
-
-        }
     }
 
     public static void main(String[] args) {
