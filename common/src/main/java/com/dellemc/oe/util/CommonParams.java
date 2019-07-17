@@ -7,7 +7,7 @@ import java.net.URI;
 public class CommonParams {
     // By default, we will connect to a standalone Pravega running on localhost.
     public static URI getControllerURI() {
-        return URI.create(getEnvVar("PRAVEGA_CONTROLLER_URI", "tcp://10.247.118.176:9090"));
+        return URI.create(getEnvVar("PRAVEGA_CONTROLLER_URI", "tcp://localhost:9090"));
     }
 
     public static String getScope() {
