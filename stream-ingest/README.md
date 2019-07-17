@@ -1,4 +1,4 @@
-this app write "hello world" event into stream with name specifiy by ENV PRAVEGA_STREAM (default is test), under scope with name specified by ENV PRAVEGA_SCOPE (default is test)
+this app write "hello world" event into stream under scope configured by operational package
 
 usage:
 

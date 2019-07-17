@@ -1,5 +1,9 @@
-scopeCreator create scope with name specifiy by ENV PRAVEGA_SCOPE (default is test)
-streamCreator create stream with name specifiy by ENV PRAVEGA_STREAM (default is test), under scope with name specified by ENV PRAVEGA_SCOPE (default is test)
+scopeCreator create scope with name specifiy by ENV PRAVEGA_SCOPE
+workshop-samples by default
+
+streamCreator create stream with name specifiy by ENV PRAVEGA_STREAM,
+under scope with name specified by ENV PRAVEGA_SCOPE
+workshop-stream by default
 
 usage:
 
