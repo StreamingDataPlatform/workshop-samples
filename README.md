@@ -27,6 +27,9 @@ kubectl get secret workshop-samples-pravega -n workshop-samples -o jsonpath="{.d
 ```
 1. Edit the common/set-workshop-env.sh environment variables
 1. run the set-workshop-env
+```
+source common/set-workshop-env.sh
+```
 1. Now build the workshop samples
 ```
 gradlew clean installDist
