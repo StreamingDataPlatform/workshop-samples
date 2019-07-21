@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
+import java.net.URL;
 
 /*
  * At a high level, WordCountReader reads from a Pravega stream, and prints 
@@ -63,6 +64,10 @@ public class WordCountReader {
         final String streamName = CommonParams.getStreamName();
         final URI controllerURI = CommonParams.getControllerURI();
 
+        //ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+        //Thread.currentThread().setContextClassLoader(classLoader);
+
+        JarFileLoader.load();
 
         // initialize the parameter utility tool in order to retrieve input parameters
          PravegaConfig pravegaConfig = PravegaConfig.fromDefaults()

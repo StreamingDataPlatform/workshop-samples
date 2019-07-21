@@ -8,17 +8,49 @@
  *   http://www.apache.org/licenses/LICENSE-2.0
  *
  */
-
-apply plugin: 'java'
-apply plugin: 'distribution'
+apply plugin: "distribution"
+apply plugin: "java"
+apply plugin: "maven"
+apply plugin: "application"
+apply plugin: "maven-publish"
 
 sourceCompatibility = 1.8
 archivesBaseName = 'stream-ingest'
 
+group = "com.dellemc.oe.ingest"
+version = samplesVersion
+archivesBaseName = "stream-ingest"
+description = "stream-ingest"
+mainClassName = "com.dellemc.oe.ingest.EventWriter"
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
 dependencies {
     compile project(':common')
     compile "io.pravega:pravega-client:${pravegaVersion}"
-    runtime files ('../common/lib/pravega-keycloak-credentials-0.5.0-2299.8779f22-0.9.0-026.4b08238-shadow.jar')
+    //compile "io.pravega:pravega-keycloak-credentials:${pravegaCredentialsVersion}"
+    if (includePravegaCredentials.toBoolean()) {
+        //compile "io.pravega:pravega-keycloak-credentials:${pravegaCredentialsVersion}"
+        //runtime files ('../common/lib/pravega-keycloak-credentials-0.5.0-2302.7592022-0.11.7-001.29d9682-shadow.jar')
+        runtime files ('../common/lib/pravega-keycloak-credentials-${pravegaCredentialsVersion}-shadow.jar')
+    }
+}
+
+apply plugin: 'com.github.johnrengelman.shadow'
+
+shadowJar {
+    dependencies {
+        exclude(dependency("org.scala-lang:scala-library"))
+        exclude(dependency("org.scala-lang:scala-reflect"))
+        exclude(dependency("org.scala-lang:scala-compiler"))
+    }
+
+    relocate "com.google", "com.dell.nautilus.analytics.shaded.com.google"
+    relocate "io.netty", "com.dell.nautilus.analytics.shaded.io.netty"
+
+    classifier = ""
+
+    zip64 true
 }
 
 // Build examples
@@ -47,7 +79,31 @@ distributions {
             into('lib') {
                 from(jar)
                 from(project.configurations.runtime)
+                from shadowJar
+                from(project.configurations.shadow)                
+            }
+            into('conf') {
+                from(project.file('src/main/resources/logback.xml'))
             }
         }
     }
 }
+
+publishing {
+       repositories {
+           maven {
+               credentials {
+                   username "nautilus"
+                   password "password"
+               }
+               url = "http://localhost:9090/maven2"
+           }          
+          
+       }
+
+       publications {
+           shadow(MavenPublication) { publication ->
+               project.shadow.component(publication)
+           }
+       }
+    }

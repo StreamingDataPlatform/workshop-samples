@@ -1,12 +1,12 @@
 {
   "realm": "nautilus",
-  "auth-server-url": "https://keycloak.p-test.nautilus-lab-wachusett.com/auth",
+  "auth-server-url": "https://keycloak.nautilus-test.nautilus-lab-stone.com/auth",
   "ssl-required": "external",
   "bearer-only": false,
   "public-client": false,
   "resource": "workshop-samples-pravega",
   "confidential-port": 0,
   "credentials": {
-    "secret": "c72c45f8-76b0-4ca2-99cf-1f1a03704c4f"
+    "secret": "4052c9d0-829c-4628-bad5-3b5701bf1634"
   }
 }
