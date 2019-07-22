@@ -67,7 +67,7 @@ public class WordCountReader {
         //ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         //Thread.currentThread().setContextClassLoader(classLoader);
 
-        JarFileLoader.load();
+        //JarFileLoader.load();
 
         // initialize the parameter utility tool in order to retrieve input parameters
          PravegaConfig pravegaConfig = PravegaConfig.fromDefaults()
