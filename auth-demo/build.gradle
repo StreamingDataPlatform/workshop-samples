@@ -11,7 +11,10 @@ dependencies {
     compile "io.pravega:pravega-client:${pravegaVersion}",
             "io.pravega:pravega-common:${pravegaVersion}",
             "commons-cli:commons-cli:1.4"
-    runtime files ('../common/lib/pravega-keycloak-credentials-0.5.0-2299.8779f22-0.9.0-026.4b08238-shadow.jar')
+    if (includePravegaCredentials.toBoolean()) {
+        print " Adding Credential jar for auth-demo module"
+        runtime files ('../common/lib/pravega-keycloak-credentials-0.5.0-2302.7592022-0.11.7-001.29d9682-shadow.jar')
+    }
     compile "org.slf4j:slf4j-api:1.7.14"
     compile "ch.qos.logback:logback-classic:1.1.7"
 }

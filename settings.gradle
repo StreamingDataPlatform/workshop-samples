@@ -11,9 +11,9 @@
 rootProject.name = "workshop-samples"
 
 include "common"
-//include "flink-temperature-events"
 include "auth-demo"
 include "operational"
 include "stream-ingest"
+include "stream-process"
 include "stream-to-stream"
-//include "stream-process"
+

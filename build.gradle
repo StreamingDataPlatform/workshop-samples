@@ -52,6 +52,12 @@ subprojects {
         maven {
             url "http://oss.jfrog.org/jfrog-dependencies"
         }
+        maven {
+            url "http://mvnrepository.com/artifact"
+        }
+        maven {
+            url "http://repo1.maven.org/maven2"
+        }
     }
 
 }

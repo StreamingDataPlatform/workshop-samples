@@ -13,31 +13,28 @@ package com.dellemc.oe.flink.wordcount;
 import com.dellemc.oe.util.CommonParams;
 
 import io.pravega.client.admin.StreamManager;
-import io.pravega.client.stream.ScalingPolicy;
-import io.pravega.client.stream.Stream;
-import io.pravega.client.stream.StreamConfiguration;
+import io.pravega.client.stream.*;
 import io.pravega.connectors.flink.FlinkPravegaReader;
 import io.pravega.connectors.flink.FlinkPravegaWriter;
 import io.pravega.connectors.flink.PravegaConfig;
 import io.pravega.connectors.flink.PravegaEventRouter;
 import io.pravega.connectors.flink.serialization.PravegaSerialization;
 import com.dellemc.oe.flink.Utils;
-import com.dellemc.oe.util.CommonParams;
 import org.apache.flink.api.common.functions.FlatMapFunction;
-import org.apache.flink.api.java.utils.ParameterTool;
+
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.util.Collector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import java.net.URI;
-import java.net.URL;
+;
 
 /*
- * At a high level, WordCountReader reads from a Pravega stream, and prints 
- * the word count summary to the output. This class provides an example for 
+ * At a high level, WordCountReader reads from a Pravega stream, and prints
+ * the word count summary to the output. This class provides an example for
  * a simple Flink application that reads streaming data from Pravega.
  *
  * This application has the following input parameters
@@ -48,29 +45,24 @@ import java.net.URL;
 public class WordCountReader {
 
     // Logger initialization
-    private static final Logger LOG = LoggerFactory.getLogger(WordCountReader.class);
+    //private static final Logger LOG = LoggerFactory.getLogger(WordCountReader.class);
 
     // The application reads data from specified Pravega stream and once every 10 seconds
     // prints the distinct words and counts from the previous 10 seconds.
 
-    // Application parameters
-    //   stream - default examples/wordcount
-    //   controller - default tcp://127.0.0.1:9090
-
     public static void main(String[] args) throws Exception {
-        LOG.info("Starting WordCountReader...");
+        // LOG.info("Starting WordCountReader...");
 
         final String scope = CommonParams.getScope();
         final String streamName = CommonParams.getStreamName();
         final URI controllerURI = CommonParams.getControllerURI();
 
-        //ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        //Thread.currentThread().setContextClassLoader(classLoader);
-
-        //JarFileLoader.load();
+        System.out.println("#######################     SCOPE   ###################### "+scope);
+        System.out.println("#######################     streamName   ###################### "+streamName);
+        System.out.println("#######################     controllerURI   ###################### "+controllerURI);
 
         // initialize the parameter utility tool in order to retrieve input parameters
-         PravegaConfig pravegaConfig = PravegaConfig.fromDefaults()
+        PravegaConfig pravegaConfig = PravegaConfig.fromDefaults()
                 .withControllerURI(controllerURI)
                 .withDefaultScope(scope)
                 //.withCredentials(credentials)
@@ -82,16 +74,14 @@ public class WordCountReader {
                 streamName);
         System.out.println("==============  stream  =============== "+stream);
 
-        // initialize the Flink execution environment
-        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-
+        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         // create the Pravega source to read a stream of text
         FlinkPravegaReader<String> source = FlinkPravegaReader.<String>builder()
                 .withPravegaConfig(pravegaConfig)
                 .forStream(stream)
                 .withDeserializationSchema(PravegaSerialization.deserializationFor(String.class))
                 .build();
-        System.out.println("==============  SOURCE  ===============");
+        System.out.println("==============  SOURCE  =============== "+source);
         // count each word over a 10 second time period
         DataStream<WordCount> dataStream = env.addSource(source).name(streamName)
                 .flatMap(new WordCountReader.Splitter())
@@ -100,7 +90,8 @@ public class WordCountReader {
                 .sum("count");
 
         // create an output sink to print to stdout for verification
-        dataStream.print();
+        //dataStream.printToErr();
+        dataStream.print().setParallelism(1);
         System.out.println("==============  PRINTED  ===============");
         Stream output_stream = getOrCreateStream(pravegaConfig, "output-stream", 3);
         // create the Pravega sink to write a stream of text
@@ -113,15 +104,13 @@ public class WordCountReader {
         dataStream.addSink(writer).name("OutputStream");
 
         // create another output sink to print to stdout for verification
-        //avgTemp.print().name("stdout");
+        
         System.out.println("============== Final output ===============");
-        dataStream.print();
-
-
+        dataStream.printToErr();
         // execute within the Flink environment
-        env.execute("WordCountReader");
+       env.execute("WordCountReader");
 
-        LOG.info("Ending WordCountReader...");
+        //LOG.info("Ending WordCountReader...");
     }
 
     /*
@@ -160,7 +149,7 @@ public class WordCountReader {
     private static class Splitter implements FlatMapFunction<String, WordCount> {
         @Override
         public void flatMap(String line, Collector<WordCount> out) throws Exception {
-            for (String word: line.split(Constants.WORD_SEPARATOR)) {
+            for (String word: line.split(" ")) {
                 out.collect(new WordCount(word, 1));
             }
         }

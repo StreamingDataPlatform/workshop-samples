@@ -41,34 +41,34 @@ buildscript {
 
 dependencies {
     compile project(':common')
-    compile "io.pravega:pravega-client:${pravegaVersion}",
-            "io.pravega:pravega-common:${pravegaVersion}",
-            "commons-cli:commons-cli:1.4"
-    //compile "io.pravega:pravega-keycloak-credentials:${pravegaCredentialsVersion}"
-    compile files('../common/lib/pravega-keycloak-credentials-0.5.0-2302.7592022-0.11.7-001.29d9682-shadow.jar')
-    //compile files('../common/lib/pravega-keycloak-credentials-${pravegaCredentialsVersion}-shadow.jar')
+      
     if (includePravegaCredentials.toBoolean()) {
-        //compile "io.pravega:pravega-keycloak-credentials:${pravegaCredentialsVersion}"
-        runtime files ('../common/lib/pravega-keycloak-credentials-${pravegaCredentialsVersion}-shadow.jar')
+        print " Adding Credential jar for stream-to-stream module"
+        runtime files ('../common/lib/pravega-keycloak-credentials-0.5.0-2302.7592022-0.11.7-001.29d9682-shadow.jar')
     }
-    compile "org.slf4j:slf4j-api:1.7.14"
+    
+    //compile "org.elasticsearch.client:elasticsearch-rest-high-level-client:6.5.4"
+    compile "org.slf4j:slf4j-api:1.6.6"
     compile "ch.qos.logback:logback-classic:1.2.3"
     compile "ch.qos.logback:logback-core:1.2.3"
     compile "net.logstash.logback:logstash-logback-encoder:4.11"
-    compile "io.pravega:pravega-connectors-flink_2.12:${pravegaFlinkConnectorVersion}"
-    compile "org.apache.flink:flink-streaming-java_2.11:${flinkVersion}"
-    compile "org.apache.flink:flink-streaming-scala_2.11:${flinkVersion}"
-    //compile "org.apache.flink:flink-ml_2.11:${flinkVersion}"
-    //compile "org.apache.flink:flink-table_2.11:${flinkVersion}"
-    //compile 'org.apache.flink:flink-runtime-web:0.10.2-hadoop1'
+    compile "io.pravega:pravega-connectors-flink_${flinkScalaVersion}:${pravegaFlinkConnectorVersion}"
+    compile "org.apache.flink:flink-streaming-java_${flinkScalaVersion}:${flinkVersion}"
+    compile "org.apache.flink:flink-streaming-scala_${flinkScalaVersion}:${flinkVersion}"
+    compile "org.apache.flink:flink-ml_${flinkScalaVersion}:${flinkVersion}"
+    compile "org.apache.flink:flink-table_${flinkScalaVersion}:${flinkVersion}"
+    //compile "org.apache.flink:flink-connector-elasticsearch6_${flinkScalaVersion}:${flinkVersion}"
+//    compile "org.apache.flink:flink-json:${flinkVersion}"
+    compile "io.pravega:pravega-client:${pravegaVersion}"
 
-     // common-library dependencies
-   /* compile "com.google.guava:guava:20.0"
+    // common-library dependencies
+    compile "com.google.guava:guava:20.0"
     compile "org.xerial:sqlite-jdbc:3.20.0"
     compile "com.fasterxml.jackson.core:jackson-databind:2.9.1"
 
-    testCompile "org.apache.flink:flink-test-utils_2.11:${flinkVersion}"
-    testCompile group: "junit", name: "junit", version: "4.11"*/
+    testCompile "org.apache.flink:flink-test-utils_${flinkScalaVersion}:${flinkVersion}"
+    testCompile group: "junit", name: "junit", version: "4.11"
+
 }
 
 task scriptWordCountWriter(type: CreateStartScripts) {
