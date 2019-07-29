@@ -43,7 +43,7 @@ dependencies {
     compile project(':common')
 
     if (includePravegaCredentials.toBoolean()) {
-        print " Adding Credential jar for stream-to-stream module"
+        print " Adding Credential jar for stream-to-process module"
         runtime files ('../common/lib/pravega-keycloak-credentials-0.5.0-2302.7592022-0.11.7-001.29d9682-shadow.jar')
     }
 

@@ -6,6 +6,8 @@ apply plugin: 'java'
 version=samplesVersion
 
 dependencies {
+	compile "io.pravega:pravega-client:${pravegaVersion}"
+	compile "com.fasterxml.jackson.core:jackson-databind:2.9.1"
  	testCompile 'junit:junit:4.11'  
 }
 

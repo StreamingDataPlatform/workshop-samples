@@ -1,0 +1,129 @@
+/*
+ * Copyright (c) 2017 Dell Inc., or its subsidiaries. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ */
+apply plugin: "distribution"
+apply plugin: "java"
+apply plugin: "maven"
+apply plugin: "application"
+apply plugin: "maven-publish"
+
+
+sourceCompatibility = "1.8"
+
+archivesBaseName = "various-readers"
+
+group = "com.dellemc.oe.readers"
+version = samplesVersion
+archivesBaseName = "various-readers"
+description = "various-readers"
+mainClassName = "com.dellemc.oe.readers.JSONReader"
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+ext {
+    scalaJava8CompatVersion = '0.7.0'
+}
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
+    }
+}
+
+dependencies {
+    compile project(':common')
+    if (includePravegaCredentials.toBoolean()) {
+        print " Adding Credential jar for various-readers module"
+        runtime files('../common/lib/pravega-keycloak-credentials-0.5.0-2302.7592022-0.11.7-001.29d9682-shadow.jar')
+    }
+    //compile "org.elasticsearch.client:elasticsearch-rest-high-level-client:6.5.4"
+    compile "org.slf4j:slf4j-api:1.6.6"
+    compile "ch.qos.logback:logback-classic:1.2.3"
+    compile "ch.qos.logback:logback-core:1.2.3"
+    compile "net.logstash.logback:logstash-logback-encoder:4.11"
+    compile "io.pravega:pravega-client:${pravegaVersion}"
+    compile "com.fasterxml.jackson.core:jackson-databind:2.9.1"
+
+    testCompile group: "junit", name: "junit", version: "4.11"
+}
+// Build examples
+task scriptJSONReader(type: CreateStartScripts) {
+    outputDir = file('build/scripts')
+    mainClassName = 'com.dellemc.oe.readers.JSONReader'
+    applicationName = 'jsonWriter'
+    classpath = files(jar.archivePath) + sourceSets.main.runtimeClasspath
+}
+
+task startJSONReader(type: JavaExec) {
+    main = "com.dellemc.oe.readers.JSONReader"
+    classpath = sourceSets.main.runtimeClasspath
+    if(System.getProperty("exec.args") != null) {
+        args System.getProperty("exec.args").split()
+    }
+}
+
+apply plugin: 'com.github.johnrengelman.shadow'
+
+shadowJar {
+    dependencies {
+        exclude(dependency("org.scala-lang:scala-library"))
+        exclude(dependency("org.scala-lang:scala-reflect"))
+        exclude(dependency("org.scala-lang:scala-compiler"))
+    }
+
+    relocate "com.google", "com.dell.nautilus.analytics.shaded.com.google"
+    relocate "io.netty", "com.dell.nautilus.analytics.shaded.io.netty"
+
+    classifier = ""
+
+    zip64 true
+}
+
+distributions {
+    main {
+        baseName = archivesBaseName
+        contents {
+            into('bin') {
+                from project.scriptJSONReader
+            }
+            into('lib') {
+                from(jar)
+                from(project.configurations.runtime)
+                from shadowJar
+                from(project.configurations.shadow)
+            }
+            into('conf') {
+                from(project.file('src/main/resources/logback.xml'))
+            }
+        }
+    }
+
+
+    publishing {
+       repositories {
+           maven {
+               credentials {
+                   username "nautilus"
+                   password "password"
+               }
+               url = "http://localhost:9090/maven2"
+           }          
+          
+       }
+
+       publications {
+           shadow(MavenPublication) { publication ->
+               project.shadow.component(publication)
+           }
+       }
+    }
+}

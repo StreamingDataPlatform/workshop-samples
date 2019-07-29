@@ -25,6 +25,10 @@ mainClassName = "com.dellemc.oe.ingest.EventWriter"
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+ext {
+    scalaJava8CompatVersion = '0.7.0'
+}
+
 dependencies {
     compile project(':common')
     compile "io.pravega:pravega-client:${pravegaVersion}"
@@ -32,6 +36,11 @@ dependencies {
         print " Adding Credential jar for stream-ingest module"
         runtime files ('../common/lib/pravega-keycloak-credentials-0.5.0-2302.7592022-0.11.7-001.29d9682-shadow.jar')
     }
+    compile "org.slf4j:slf4j-api:1.6.6"
+    compile "ch.qos.logback:logback-classic:1.2.3"
+    compile "ch.qos.logback:logback-core:1.2.3"
+    compile "net.logstash.logback:logstash-logback-encoder:4.11"
+    compile "com.fasterxml.jackson.core:jackson-databind:2.9.1"
 }
 
 apply plugin: 'com.github.johnrengelman.shadow'
@@ -67,12 +76,29 @@ task startEventWriter(type: JavaExec) {
     }
 }
 
+// Build examples
+task scriptJSONWriter(type: CreateStartScripts) {
+    outputDir = file('build/scripts')
+    mainClassName = 'com.dellemc.oe.ingest.JSONWriter'
+    applicationName = 'jsonWriter'
+    classpath = files(jar.archivePath) + sourceSets.main.runtimeClasspath
+}
+
+task startJSONWriter(type: JavaExec) {
+    main = "com.dellemc.oe.ingest.JSONWriter"
+    classpath = sourceSets.main.runtimeClasspath
+    if(System.getProperty("exec.args") != null) {
+        args System.getProperty("exec.args").split()
+    }
+}
+
 distributions {
     main {
         baseName = archivesBaseName
         contents {
             into('bin') {
                 from project.scriptEventWriter
+                from project.scriptJSONWriter
             }
             into('lib') {
                 from(jar)

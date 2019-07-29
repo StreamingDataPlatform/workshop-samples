@@ -16,4 +16,5 @@ include "operational"
 include "stream-ingest"
 include "stream-process"
 include "stream-to-stream"
+include "various-readers"
 
