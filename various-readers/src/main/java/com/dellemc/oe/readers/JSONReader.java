@@ -14,7 +14,8 @@ import com.dellemc.oe.serialization.JsonNodeSerializer;
 import com.dellemc.oe.util.CommonParams;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.pravega.client.ClientFactory;
+import io.pravega.client.ClientConfig;
+import io.pravega.client.EventStreamClientFactory;
 import io.pravega.client.admin.ReaderGroupManager;
 import io.pravega.client.admin.StreamManager;
 import io.pravega.client.stream.*;
@@ -54,11 +55,15 @@ public class JSONReader {
             String streamName = "json-stream";
             URI controllerURI =  new URI("tcp://localhost:9090");*/
             streamName = "json-stream";
+            // Get stream manager for further use
             StreamManager streamManager = StreamManager.create(controllerURI);
+            // create scope if not exists. This wont work when we try to create scope in nautilus. We need to use other methods to create scope on nautilus.
             streamManager.createScope(scope);
             StreamConfiguration streamConfig = StreamConfiguration.builder().build();
+            //Carete stream if not exists.
             streamManager.createStream(scope, streamName, streamConfig);
 
+            // Create reader group and reader config
             final String readerGroup = UUID.randomUUID().toString().replace("-", "");
             final ReaderGroupConfig readerGroupConfig = ReaderGroupConfig.builder()
                     .stream(Stream.of(scope, streamName))
@@ -67,29 +72,34 @@ public class JSONReader {
                 readerGroupManager.createReaderGroup(readerGroup, readerGroupConfig);
             }
 
-            try (ClientFactory clientFactory = ClientFactory.withScope(scope, controllerURI);
+            // create client config
+            ClientConfig clientConfig = ClientConfig.builder().controllerURI(URI.create(controllerURI.toString())).build();
+
+            // Create  EventStreamClientFactory and  create reader to get stream data
+            try (EventStreamClientFactory clientFactory = EventStreamClientFactory.withScope(scope, clientConfig);
                  EventStreamReader<JsonNode> reader = clientFactory.createReader("reader",
                          readerGroup,
                          new JsonNodeSerializer(),
                          ReaderConfig.builder().build())) {
-                System.out.format("@@@@@@@@@@@@@@@@ Reading all the events from %s/%s%n", scope, streamName);
+                LOG.info("@@@@@@@@@@@@@@@@ Reading all the events from scope :  ", scope, streamName);
                 EventRead<JsonNode> event = null;
+                // read data from stream
                 while (reader.hashCode() > 0) {
                     try {
                         event = reader.readNextEvent(READER_TIMEOUT_MS);
                         if (event.getEvent() != null) {
-                            System.out.format("@@@@@@@@@@@@@@ Read event '%s'%n", event.getEvent());
+                            LOG.info("@@@@@@@@@@@@@@ Read event  : "+ event.getEvent());
                         }
                     } catch (ReinitializationRequiredException e) {
                         //There are certain circumstances where the reader needs to be reinitialized
                         e.printStackTrace();
                     }
                 } //while (event.getEvent() != null);
-                System.out.format("@@@@@@@@@@@@@@ No more events from %s/%s%n", scope, streamName);
+                LOG.info("@@@@@@@@@@@@@@ No more events from  stream  :  "+scope, streamName);
             }
 
 
-            System.out.println("########## READER END #############");
+            LOG.info("########## READER END #############");
 
         }
         catch(Exception e)

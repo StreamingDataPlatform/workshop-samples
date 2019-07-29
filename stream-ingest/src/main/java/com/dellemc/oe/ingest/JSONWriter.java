@@ -16,7 +16,9 @@ import com.dellemc.oe.serialization.JsonNodeSerializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.pravega.client.ClientConfig;
 import io.pravega.client.ClientFactory;
+import io.pravega.client.EventStreamClientFactory;
 import io.pravega.client.admin.StreamManager;
 import io.pravega.client.stream.EventStreamWriter;
 import io.pravega.client.stream.EventWriterConfig;
@@ -48,15 +50,21 @@ public class JSONWriter {
         try {
             String streamName = "json-stream";
             StreamManager streamManager = StreamManager.create(controllerURI);
+            // create scope if not exists. This wont work when we try to create scope in nautilus. We need to use other methods to create scope on nautilus.
             streamManager.createScope(scope);
             StreamConfiguration streamConfig = StreamConfiguration.builder().build();
             streamManager.createStream(scope, streamName, streamConfig);
 
-            ClientFactory clientFactory = ClientFactory.withScope(scope, controllerURI);
+            // Create client config
+            ClientConfig clientConfig = ClientConfig.builder().controllerURI(URI.create(controllerURI.toString())).build();
+            // Create EventStreamClientFactory
+            EventStreamClientFactory clientFactory = EventStreamClientFactory.withScope(scope, clientConfig);
+            // Create event writer
             EventStreamWriter<JsonNode> writer = clientFactory.createEventWriter(
                     streamName,
                     new JsonNodeSerializer(),
                     EventWriterConfig.builder().build());
+            // same data write every 1 sec
             while(true)
             {
                 ObjectNode data = createJSONData();
@@ -68,10 +76,12 @@ public class JSONWriter {
         catch(Exception e)
         {
             e.printStackTrace();
+            LOG.error("====== ERROR ==========");
         }
 
     }
 
+    // Create a JSON data for testing purpose
     public static ObjectNode createJSONData()  {
         ObjectNode message = null;
         try {
@@ -80,7 +90,7 @@ public class JSONWriter {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(data);
             message = (ObjectNode) jsonNode;
-            LOG.info(message.toString());
+            LOG.info("@@@@@@@@@@@@@ DATA >>>  "+message.toString());
             return message;
         }
         catch (Exception e) {
