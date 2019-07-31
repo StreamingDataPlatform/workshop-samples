@@ -10,25 +10,29 @@
  */
 package com.dellemc.oe.readers;
 
+import com.dellemc.oe.model.JSONData;
+import com.dellemc.oe.serialization.JsonDeserializationSchema;
 import com.dellemc.oe.serialization.JsonNodeSerializer;
 import com.dellemc.oe.util.CommonParams;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import io.pravega.client.ClientConfig;
-import io.pravega.client.EventStreamClientFactory;
-import io.pravega.client.admin.ReaderGroupManager;
+import com.dellemc.oe.util.Utils;
 import io.pravega.client.admin.StreamManager;
 import io.pravega.client.stream.*;
 import io.pravega.client.stream.impl.DefaultCredentials;
+import io.pravega.connectors.flink.FlinkPravegaReader;
+import io.pravega.connectors.flink.FlinkPravegaWriter;
+import io.pravega.connectors.flink.PravegaConfig;
+import io.pravega.connectors.flink.PravegaEventRouter;
+import io.pravega.connectors.flink.serialization.PravegaSerialization;
+import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
-import java.util.UUID;
-;
 
 /*
- * 
+ *  This flink application demonstrates the JSON Data reading
  */
 public class JSONReader {
 
@@ -54,57 +58,55 @@ public class JSONReader {
         try {
             streamName = "json-stream";
             // Create client config
-            ClientConfig clientConfig = null;
+            PravegaConfig pravegaConfig = null;
             if(CommonParams.isPravegaStandaloneAuth())
             {
-                clientConfig = ClientConfig.builder().controllerURI(URI.create(controllerURI.toString()))
-                        .credentials(new DefaultCredentials(CommonParams.getPassword(), CommonParams.getUser()))
-                        .build();
+                pravegaConfig = PravegaConfig.fromDefaults()
+                        .withControllerURI(controllerURI)
+                        .withDefaultScope(scope)
+                        .withCredentials(new DefaultCredentials(CommonParams.getPassword(), CommonParams.getUser()))
+                        .withHostnameValidation(false);
+                try(StreamManager streamManager = StreamManager.create(pravegaConfig.getClientConfig())) {
+                    // create the requested scope (if necessary)
+                    streamManager.createScope(scope);
+                }
+
             }
             else
             {
-                clientConfig = ClientConfig.builder().controllerURI(URI.create(controllerURI.toString())).build();
+                pravegaConfig = PravegaConfig.fromDefaults()
+                        .withControllerURI(controllerURI)
+                        .withDefaultScope(scope)
+                        .withHostnameValidation(false);
             }
-            // Get stream manager for further use
-            StreamManager streamManager = StreamManager.create(clientConfig);
-            StreamConfiguration streamConfig = StreamConfiguration.builder().build();
-            //Carete stream if not exists.
-            streamManager.createStream(scope, streamName, streamConfig);
 
-            // Create reader group and reader config
-            final String readerGroup = UUID.randomUUID().toString().replace("-", "");
-            final ReaderGroupConfig readerGroupConfig = ReaderGroupConfig.builder()
-                    .stream(Stream.of(scope, streamName))
+            LOG.info("==============  pravegaConfig  =============== "+pravegaConfig);
+
+            // create the Pravega input stream (if necessary)
+            Stream stream = Utils.createStream(
+                    pravegaConfig,
+                    streamName);
+            LOG.info("==============  stream  =============== "+stream);
+
+            StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+            // create the Pravega source to read a stream of text
+            FlinkPravegaReader<JSONData> flinkPravegaReader = FlinkPravegaReader.builder()
+                    .withPravegaConfig(pravegaConfig)
+                    .forStream(stream)
+                    .withDeserializationSchema(new JsonDeserializationSchema(JSONData.class))
                     .build();
-            try (ReaderGroupManager readerGroupManager = ReaderGroupManager.withScope(scope, controllerURI)) {
-                readerGroupManager.createReaderGroup(readerGroup, readerGroupConfig);
-            }
 
-           // Create  EventStreamClientFactory and  create reader to get stream data
-            try (EventStreamClientFactory clientFactory = EventStreamClientFactory.withScope(scope, clientConfig);
-                 EventStreamReader<JsonNode> reader = clientFactory.createReader("reader",
-                         readerGroup,
-                         new JsonNodeSerializer(),
-                         ReaderConfig.builder().build())) {
-                LOG.info("@@@@@@@@@@@@@@@@ Reading all the events from scope :  ", scope, streamName);
-                EventRead<JsonNode> event = null;
-                // read data from stream
-                while (reader.hashCode() > 0) {
-                    try {
-                        event = reader.readNextEvent(READER_TIMEOUT_MS);
-                        if (event.getEvent() != null) {
-                            LOG.info("@@@@@@@@@@@@@@ Read event  : "+ event.getEvent());
-                        }
-                    } catch (ReinitializationRequiredException e) {
-                        //There are certain circumstances where the reader needs to be reinitialized
-                        e.printStackTrace();
-                    }
-                } //while (event.getEvent() != null);
-                LOG.info("@@@@@@@@@@@@@@ No more events from  stream  :  "+scope, streamName);
-            }
+            DataStream<JSONData> events = env
+                    .addSource(flinkPravegaReader)
+                    .name("events");
 
+            // create an output sink to print to stdout for verification
+            events.printToErr();
 
-            LOG.info("########## READER END #############");
+            // execute within the Flink environment
+            env.execute("JSON Reader");
+
+            LOG.info("########## JSON READER END #############");
 
         }
         catch(Exception e)
@@ -113,7 +115,5 @@ public class JSONReader {
         }
 
     }
-
-
 
 }

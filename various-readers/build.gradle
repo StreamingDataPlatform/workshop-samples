@@ -50,10 +50,23 @@ dependencies {
     compile "ch.qos.logback:logback-classic:1.2.3"
     compile "ch.qos.logback:logback-core:1.2.3"
     compile "net.logstash.logback:logstash-logback-encoder:4.11"
+    compile "io.pravega:pravega-connectors-flink_${flinkScalaVersion}:${pravegaFlinkConnectorVersion}"
+    compile "org.apache.flink:flink-streaming-java_${flinkScalaVersion}:${flinkVersion}"
+    compile "org.apache.flink:flink-streaming-scala_${flinkScalaVersion}:${flinkVersion}"
+    compile "org.apache.flink:flink-ml_${flinkScalaVersion}:${flinkVersion}"
+    compile "org.apache.flink:flink-table_${flinkScalaVersion}:${flinkVersion}"
+    //compile "org.apache.flink:flink-connector-elasticsearch6_${flinkScalaVersion}:${flinkVersion}"
+//    compile "org.apache.flink:flink-json:${flinkVersion}"
     compile "io.pravega:pravega-client:${pravegaVersion}"
+
+    // common-library dependencies
+    compile "com.google.guava:guava:20.0"
+    compile "org.xerial:sqlite-jdbc:3.20.0"
     compile "com.fasterxml.jackson.core:jackson-databind:2.9.1"
 
+    testCompile "org.apache.flink:flink-test-utils_${flinkScalaVersion}:${flinkVersion}"
     testCompile group: "junit", name: "junit", version: "4.11"
+
 }
 // Build examples
 task scriptJSONReader(type: CreateStartScripts) {

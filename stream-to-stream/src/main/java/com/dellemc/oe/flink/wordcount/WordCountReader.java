@@ -10,7 +10,7 @@
  */
 package com.dellemc.oe.flink.wordcount;
 
-import com.dellemc.oe.flink.Utils;
+import com.dellemc.oe.util.Utils;
 import com.dellemc.oe.util.CommonParams;
 
 import io.pravega.client.admin.StreamManager;
