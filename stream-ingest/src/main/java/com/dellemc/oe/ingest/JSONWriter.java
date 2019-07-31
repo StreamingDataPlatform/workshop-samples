@@ -24,6 +24,7 @@ import io.pravega.client.stream.EventStreamWriter;
 import io.pravega.client.stream.EventWriterConfig;
 import io.pravega.client.stream.StreamConfiguration;
 
+import io.pravega.client.stream.impl.DefaultCredentials;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;;
 
@@ -49,16 +50,27 @@ public class JSONWriter {
 
         try {
             String streamName = "json-stream";
-            StreamManager streamManager = StreamManager.create(controllerURI);
-            // create scope if not exists. This wont work when we try to create scope in nautilus. We need to use other methods to create scope on nautilus.
-            streamManager.createScope(scope);
+            // Create client config
+            ClientConfig clientConfig = null;
+            if(CommonParams.isPravegaStandaloneAuth())
+            {
+                clientConfig = ClientConfig.builder().controllerURI(URI.create(controllerURI.toString()))
+                        .credentials(new DefaultCredentials(CommonParams.getPassword(), CommonParams.getUser()))
+                        .build();
+            }
+            else
+            {
+                clientConfig = ClientConfig.builder().controllerURI(URI.create(controllerURI.toString())).build();
+            }
+
+            StreamManager streamManager = StreamManager.create(clientConfig);
             StreamConfiguration streamConfig = StreamConfiguration.builder().build();
             streamManager.createStream(scope, streamName, streamConfig);
 
-            // Create client config
-            ClientConfig clientConfig = ClientConfig.builder().controllerURI(URI.create(controllerURI.toString())).build();
+
             // Create EventStreamClientFactory
             EventStreamClientFactory clientFactory = EventStreamClientFactory.withScope(scope, clientConfig);
+
             // Create event writer
             EventStreamWriter<JsonNode> writer = clientFactory.createEventWriter(
                     streamName,
