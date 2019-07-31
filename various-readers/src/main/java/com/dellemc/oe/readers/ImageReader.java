@@ -31,6 +31,7 @@ import io.pravega.client.stream.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.dellemc.oe.util.CommonParams;
+import io.pravega.client.stream.impl.DefaultCredentials;
 import io.pravega.common.io.StreamHelpers;
 import lombok.val;
 import org.slf4j.Logger;
@@ -61,9 +62,20 @@ public class ImageReader {
 
              //String scope = "image-scope";
             String streamName = "image-stream";
-            //URI controllerURI =  new URI("tcp://localhost:9090");
-            StreamManager streamManager = StreamManager.create(controllerURI);
-            streamManager.createScope(scope);
+            // Create client config
+            ClientConfig clientConfig = null;
+            if(CommonParams.isPravegaStandaloneAuth())
+            {
+                clientConfig = ClientConfig.builder().controllerURI(URI.create(controllerURI.toString()))
+                        .credentials(new DefaultCredentials(CommonParams.getPassword(), CommonParams.getUser()))
+                        .build();
+            }
+            else
+            {
+                clientConfig = ClientConfig.builder().controllerURI(URI.create(controllerURI.toString())).build();
+            }
+
+        StreamManager streamManager = StreamManager.create(clientConfig);
             StreamConfiguration streamConfig = StreamConfiguration.builder().build();
             streamManager.createStream(scope, streamName, streamConfig);
 
@@ -76,8 +88,6 @@ public class ImageReader {
                 readerGroupManager.createReaderGroup(readerGroup, readerGroupConfig);
             }
 
-            // Create client config
-            ClientConfig clientConfig = ClientConfig.builder().controllerURI(URI.create(controllerURI.toString())).build();
             ByteStreamReader reader = null;
             // Create  EventStreamClientFactory and  create reader to get stream data
             try

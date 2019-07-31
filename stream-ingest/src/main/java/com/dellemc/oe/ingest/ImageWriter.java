@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.dellemc.oe.util.CommonParams;
 import io.pravega.client.stream.StreamConfiguration;
+import io.pravega.client.stream.impl.DefaultCredentials;
 import lombok.val;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,20 +57,30 @@ public class ImageWriter {
         try {
             //String scope = "image-scope";
             String streamName = "image-stream";
-            //URI controllerURI =  new URI("tcp://localhost:9090");
-            StreamManager streamManager = StreamManager.create(controllerURI);
-            streamManager.createScope(scope);
+            // Create client config
+            ClientConfig clientConfig = null;
+            if(CommonParams.isPravegaStandaloneAuth())
+            {
+                clientConfig = ClientConfig.builder().controllerURI(URI.create(controllerURI.toString()))
+                        .credentials(new DefaultCredentials(CommonParams.getPassword(), CommonParams.getUser()))
+                        .build();
+            }
+            else
+            {
+                clientConfig = ClientConfig.builder().controllerURI(URI.create(controllerURI.toString())).build();
+            }
+
+            StreamManager streamManager = StreamManager.create(clientConfig);
             StreamConfiguration streamConfig = StreamConfiguration.builder().build();
             streamManager.createStream(scope, streamName, streamConfig);
 
-            // Create client config
-            ClientConfig clientConfig = ClientConfig.builder().controllerURI(URI.create(controllerURI.toString())).build();
             // Create ByteStreamClientFactory
             ByteStreamClientFactory clientFactory = ByteStreamClientFactory.withScope(scope, clientConfig);
 
              ByteStreamWriter writer = clientFactory.createByteStreamWriter(streamName);
              //  Read a image and convert to byte[]
              byte[] payload = ImageToByteArray.readImage();
+
 
             while(true)
             {

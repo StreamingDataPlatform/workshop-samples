@@ -13,12 +13,15 @@ package com.dellemc.oe.ingest;
 import java.net.URI;
 
 import java.util.concurrent.CompletableFuture;
+
+import io.pravega.client.ClientConfig;
 import io.pravega.client.ClientFactory;
 import io.pravega.client.admin.StreamManager;
 import io.pravega.client.stream.EventStreamWriter;
 import io.pravega.client.stream.EventWriterConfig;
 import io.pravega.client.stream.ScalingPolicy;
 import io.pravega.client.stream.StreamConfiguration;
+import io.pravega.client.stream.impl.DefaultCredentials;
 import io.pravega.client.stream.impl.JavaSerializer;
 
 import com.dellemc.oe.util.CommonParams;
@@ -38,19 +41,50 @@ public class EventWriter {
     }
 
     public void run(String routingKey, String message)  {
+        System.out.println(" @@@@@@@@@@@@@@@@ URI "+controllerURI.toString());
 
-        try (ClientFactory clientFactory = ClientFactory.withScope(scope, controllerURI);
+        // Create client config
+        ClientConfig clientConfig = null;
+        if(CommonParams.isPravegaStandaloneAuth())
+        {
+            clientConfig = ClientConfig.builder().controllerURI(URI.create(controllerURI.toString()))
+                    .credentials(new DefaultCredentials(CommonParams.getPassword(), CommonParams.getUser()))
+                    .build();
+        }
+        else
+        {
+            clientConfig = ClientConfig.builder().controllerURI(URI.create(controllerURI.toString())).build();
+        }
+
+        try (ClientFactory clientFactory = ClientFactory.withScope(scope, clientConfig);
+
              EventStreamWriter<String> writer = clientFactory.createEventWriter(streamName,
-                     new JavaSerializer<String>(),
+                     new JavaSerializer<>(),
                      EventWriterConfig.builder().build())) {
 						 
 						 
 						 System.out.format("Writing message: '%s' with routing-key: '%s' to stream '%s / %s'%n",
 						 message, routingKey, scope, streamName);
 						 
-						 /*writes the given non-null Event object to the Stream using a given Routing key to determine which Stream Segment it should written to. writeEvent() is asynchronous and return some sort of Future object, which will complete when the event has been durably stored on the configured number of replicas, and is available for readers to see. Failures that occur are handled internally with multiple retires and exponential backoff. So there is no need to attempt to retry in the event of an exception*/
-						 final CompletableFuture writeFuture = writer.writeEvent(routingKey, message);
-                
+						 /*writes the given non-null Event object to the Stream using a given Routing key to determine which Stream Segment
+						 it should written to. writeEvent() is asynchronous and return some sort of Future object, which will complete
+						 when the event has been durably stored on the configured number of replicas, and is available for readers to see.
+						 Failures that occur are handled internally with multiple retires and exponential backoff.
+						 So there is no need to attempt to retry in the event of an exception*/
+						 //final CompletableFuture writeFuture = writer.writeEvent(routingKey, message);
+            while(true)
+            {
+                try
+                {
+                    final CompletableFuture writeFuture = writer.writeEvent(routingKey, message);
+                    Thread.sleep(1000);
+                }
+                catch(Exception e)
+                {
+                    e.printStackTrace();
+                }
+
+            }
             }
     }
 

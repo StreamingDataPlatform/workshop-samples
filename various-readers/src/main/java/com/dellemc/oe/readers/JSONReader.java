@@ -19,6 +19,7 @@ import io.pravega.client.EventStreamClientFactory;
 import io.pravega.client.admin.ReaderGroupManager;
 import io.pravega.client.admin.StreamManager;
 import io.pravega.client.stream.*;
+import io.pravega.client.stream.impl.DefaultCredentials;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,14 +52,21 @@ public class JSONReader {
     public static void run(String scope , String streamName,URI controllerURI )  {
 
         try {
-            /*String scope = "json-scope";
-            String streamName = "json-stream";
-            URI controllerURI =  new URI("tcp://localhost:9090");*/
             streamName = "json-stream";
+            // Create client config
+            ClientConfig clientConfig = null;
+            if(CommonParams.isPravegaStandaloneAuth())
+            {
+                clientConfig = ClientConfig.builder().controllerURI(URI.create(controllerURI.toString()))
+                        .credentials(new DefaultCredentials(CommonParams.getPassword(), CommonParams.getUser()))
+                        .build();
+            }
+            else
+            {
+                clientConfig = ClientConfig.builder().controllerURI(URI.create(controllerURI.toString())).build();
+            }
             // Get stream manager for further use
-            StreamManager streamManager = StreamManager.create(controllerURI);
-            // create scope if not exists. This wont work when we try to create scope in nautilus. We need to use other methods to create scope on nautilus.
-            streamManager.createScope(scope);
+            StreamManager streamManager = StreamManager.create(clientConfig);
             StreamConfiguration streamConfig = StreamConfiguration.builder().build();
             //Carete stream if not exists.
             streamManager.createStream(scope, streamName, streamConfig);
@@ -72,10 +80,7 @@ public class JSONReader {
                 readerGroupManager.createReaderGroup(readerGroup, readerGroupConfig);
             }
 
-            // create client config
-            ClientConfig clientConfig = ClientConfig.builder().controllerURI(URI.create(controllerURI.toString())).build();
-
-            // Create  EventStreamClientFactory and  create reader to get stream data
+           // Create  EventStreamClientFactory and  create reader to get stream data
             try (EventStreamClientFactory clientFactory = EventStreamClientFactory.withScope(scope, clientConfig);
                  EventStreamReader<JsonNode> reader = clientFactory.createReader("reader",
                          readerGroup,
