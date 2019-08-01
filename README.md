@@ -25,6 +25,32 @@ kubectl get secret workshop-samples-pravega -n workshop-samples -o jsonpath="{.d
   }
 }
 ```
+
+## Setting up your IDE
+
+First, we need to build pravega client and pravega flink connector
+ans install it in local maven
+
+```
+git clone https://github.com/pravega/pravega
+cd pravega
+git checkout r0.5
+./gradlew install
+cd ..
+git clone https://github.com/pravega/flink-connectors
+cd flink-connectors
+git checkout r0.5
+./gradlew install
+```
+
+To import the source into IntelliJ:
+1. Import the project directory into IntelliJ IDE. It will automatically detect the gradle project and import things correctly.
+2. Enable `Annotation Processing` by going to `Build, Execution, Deployment` -> `Compiler` > `Annotation Processors` and checking 'Enable annotation processing'.
+3. Install the `Lombok Plugin`. This can be found in `Preferences` -> `Plugins`. Restart your IDE.
+
+## Running in CLI
+
+```
 1. Edit the common/set-workshop-env.sh environment variables
 1. run the set-workshop-env
 ```
