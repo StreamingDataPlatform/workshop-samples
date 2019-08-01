@@ -10,29 +10,27 @@
  */
 package com.dellemc.oe.flink.wordcount;
 
-import com.dellemc.oe.util.Utils;
 import com.dellemc.oe.util.CommonParams;
-
+import com.dellemc.oe.util.Utils;
 import io.pravega.client.admin.StreamManager;
-import io.pravega.client.stream.*;
+import io.pravega.client.stream.ScalingPolicy;
+import io.pravega.client.stream.Stream;
+import io.pravega.client.stream.StreamConfiguration;
 import io.pravega.client.stream.impl.DefaultCredentials;
 import io.pravega.connectors.flink.FlinkPravegaReader;
 import io.pravega.connectors.flink.FlinkPravegaWriter;
 import io.pravega.connectors.flink.PravegaConfig;
 import io.pravega.connectors.flink.PravegaEventRouter;
 import io.pravega.connectors.flink.serialization.PravegaSerialization;
-
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.util.Collector;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
-;
 
 /*
  * At a high level, WordCountReader reads from a Pravega stream, and prints
@@ -55,46 +53,43 @@ public class WordCountReader {
     // prints the distinct words and counts from the previous 10 seconds.
 
     public static void main(String[] args) throws Exception {
-        // LOG.info("Starting WordCountReader...");
+        LOG.info("Starting WordCountReader...");
 
         final String scope = CommonParams.getScope();
         final String streamName = CommonParams.getStreamName();
         final URI controllerURI = CommonParams.getControllerURI();
 
-        LOG.info("#######################     SCOPE   ###################### "+scope);
-        LOG.info("#######################     streamName   ###################### "+streamName);
-        LOG.info("#######################     controllerURI   ###################### "+controllerURI);
+        LOG.info("#######################     SCOPE   ###################### " + scope);
+        LOG.info("#######################     streamName   ###################### " + streamName);
+        LOG.info("#######################     controllerURI   ###################### " + controllerURI);
 
         // Create client config
         PravegaConfig pravegaConfig = null;
-        if(CommonParams.isPravegaStandaloneAuth())
-        {
-               pravegaConfig = PravegaConfig.fromDefaults()
+        if (CommonParams.isPravegaStandaloneAuth()) {
+            pravegaConfig = PravegaConfig.fromDefaults()
                     .withControllerURI(controllerURI)
                     .withDefaultScope(scope)
                     .withCredentials(new DefaultCredentials(CommonParams.getPassword(), CommonParams.getUser()))
                     .withHostnameValidation(false);
-            try(StreamManager streamManager = StreamManager.create(pravegaConfig.getClientConfig())) {
+            try (StreamManager streamManager = StreamManager.create(pravegaConfig.getClientConfig())) {
                 // create the requested scope (if necessary)
                 streamManager.createScope(scope);
             }
 
-        }
-        else
-        {
+        } else {
             pravegaConfig = PravegaConfig.fromDefaults()
                     .withControllerURI(controllerURI)
                     .withDefaultScope(scope)
                     .withHostnameValidation(false);
         }
 
-        LOG.info("==============  pravegaConfig  =============== "+pravegaConfig);
+        LOG.info("==============  pravegaConfig  =============== " + pravegaConfig);
 
         // create the Pravega input stream (if necessary)
         Stream stream = Utils.createStream(
                 pravegaConfig,
                 streamName);
-        LOG.info("==============  stream  =============== "+stream);
+        LOG.info("==============  stream  =============== " + stream);
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         // create the Pravega source to read a stream of text
@@ -103,7 +98,7 @@ public class WordCountReader {
                 .forStream(stream)
                 .withDeserializationSchema(PravegaSerialization.deserializationFor(String.class))
                 .build();
-        LOG.info("==============  SOURCE  =============== "+source);
+        LOG.info("==============  SOURCE  =============== " + source);
         // count each word over a 10 second time period
         DataStream<WordCount> dataStream = env.addSource(source).name(streamName)
                 .flatMap(new WordCountReader.Splitter())
@@ -120,7 +115,7 @@ public class WordCountReader {
         FlinkPravegaWriter<WordCount> writer = FlinkPravegaWriter.<WordCount>builder()
                 .withPravegaConfig(pravegaConfig)
                 .forStream(output_stream)
-                .withEventRouter(new  EventRouter())
+                .withEventRouter(new EventRouter())
                 .withSerializationSchema(PravegaSerialization.serializationFor(WordCount.class))
                 .build();
         dataStream.addSink(writer).name("OutputStream");
@@ -130,9 +125,29 @@ public class WordCountReader {
         LOG.info("============== Final output ===============");
         dataStream.printToErr();
         // execute within the Flink environment
-       env.execute("WordCountReader");
+        env.execute("WordCountReader");
 
         LOG.info("Ending WordCountReader...");
+    }
+
+    static public Stream getOrCreateStream(PravegaConfig pravegaConfig, String streamName, int numSegments) {
+        StreamConfiguration streamConfig = StreamConfiguration.builder()
+                .scalingPolicy(ScalingPolicy.fixed(numSegments))
+                .build();
+
+        return createStream(pravegaConfig, streamName, streamConfig);
+    }
+
+    static Stream createStream(PravegaConfig pravegaConfig, String streamName, StreamConfiguration streamConfig) {
+        // resolve the qualified name of the stream
+        Stream stream = pravegaConfig.resolve(streamName);
+
+        try (StreamManager streamManager = StreamManager.create(pravegaConfig.getClientConfig())) {
+            // create the requested stream based on the given stream configuration
+            streamManager.createStream(stream.getScope(), stream.getStreamName(), streamConfig);
+        }
+
+        return stream;
     }
 
     /*
@@ -147,31 +162,11 @@ public class WordCountReader {
         }
     }
 
-    static public Stream getOrCreateStream(PravegaConfig pravegaConfig, String streamName, int numSegments) {
-        StreamConfiguration streamConfig = StreamConfiguration.builder()
-                .scalingPolicy(ScalingPolicy.fixed(numSegments))
-                .build();
-
-        return  createStream(pravegaConfig, streamName, streamConfig);
-    }
-
-    static Stream createStream(PravegaConfig pravegaConfig, String streamName, StreamConfiguration streamConfig) {
-        // resolve the qualified name of the stream
-        Stream stream = pravegaConfig.resolve(streamName);
-
-        try(StreamManager streamManager = StreamManager.create(pravegaConfig.getClientConfig())) {
-            // create the requested stream based on the given stream configuration
-            streamManager.createStream(stream.getScope(), stream.getStreamName(), streamConfig);
-        }
-
-        return stream;
-    }
-
     // split data into word by space
     private static class Splitter implements FlatMapFunction<String, WordCount> {
         @Override
         public void flatMap(String line, Collector<WordCount> out) throws Exception {
-            for (String word: line.split(" ")) {
+            for (String word : line.split(" ")) {
                 out.collect(new WordCount(word, 1));
             }
         }

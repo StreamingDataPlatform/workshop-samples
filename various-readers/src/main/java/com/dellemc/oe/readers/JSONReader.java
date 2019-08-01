@@ -12,18 +12,13 @@ package com.dellemc.oe.readers;
 
 import com.dellemc.oe.model.JSONData;
 import com.dellemc.oe.serialization.JsonDeserializationSchema;
-import com.dellemc.oe.serialization.JsonNodeSerializer;
 import com.dellemc.oe.util.CommonParams;
-
 import com.dellemc.oe.util.Utils;
 import io.pravega.client.admin.StreamManager;
-import io.pravega.client.stream.*;
+import io.pravega.client.stream.Stream;
 import io.pravega.client.stream.impl.DefaultCredentials;
 import io.pravega.connectors.flink.FlinkPravegaReader;
-import io.pravega.connectors.flink.FlinkPravegaWriter;
 import io.pravega.connectors.flink.PravegaConfig;
-import io.pravega.connectors.flink.PravegaEventRouter;
-import io.pravega.connectors.flink.serialization.PravegaSerialization;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.slf4j.Logger;
@@ -41,52 +36,49 @@ public class JSONReader {
     private static final int READER_TIMEOUT_MS = 3000;
 
     public static void main(String[] args) throws Exception {
-       LOG.info("########## READER START #############");
+        LOG.info("########## READER START #############");
 
         final String scope = CommonParams.getScope();
         String streamName = CommonParams.getStreamName();
         final URI controllerURI = CommonParams.getControllerURI();
 
-        LOG.info("#######################     SCOPE   ###################### "+scope);
-        LOG.info("#######################     streamName   ###################### "+streamName);
-        LOG.info("#######################     controllerURI   ###################### "+controllerURI);
-        run(scope , streamName,controllerURI );
+        LOG.info("#######################     SCOPE   ###################### " + scope);
+        LOG.info("#######################     streamName   ###################### " + streamName);
+        LOG.info("#######################     controllerURI   ###################### " + controllerURI);
+        run(scope, streamName, controllerURI);
     }
 
-    public static void run(String scope , String streamName,URI controllerURI )  {
+    public static void run(String scope, String streamName, URI controllerURI) {
 
         try {
             streamName = "json-stream";
             // Create client config
             PravegaConfig pravegaConfig = null;
-            if(CommonParams.isPravegaStandaloneAuth())
-            {
+            if (CommonParams.isPravegaStandaloneAuth()) {
                 pravegaConfig = PravegaConfig.fromDefaults()
                         .withControllerURI(controllerURI)
                         .withDefaultScope(scope)
                         .withCredentials(new DefaultCredentials(CommonParams.getPassword(), CommonParams.getUser()))
                         .withHostnameValidation(false);
-                try(StreamManager streamManager = StreamManager.create(pravegaConfig.getClientConfig())) {
+                try (StreamManager streamManager = StreamManager.create(pravegaConfig.getClientConfig())) {
                     // create the requested scope (if necessary)
                     streamManager.createScope(scope);
                 }
 
-            }
-            else
-            {
+            } else {
                 pravegaConfig = PravegaConfig.fromDefaults()
                         .withControllerURI(controllerURI)
                         .withDefaultScope(scope)
                         .withHostnameValidation(false);
             }
 
-            LOG.info("==============  pravegaConfig  =============== "+pravegaConfig);
+            LOG.info("==============  pravegaConfig  =============== " + pravegaConfig);
 
             // create the Pravega input stream (if necessary)
             Stream stream = Utils.createStream(
                     pravegaConfig,
                     streamName);
-            LOG.info("==============  stream  =============== "+stream);
+            LOG.info("==============  stream  =============== " + stream);
 
             StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
             // create the Pravega source to read a stream of text
@@ -108,9 +100,7 @@ public class JSONReader {
 
             LOG.info("########## JSON READER END #############");
 
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

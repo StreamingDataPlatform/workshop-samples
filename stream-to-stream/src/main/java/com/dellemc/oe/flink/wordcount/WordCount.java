@@ -21,7 +21,8 @@ public class WordCount implements Serializable {
     private String word;
     private int count;
 
-    public WordCount() {}
+    public WordCount() {
+    }
 
     public WordCount(String word, int count) {
         this.count = count;
@@ -36,12 +37,16 @@ public class WordCount implements Serializable {
         this.count = count;
     }
 
-    public String getWord() {return word;}
+    public String getWord() {
+        return word;
+    }
 
-    public void setWord(String word) {this.word = word;}
+    public void setWord(String word) {
+        this.word = word;
+    }
 
     @Override
     public String toString() {
-        return "Word: "+ word + ": " + " Count: " + count;
+        return "Word: " + word + ": " + " Count: " + count;
     }
 }
