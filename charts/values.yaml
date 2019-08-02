@@ -1,0 +1,56 @@
+# Chart should ONLY deploy the application and not all resources
+onlyApplication: false
+
+# Number of Projects to be created
+projects: 1
+
+# Number of Flink Clusters per project to be created
+clusters: 1
+
+# Number of Applications to be deployed per project
+applications: 1
+
+flinkVersion: 1.7.2
+
+# Detailed Project Control
+project:
+  zookeeperReplicas: 3
+
+  mavenStorage: 20Gi
+  localStorage: 20Gi
+
+# Detailed FlinkCluster Control
+cluster:
+  localStorage: 20Gi
+
+  taskManager:
+    replicas: 2
+    memory: 1024M
+    cpu: 900m
+    taskSlots: 5
+
+# Detailed FlinkApplication Control
+application:
+  mavenVersion: 0.1.0
+
+  defaultParallelism: 3
+
+  pravega:
+    PRAVEGA_SCOPE: workshop-samples
+    STREAM_NAME: workshop-stream
+    PRAVEGA_STANDALONE_AUTH: false
+
+    # Controls Created Streams
+    streamSegments: 3
+
+  writer:
+    # How many instances of the Event generating Source to execute
+    parallelism: 5
+    pravega_client_auth_method:  Bearer
+    pravega_client_auth_loadDynamic:  true
+    
+  reader:
+    # How many readers
+    parallelism: 5
+    pravega_client_auth_method:  Bearer
+    pravega_client_auth_loadDynamic:  true

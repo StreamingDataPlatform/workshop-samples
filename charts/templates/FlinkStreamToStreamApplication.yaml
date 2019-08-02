@@ -1,0 +1,42 @@
+{{- $relname := .Release.Name -}}
+{{- $numApplications := .Values.applications -}}
+{{- $application := .Values.application -}}
+{{- $flinkVersion := .Values.flinkVersion -}}
+{{- range $projectNum, $e := until (int .Values.projects)  }}
+{{- range $applicationNum, $e := until (int $numApplications) }}
+apiVersion: flink.nautilus.dellemc.com/v1beta1
+kind: "FlinkApplication"
+metadata:
+  name: "stream-to-stream"
+  namespace: {{ $relname }}
+spec:
+  flinkVersion: {{ $flinkVersion }}
+
+  mavenCoordinate: com.dellemc.oe.flink.wordcount:stream-to-stream:{{ $application.mavenVersion }}
+  mainClass: com.dellemc.oe.flink.wordcount.WordCountReader
+
+  parallelism: {{ $application.defaultParallelism }}
+
+  state: started
+
+  parameters:
+    - name: PRAVEGA_SCOPE
+      value: "{{ $application.pravega.PRAVEGA_SCOPE }}"
+
+    - name: STREAM_NAME
+      value: "{{ $application.pravega.STREAM_NAME }}"
+
+    - name: PRAVEGA_STANDALONE_AUTH
+      value: "{{ $application.pravega.PRAVEGA_STANDALONE_AUTH }}"
+
+    - name: pravega_client_auth_method
+      value: "{{ $application.reader.pravega_client_auth_method }}"
+
+    - name: pravega_client_auth_loadDynamic
+      value: "{{ $application.reader.pravega_client_auth_loadDynamic }}"
+
+    - name: sourceParallelism
+      value: "{{ $application.reader.parallelism }}"
+---
+{{- end }}
+{{- end }}
