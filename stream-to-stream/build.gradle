@@ -121,18 +121,16 @@ distributions {
         }
     }
 
-
     publishing {
-       repositories {
-           maven {
-               credentials {
-                   username "nautilus"
-                   password "password"
-               }
-               url = "http://localhost:9090/maven2"
-           }          
-          
-       }
+        repositories {
+            maven {
+                credentials {
+                    username userName
+                    password password
+                }
+                url projectRepoUrl
+            }
+        }
 
        publications {
            shadow(MavenPublication) { publication ->
