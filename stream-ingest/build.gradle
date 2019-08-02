@@ -118,7 +118,7 @@ publishing {
         maven {
             credentials {
                 username userName
-                password password
+                password passWord
             }
             url projectRepoUrl
         }

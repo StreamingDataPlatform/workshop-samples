@@ -59,6 +59,16 @@ dependencies {
 //    compile "org.apache.flink:flink-json:${flinkVersion}"
     compile "io.pravega:pravega-client:${pravegaVersion}"
 
+    // MongoDB
+    // https://mvnrepository.com/artifact/org.mongodb/mongodb-driver
+    compile group: 'org.mongodb', name: 'mongodb-driver', version: '3.11.0-rc0'
+    // https://mvnrepository.com/artifact/org.mongodb.mongo-hadoop/mongo-hadoop-core
+    compile group: 'org.mongodb.mongo-hadoop', name: 'mongo-hadoop-core', version: '2.0.2'
+    // https://mvnrepository.com/artifact/org.apache.flink/flink-hadoop-compatibility
+    testCompile group: 'org.apache.flink', name: 'flink-hadoop-compatibility_2.10', version: '1.7.2'
+
+
+
     // common-library dependencies
     compile "com.google.guava:guava:20.0"
     compile "org.xerial:sqlite-jdbc:3.20.0"
@@ -78,6 +88,22 @@ task scriptJSONReader(type: CreateStartScripts) {
 
 task startJSONReader(type: JavaExec) {
     main = "com.dellemc.oe.readers.JSONReader"
+    classpath = sourceSets.main.runtimeClasspath
+    if(System.getProperty("exec.args") != null) {
+        args System.getProperty("exec.args").split()
+    }
+}
+
+// Build examples
+task scriptJSONReader(type: CreateStartScripts) {
+    outputDir = file('build/scripts')
+    mainClassName = 'com.dellemc.oe.readers.ImageReader'
+    applicationName = 'imageWriter'
+    classpath = files(jar.archivePath) + sourceSets.main.runtimeClasspath
+}
+
+task startJSONReader(type: JavaExec) {
+    main = "com.dellemc.oe.readers.ImageReader"
     classpath = sourceSets.main.runtimeClasspath
     if(System.getProperty("exec.args") != null) {
         args System.getProperty("exec.args").split()
@@ -125,7 +151,7 @@ distributions {
            maven {
                credentials {
                    username userName
-                   password password
+                   password passWord
                }
                url projectRepoUrl
            } 

@@ -104,21 +104,3 @@ distributions {
         }
     }
 }
-
-publishing {
-    repositories {
-        maven {
-            credentials {
-                username userName
-                password password
-            }
-            url projectRepoUrl
-        }
-    }
-
-       publications {
-           shadow(MavenPublication) { publication ->
-               project.shadow.component(publication)
-           }
-       }
-    }
