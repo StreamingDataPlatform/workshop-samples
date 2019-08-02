@@ -13,31 +13,17 @@ package com.dellemc.oe.readers;
 import java.net.URI;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-
-import com.dellemc.oe.serialization.JsonNodeSerializer;
-import com.dellemc.oe.util.ImageToByteArray;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.pravega.client.ByteStreamClientFactory;
 import io.pravega.client.ClientConfig;
-import io.pravega.client.ClientFactory;
-import io.pravega.client.EventStreamClientFactory;
 import io.pravega.client.admin.ReaderGroupManager;
 import io.pravega.client.admin.StreamManager;
 import io.pravega.client.byteStream.ByteStreamReader;
-import io.pravega.client.byteStream.ByteStreamWriter;
-import io.pravega.client.byteStream.impl.ByteStreamClientImpl;
-import io.pravega.client.netty.impl.ConnectionFactoryImpl;
 import io.pravega.client.stream.*;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.dellemc.oe.util.CommonParams;
 import io.pravega.client.stream.impl.DefaultCredentials;
 import io.pravega.common.io.StreamHelpers;
-import lombok.val;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.imageio.ImageWriter;
 
 
 /**
@@ -66,16 +52,16 @@ public class ImageReader {
             ClientConfig clientConfig = null;
             if(CommonParams.isPravegaStandaloneAuth())
             {
-                clientConfig = ClientConfig.builder().controllerURI(URI.create(controllerURI.toString()))
+                clientConfig = ClientConfig.builder().controllerURI(controllerURI)
                         .credentials(new DefaultCredentials(CommonParams.getPassword(), CommonParams.getUser()))
                         .build();
             }
             else
             {
-                clientConfig = ClientConfig.builder().controllerURI(URI.create(controllerURI.toString())).build();
+                clientConfig = ClientConfig.builder().controllerURI(controllerURI).build();
             }
 
-        StreamManager streamManager = StreamManager.create(clientConfig);
+            StreamManager streamManager = StreamManager.create(clientConfig);
             StreamConfiguration streamConfig = StreamConfiguration.builder().build();
             streamManager.createStream(scope, streamName, streamConfig);
 

@@ -4,13 +4,25 @@
 External connectivity enabled Nautilus cluster required to perform these samples.
 
 ## Running the Samples
-1. Create a project `workshop-samples` in Nautilus UI
-    1. This will automatically create a scope `workshop-samples`
-1. Get the `keycloak.json` file by executing this command
+
+### Configure Nautilus Authentication
+- Obtain the file pravega-keycloak-credentials-*.jar and place it in the lib directory.
 ```
-kubectl get secret workshop-samples-pravega -n workshop-samples -o jsonpath="{.data.keycloak\.json}" |base64 -d | jq .
+PRAVEGA_CREDENTIALS_VERSION=0.5.0-2305.31c34b9-0.11.10-001.e597251
+sudo apt install maven
+mvn install:install-file \
+-Dfile=lib/pravega-keycloak-credentials-${PRAVEGA_CREDENTIALS_VERSION}-shadow.jar \
+-DgroupId=io.pravega -DartifactId=pravega-keycloak-credentials \
+-Dversion=${PRAVEGA_CREDENTIALS_VERSION} -Dpackaging=jar
 ```
-  output:
+- Create a project `workshop-samples` in Nautilus UI
+- This will automatically create a scope `workshop-samples`
+-  Get the `keycloak.json` file by executing this command
+```
+kubectl get secret workshop-samples-pravega -n workshop-samples -o jsonpath="{.data.keycloak\.json}" |base64 -d >  ${HOME}/keycloak.json
+chmod go-rw ${HOME}/keycloak.json
+```
+  output looks like the following:
 ```
 {
   "realm": "nautilus",
@@ -24,6 +36,12 @@ kubectl get secret workshop-samples-pravega -n workshop-samples -o jsonpath="{.d
     "secret": "c72c45f8-76b0-4ca2-99cf-1f1a03704c4f"
   }
 }
+```
+When running the example applications, you must set the following environment variables. This can be done by setting the IntelliJ run configurations. If you set this in IntelliJ, you must manually replace ${HOME} with your actual home directory.
+```
+export pravega_client_auth_method=Bearer
+export pravega_client_auth_loadDynamic=true
+export KEYCLOAK_SERVICE_ACCOUNT_FILE=${HOME}/keycloak.json
 ```
 
 ## Setting up your IDE
@@ -44,35 +62,16 @@ git checkout r0.5
 ```
 
 To import the source into IntelliJ:
-1. Import the project directory into IntelliJ IDE. It will automatically detect the gradle project and import things correctly.
-2. Enable `Annotation Processing` by going to `Build, Execution, Deployment` -> `Compiler` > `Annotation Processors` and checking 'Enable annotation processing'.
-3. Install the `Lombok Plugin`. This can be found in `Preferences` -> `Plugins`. Restart your IDE.
+1- create a project from existing source
+2- Enable auto import
+## Running JSON Reader in Nautilus
 
-## Running in CLI
-
+- You must make the Maven repo in Nautilus available to your development workstation.
 ```
-1. Edit the common/set-workshop-env.sh environment variables
-1. run the set-workshop-env
+kubectl port-forward service/repo 9090:80 --namespace workshop-samples &
 ```
-source common/set-workshop-env.sh
+- Build and publish your application JAR file.
 ```
-1. Now build the workshop samples
-```
-gradlew clean installDist
-```
-  1. Go to the folder workshop-samples and run the auth-demo
-```
-sh auth-demo/build/install/auth-demo/bin/auth-demo
-```
-  1. To Create Scope
-```
-sh operational/build/install/operational/bin/scopeCreator
-```
-  1. To create Stream
-```
-sh operational/build/install/operational/bin/streamCreator
-```
-  1. To ingest data
-```
-sh stream-ingest/build/install/stream-ingest/bin/eventWriter
-```
+./gradlew publish
+helm upgrade --install --timeout 600 jsonreader \
+--wait --namespace workshop-samples charts

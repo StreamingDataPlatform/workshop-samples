@@ -9,20 +9,22 @@
  *
  */
 
+
+//plugins {
+  //  id 'com.github.johnrengelman.shadow' version '2.0.3'
+//}
+
 apply plugin: "distribution"
 apply plugin: "java"
 apply plugin: "maven"
 apply plugin: "application"
 apply plugin: "maven-publish"
-
-sourceCompatibility = 1.8
-archivesBaseName = 'operational'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 group = "com.dellemc.oe.operations"
 version = samplesVersion
 archivesBaseName = "operational"
 description = "operational"
-mainClassName = "com.dellemc.oe.operations.StreamCreator"
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -31,28 +33,9 @@ dependencies {
     compile project(':common')
     compile "io.pravega:pravega-client:${pravegaVersion}"
     if (includePravegaCredentials.toBoolean()) {
-        print " Adding Credential jar for operational module"
-        runtime files ('../common/lib/pravega-keycloak-credentials-0.5.0-2302.7592022-0.11.7-001.29d9682-shadow.jar')
+        compile "io.pravega:pravega-keycloak-credentials:${pravegaCredentialsVersion}"
     }
 }
-
-apply plugin: 'com.github.johnrengelman.shadow'
-
-shadowJar {
-    dependencies {
-        exclude(dependency("org.scala-lang:scala-library"))
-        exclude(dependency("org.scala-lang:scala-reflect"))
-        exclude(dependency("org.scala-lang:scala-compiler"))
-    }
-
-    relocate "com.google", "com.dell.nautilus.analytics.shaded.com.google"
-    relocate "io.netty", "com.dell.nautilus.analytics.shaded.io.netty"
-
-    classifier = ""
-
-    zip64 true
-}
-
 // Build examples
 
 task scriptScopeCreator(type: CreateStartScripts) {
@@ -85,18 +68,28 @@ task startStreamCreator(type: JavaExec) {
     }
 }
 
+shadowJar {
+    dependencies {
+        exclude(dependency("org.scala-lang:scala-library"))
+        exclude(dependency("org.scala-lang:scala-reflect"))
+        exclude(dependency("org.scala-lang:scala-compiler"))
+    }
+    classifier = ""
+    zip64 true
+}
+
 distributions {
     main {
         baseName = archivesBaseName
         contents {
             into('bin') {
-                from project.scriptStreamCreator
+
             }
             into('lib') {
                 from(jar)
                 from(project.configurations.runtime)
                 from shadowJar
-                from(project.configurations.shadow)                
+                from(project.configurations.shadow)
             }
             into('conf') {
                 from(project.file('src/main/resources/logback.xml'))
@@ -104,22 +97,3 @@ distributions {
         }
     }
 }
-
-publishing {
-       repositories {
-           maven {
-               credentials {
-                   username "nautilus"
-                   password "password"
-               }
-               url = "http://localhost:9090/maven2"
-           }          
-          
-       }
-
-       publications {
-           shadow(MavenPublication) { publication ->
-               project.shadow.component(publication)
-           }
-       }
-    }

@@ -13,10 +13,7 @@ apply plugin: "java"
 apply plugin: "maven"
 apply plugin: "application"
 apply plugin: "maven-publish"
-
-
-sourceCompatibility = "1.8"
-archivesBaseName = 'stream-to-stream'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 group = "com.dellemc.oe.flink.wordcount"
 version = samplesVersion
@@ -30,35 +27,21 @@ ext {
     scalaJava8CompatVersion = '0.7.0'
 }
 
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
-    }
-}
-
 dependencies {
     compile project(':common')
       
     if (includePravegaCredentials.toBoolean()) {
-        print " Adding Credential jar for stream-to-stream module"
-        runtime files ('../common/lib/pravega-keycloak-credentials-0.5.0-2302.7592022-0.11.7-001.29d9682-shadow.jar')
+        compile "io.pravega:pravega-keycloak-credentials:${pravegaCredentialsVersion}"
     }
-    
-    //compile "org.elasticsearch.client:elasticsearch-rest-high-level-client:6.5.4"
-    compile "org.slf4j:slf4j-api:1.6.6"
-    compile "ch.qos.logback:logback-classic:1.2.3"
-    compile "ch.qos.logback:logback-core:1.2.3"
-    compile "net.logstash.logback:logstash-logback-encoder:4.11"
+
+    compile "org.slf4j:slf4j-api:${slf4jApiVersion}"
+    compile "ch.qos.logback:logback-classic:${logbackVersion}"
+    compile "ch.qos.logback:logback-core:${logbackVersion}"
     compile "io.pravega:pravega-connectors-flink_${flinkScalaVersion}:${pravegaFlinkConnectorVersion}"
     compile "org.apache.flink:flink-streaming-java_${flinkScalaVersion}:${flinkVersion}"
     compile "org.apache.flink:flink-streaming-scala_${flinkScalaVersion}:${flinkVersion}"
     compile "org.apache.flink:flink-ml_${flinkScalaVersion}:${flinkVersion}"
     compile "org.apache.flink:flink-table_${flinkScalaVersion}:${flinkVersion}"
-    //compile "org.apache.flink:flink-connector-elasticsearch6_${flinkScalaVersion}:${flinkVersion}"
-//    compile "org.apache.flink:flink-json:${flinkVersion}"
     compile "io.pravega:pravega-client:${pravegaVersion}"
 
     // common-library dependencies
@@ -85,20 +68,13 @@ task scriptWordCountReader(type: CreateStartScripts) {
     classpath = files(jar.archivePath) + sourceSets.main.runtimeClasspath
 }
 
-apply plugin: 'com.github.johnrengelman.shadow'
-
 shadowJar {
     dependencies {
         exclude(dependency("org.scala-lang:scala-library"))
         exclude(dependency("org.scala-lang:scala-reflect"))
         exclude(dependency("org.scala-lang:scala-compiler"))
     }
-
-    relocate "com.google", "com.dell.nautilus.analytics.shaded.com.google"
-    relocate "io.netty", "com.dell.nautilus.analytics.shaded.io.netty"
-
     classifier = ""
-
     zip64 true
 }
 

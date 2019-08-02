@@ -12,25 +12,15 @@ package com.dellemc.oe.ingest;
 
 import java.net.URI;
 
-import com.dellemc.oe.serialization.JsonNodeSerializer;
+
 import com.dellemc.oe.util.ImageToByteArray;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.pravega.client.ByteStreamClientFactory;
 import io.pravega.client.ClientConfig;
-import io.pravega.client.ClientFactory;
-import io.pravega.client.EventStreamClientFactory;
 import io.pravega.client.admin.StreamManager;
 import io.pravega.client.byteStream.ByteStreamWriter;
-import io.pravega.client.byteStream.impl.ByteStreamClientImpl;
-import io.pravega.client.netty.impl.ConnectionFactoryImpl;
-import io.pravega.client.stream.EventStreamWriter;
-import io.pravega.client.stream.EventWriterConfig;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.dellemc.oe.util.CommonParams;
 import io.pravega.client.stream.StreamConfiguration;
 import io.pravega.client.stream.impl.DefaultCredentials;
-import lombok.val;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,13 +51,13 @@ public class ImageWriter {
             ClientConfig clientConfig = null;
             if(CommonParams.isPravegaStandaloneAuth())
             {
-                clientConfig = ClientConfig.builder().controllerURI(URI.create(controllerURI.toString()))
+                clientConfig = ClientConfig.builder().controllerURI(controllerURI)
                         .credentials(new DefaultCredentials(CommonParams.getPassword(), CommonParams.getUser()))
                         .build();
             }
             else
             {
-                clientConfig = ClientConfig.builder().controllerURI(URI.create(controllerURI.toString())).build();
+                clientConfig = ClientConfig.builder().controllerURI(controllerURI).build();
             }
 
             StreamManager streamManager = StreamManager.create(clientConfig);
