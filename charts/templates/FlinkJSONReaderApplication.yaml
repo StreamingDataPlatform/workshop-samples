@@ -19,7 +19,7 @@ spec:
 
   state: started
 
-  parameters:
+  env:
     - name: PRAVEGA_SCOPE
       value: "{{ $application.pravega.PRAVEGA_SCOPE }}"
 
