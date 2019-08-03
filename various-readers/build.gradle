@@ -95,14 +95,14 @@ task startJSONReader(type: JavaExec) {
 }
 
 // Build examples
-task scriptJSONReader(type: CreateStartScripts) {
+task scriptImageReader(type: CreateStartScripts) {
     outputDir = file('build/scripts')
     mainClassName = 'com.dellemc.oe.readers.ImageReader'
     applicationName = 'imageWriter'
     classpath = files(jar.archivePath) + sourceSets.main.runtimeClasspath
 }
 
-task startJSONReader(type: JavaExec) {
+task startImageReader(type: JavaExec) {
     main = "com.dellemc.oe.readers.ImageReader"
     classpath = sourceSets.main.runtimeClasspath
     if(System.getProperty("exec.args") != null) {
