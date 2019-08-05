@@ -44,15 +44,11 @@ dependencies {
     // MongoDB
     // https://mvnrepository.com/artifact/org.mongodb/mongodb-driver
     compile group: 'org.mongodb', name: 'mongodb-driver', version: '3.11.0-rc0'
-  
+
     // common-library dependencies
     compile "com.google.guava:guava:20.0"
     compile "org.xerial:sqlite-jdbc:3.20.0"
     compile "com.fasterxml.jackson.core:jackson-databind:2.9.1"
-
-    testCompile "org.apache.flink:flink-test-utils_${flinkScalaVersion}:${flinkVersion}"
-    testCompile group: "junit", name: "junit", version: "4.11"
-
 }
 // Build examples
 task scriptJSONReader(type: CreateStartScripts) {

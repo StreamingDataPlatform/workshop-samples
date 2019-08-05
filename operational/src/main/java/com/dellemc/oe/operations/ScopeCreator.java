@@ -12,12 +12,16 @@ package com.dellemc.oe.operations;
 
 import io.pravega.client.admin.StreamManager;
 import com.dellemc.oe.util.CommonParams;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.net.URI;
 /**
  * A simple example app that creates scope in Pravega
  */
 public class ScopeCreator {
 
+    private static Logger LOG = LoggerFactory.getLogger(ScopeCreator.class);
     public final String scope;
     public final URI controllerURI;
 
@@ -30,7 +34,7 @@ public class ScopeCreator {
         StreamManager streamManager = StreamManager.create(controllerURI);
         final boolean scopeIsNew = streamManager.createScope(scope);
         if (scopeIsNew) {
-            System.out.format("succeed in creating scope '%s'", scope);
+            LOG.info("succeed in creating scope '%s'", scope);
         }
     }
 

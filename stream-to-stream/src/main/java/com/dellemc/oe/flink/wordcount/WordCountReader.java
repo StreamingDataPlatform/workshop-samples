@@ -64,26 +64,18 @@ public class WordCountReader {
         LOG.info("#######################     controllerURI   ###################### " + controllerURI);
 
         // Create client config
-        PravegaConfig pravegaConfig = null;
-        if (CommonParams.isPravegaStandaloneAuth()) {
-            pravegaConfig = PravegaConfig.fromDefaults()
+        PravegaConfig pravegaConfig = PravegaConfig.fromDefaults()
                     .withControllerURI(controllerURI)
                     .withDefaultScope(scope)
-                    .withCredentials(new DefaultCredentials(CommonParams.getPassword(), CommonParams.getUser()))
                     .withHostnameValidation(false);
+        LOG.info("==============  pravegaConfig  =============== " + pravegaConfig);
+
+        if (CommonParams.isPravegaStandalone()) {
             try (StreamManager streamManager = StreamManager.create(pravegaConfig.getClientConfig())) {
                 // create the requested scope (if necessary)
                 streamManager.createScope(scope);
             }
-
-        } else {
-            pravegaConfig = PravegaConfig.fromDefaults()
-                    .withControllerURI(controllerURI)
-                    .withDefaultScope(scope)
-                    .withHostnameValidation(false);
         }
-
-        LOG.info("==============  pravegaConfig  =============== " + pravegaConfig);
 
         // create the Pravega input stream (if necessary)
         Stream stream = Utils.createStream(

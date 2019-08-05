@@ -18,7 +18,6 @@ import io.pravega.client.ClientConfig;
 import io.pravega.client.admin.StreamManager;
 import io.pravega.client.byteStream.ByteStreamWriter;
 import io.pravega.client.stream.StreamConfiguration;
-import io.pravega.client.stream.impl.DefaultCredentials;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.net.URI;
@@ -60,7 +59,7 @@ public class ImageWriter {
             ClientConfig   clientConfig = ClientConfig.builder().controllerURI(controllerURI).build();
             StreamManager streamManager = StreamManager.create(clientConfig);
             StreamConfiguration streamConfig = StreamConfiguration.builder().build();
-            if (CommonParams.isPravegaStandaloneAuth()) {
+            if (CommonParams.isPravegaStandalone()) {
                 streamManager.createScope(scope);
             }
             streamManager.createStream(scope, streamName, streamConfig);
@@ -81,7 +80,7 @@ public class ImageWriter {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
     }

@@ -62,8 +62,8 @@ git checkout r0.5
 ```
 
 To import the source into IntelliJ:
-1- create a project from existing source
-2- Enable auto import
+1. create a project from existing source
+2. Enable auto import
 ## Running JSON Reader in Nautilus
 
 - You must make the Maven repo in Nautilus available to your development workstation.

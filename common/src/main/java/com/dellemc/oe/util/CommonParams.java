@@ -10,8 +10,8 @@ public class CommonParams {
         return URI.create(getEnvVar("PRAVEGA_CONTROLLER_URI", "tcp://localhost:9090"));
     }
 
-    public static boolean  isPravegaStandaloneAuth() {
-        return Boolean.parseBoolean(getEnvVar("PRAVEGA_STANDALONE_AUTH", "false"));
+    public static boolean  isPravegaStandalone() {
+        return Boolean.parseBoolean(getEnvVar("PRAVEGA_STANDALONE", "true"));
     }
 
     public static String getUser() {

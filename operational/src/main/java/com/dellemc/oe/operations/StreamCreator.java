@@ -15,11 +15,15 @@ import io.pravega.client.admin.StreamManager;
 import io.pravega.client.stream.ScalingPolicy;
 import io.pravega.client.stream.StreamConfiguration;
 import com.dellemc.oe.util.CommonParams;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * A simple example app that creates stream in Pravega
  */
 public class StreamCreator {
 
+    private static Logger LOG = LoggerFactory.getLogger(StreamCreator.class);
     public final String scope;
     public final String streamName;
     public final URI controllerURI;
@@ -39,7 +43,7 @@ public class StreamCreator {
                 .build();
         final boolean streamIsNew = streamManager.createStream(scope, streamName, streamConfig);
         if (streamIsNew) {
-            System.out.format("succeed in creating stream '%s' under scope '%s'", streamName, scope);
+            LOG.info("succeed in creating stream '%s' under scope '%s'", streamName, scope);
         }
     }
 
@@ -48,7 +52,6 @@ public class StreamCreator {
         final String scope = CommonParams.getScope();
         final String stream = CommonParams.getStreamName();
         StreamCreator sc = new StreamCreator(scope, stream, controllerURI);
-
         sc.run();
     }
 }

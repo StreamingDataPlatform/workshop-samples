@@ -78,7 +78,7 @@ public class JSONWriter {
             ClientConfig clientConfig = ClientConfig.builder().controllerURI(controllerURI).build();
             StreamManager streamManager = StreamManager.create(clientConfig);
             StreamConfiguration streamConfig = StreamConfiguration.builder().build();
-            if (CommonParams.isPravegaStandaloneAuth()) {
+            if (CommonParams.isPravegaStandalone()) {
                 streamManager.createScope(scope);
             }
             streamManager.createStream(scope, streamName, streamConfig);
@@ -99,8 +99,7 @@ public class JSONWriter {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
-            LOG.error("====== ERROR ==========");
+            throw new RuntimeException(e);
         }
 
     }
