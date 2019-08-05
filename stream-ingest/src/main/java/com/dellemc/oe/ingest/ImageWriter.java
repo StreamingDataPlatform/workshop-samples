@@ -10,19 +10,18 @@
  */
 package com.dellemc.oe.ingest;
 
-import java.net.URI;
 
-
+import com.dellemc.oe.util.CommonParams;
 import com.dellemc.oe.util.ImageToByteArray;
 import io.pravega.client.ByteStreamClientFactory;
 import io.pravega.client.ClientConfig;
 import io.pravega.client.admin.StreamManager;
 import io.pravega.client.byteStream.ByteStreamWriter;
-import com.dellemc.oe.util.CommonParams;
 import io.pravega.client.stream.StreamConfiguration;
 import io.pravega.client.stream.impl.DefaultCredentials;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.net.URI;
 
 
 /**
@@ -42,60 +41,48 @@ public class ImageWriter {
         this.controllerURI = controllerURI;
     }
 
-    public void run(String routingKey, String message)  {
+    public static void main(String[] args) {
+        final String scope = CommonParams.getScope();
+        final String streamName = CommonParams.getStreamName();
+        final String routingKey = CommonParams.getRoutingKeyAttributeName();
+        final String message = CommonParams.getMessage();
+        final URI controllerURI = CommonParams.getControllerURI();
+        ImageWriter ew = new ImageWriter(scope, streamName, controllerURI);
+        ew.run(routingKey, message);
+    }
+
+    public void run(String routingKey, String message) {
 
         try {
             //String scope = "image-scope";
             String streamName = "image-stream";
             // Create client config
-            ClientConfig clientConfig = null;
-            if(CommonParams.isPravegaStandaloneAuth())
-            {
-                clientConfig = ClientConfig.builder().controllerURI(controllerURI)
-                        .credentials(new DefaultCredentials(CommonParams.getPassword(), CommonParams.getUser()))
-                        .build();
-            }
-            else
-            {
-                clientConfig = ClientConfig.builder().controllerURI(controllerURI).build();
-            }
-
+            ClientConfig   clientConfig = ClientConfig.builder().controllerURI(controllerURI).build();
             StreamManager streamManager = StreamManager.create(clientConfig);
             StreamConfiguration streamConfig = StreamConfiguration.builder().build();
+            if (CommonParams.isPravegaStandaloneAuth()) {
+                streamManager.createScope(scope);
+            }
             streamManager.createStream(scope, streamName, streamConfig);
 
             // Create ByteStreamClientFactory
             ByteStreamClientFactory clientFactory = ByteStreamClientFactory.withScope(scope, clientConfig);
 
-             ByteStreamWriter writer = clientFactory.createByteStreamWriter(streamName);
-             //  Read a image and convert to byte[]
-             byte[] payload = ImageToByteArray.readImage();
+            ByteStreamWriter writer = clientFactory.createByteStreamWriter(streamName);
+            //  Read a image and convert to byte[]
+            byte[] payload = ImageToByteArray.readImage();
 
 
-            while(true)
-            {
+            while (true) {
                 // write image data.
                 writer.write(payload);
-                LOG.info("@@@@@@@@@@@@@ DATA >>>  "+payload);
+                LOG.info("@@@@@@@@@@@@@ DATA >>>  " + payload);
                 Thread.sleep(5000);
             }
 
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
-    }
-
-
-    public static void main(String[] args) {
-        final String scope = CommonParams.getScope();
-        final String streamName = CommonParams.getStreamName();
-        final String routingKey = CommonParams.getRoutingKeyAttributeName();
-        final String message = CommonParams.getMessage();;
-        final URI controllerURI = CommonParams.getControllerURI();
-        ImageWriter ew = new ImageWriter(scope, streamName, controllerURI);
-        ew.run(routingKey, message);
     }
 }

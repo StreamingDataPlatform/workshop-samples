@@ -30,7 +30,7 @@ import java.net.URI;
 /**
  * A simple example app that uses a Pravega Writer to write to a given scope and stream.
  */
-public class JSONWriter {
+public class EventWithTimestampWriter {
     // Logger initialization
     private static final Logger LOG = LoggerFactory.getLogger(JSONWriter.class);
 
@@ -38,7 +38,7 @@ public class JSONWriter {
     public final String streamName;
     public final URI controllerURI;
 
-    public JSONWriter(String scope, String streamName, URI controllerURI) {
+    public EventWithTimestampWriter(String scope, String streamName, URI controllerURI) {
         this.scope = scope;
         this.streamName = streamName;
         this.controllerURI = controllerURI;
@@ -48,7 +48,7 @@ public class JSONWriter {
     public static ObjectNode createJSONData() {
         ObjectNode message = null;
         try {
-            String data = "{\"id\":" + Math.random() + ",\"name\":\"DELL EMC\",\"building\":3,\"location\":\"India\"}";
+            String data = "{\"sensorid\":" + Math.random() + ",\"time\":" + System.currentTimeMillis() + ",\"value\":" + Math.random();
             // Deserialize the JSON message.
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(data);
@@ -75,13 +75,22 @@ public class JSONWriter {
         try {
             String streamName = "json-stream";
             // Create client config
-            ClientConfig clientConfig = ClientConfig.builder().controllerURI(controllerURI).build();
+            ClientConfig clientConfig = null;
+            if (CommonParams.isPravegaStandaloneAuth()) {
+                clientConfig = ClientConfig.builder().controllerURI(URI.create(controllerURI.toString()))
+                        .credentials(new DefaultCredentials(CommonParams.getPassword(), CommonParams.getUser()))
+                        .build();
+            } else {
+                clientConfig = ClientConfig.builder().controllerURI(URI.create(controllerURI.toString())).build();
+            }
+
             StreamManager streamManager = StreamManager.create(clientConfig);
             StreamConfiguration streamConfig = StreamConfiguration.builder().build();
             if (CommonParams.isPravegaStandaloneAuth()) {
                 streamManager.createScope(scope);
             }
             streamManager.createStream(scope, streamName, streamConfig);
+
 
             // Create EventStreamClientFactory
             EventStreamClientFactory clientFactory = EventStreamClientFactory.withScope(scope, clientConfig);

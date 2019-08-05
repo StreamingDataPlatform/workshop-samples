@@ -11,17 +11,17 @@
 package com.dellemc.oe.readers;
 
 import java.net.URI;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import io.pravega.client.ByteStreamClientFactory;
-import io.pravega.client.ClientConfig;
-import io.pravega.client.admin.ReaderGroupManager;
 import io.pravega.client.admin.StreamManager;
-import io.pravega.client.byteStream.ByteStreamReader;
 import io.pravega.client.stream.*;
 import com.dellemc.oe.util.CommonParams;
 import io.pravega.client.stream.impl.DefaultCredentials;
-import io.pravega.common.io.StreamHelpers;
+import com.dellemc.oe.model.ImageData;
+import com.dellemc.oe.serialization.ByteArrayDeserializationSchema;
+import com.dellemc.oe.util.Utils;
+import io.pravega.connectors.flink.FlinkPravegaReader;
+import io.pravega.connectors.flink.PravegaConfig;
+import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
 public class ImageReader {
     // Logger initialization
     private static final Logger LOG = LoggerFactory.getLogger(ImageReader.class);
-    private static final int READER_TIMEOUT_MS = 3000;
 
     public final String scope;
     public final String streamName;
@@ -44,74 +43,72 @@ public class ImageReader {
         this.controllerURI = controllerURI;
     }
 
-    public void run()  {
+    public void run() {
+        try {
 
-             //String scope = "image-scope";
+            //String scope = "image-scope";
             String streamName = "image-stream";
             // Create client config
-            ClientConfig clientConfig = null;
-            if(CommonParams.isPravegaStandaloneAuth())
-            {
-                clientConfig = ClientConfig.builder().controllerURI(controllerURI)
-                        .credentials(new DefaultCredentials(CommonParams.getPassword(), CommonParams.getUser()))
-                        .build();
-            }
-            else
-            {
-                clientConfig = ClientConfig.builder().controllerURI(controllerURI).build();
-            }
+            PravegaConfig pravegaConfig = null;
+            if (CommonParams.isPravegaStandaloneAuth()) {
+                pravegaConfig = PravegaConfig.fromDefaults()
+                        .withControllerURI(controllerURI)
+                        .withDefaultScope(scope)
+                        .withCredentials(new DefaultCredentials(CommonParams.getPassword(), CommonParams.getUser()))
+                        .withHostnameValidation(false);
+                try (StreamManager streamManager = StreamManager.create(pravegaConfig.getClientConfig())) {
+                    // create the requested scope (if necessary)
+                    streamManager.createScope(scope);                }
 
-            StreamManager streamManager = StreamManager.create(clientConfig);
-            StreamConfiguration streamConfig = StreamConfiguration.builder().build();
-            streamManager.createStream(scope, streamName, streamConfig);
+            } else {
+                pravegaConfig = PravegaConfig.fromDefaults()
+                        .withControllerURI(controllerURI)
+                        .withDefaultScope(scope)
+                        .withHostnameValidation(false);
+            }
+            LOG.info("==============  pravegaConfig  =============== " + pravegaConfig);
 
-            // Create reader group and reader config
-            final String readerGroup = UUID.randomUUID().toString().replace("-", "");
-            final ReaderGroupConfig readerGroupConfig = ReaderGroupConfig.builder()
-                    .stream(Stream.of(scope, streamName))
+            // create the Pravega input stream (if necessary)
+            Stream stream = Utils.createStream(
+                    pravegaConfig,
+                    streamName);
+            LOG.info("==============  stream  =============== " + stream);
+            StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+            // create the Pravega source to read a stream of text
+            FlinkPravegaReader<ImageData> flinkPravegaReader = FlinkPravegaReader.<ImageData>builder()
+                    .withPravegaConfig(pravegaConfig)
+                    .forStream(stream)
+                    .withDeserializationSchema(new ByteArrayDeserializationSchema())
                     .build();
-            try (ReaderGroupManager readerGroupManager = ReaderGroupManager.withScope(scope, controllerURI)) {
-                readerGroupManager.createReaderGroup(readerGroup, readerGroupConfig);
-            }
 
-            ByteStreamReader reader = null;
-            // Create  EventStreamClientFactory and  create reader to get stream data
-            try
-            {
-                ByteStreamClientFactory clientFactory = ByteStreamClientFactory.withScope(scope, clientConfig);
-                reader = clientFactory.createByteStreamReader(streamName);
-                byte[] readBuffer = new byte[1024];
+            DataStream<ImageData> events = env
+                    .addSource(flinkPravegaReader)
+                    .name("events");
 
-                CompletableFuture<Integer>  count   =   reader. onDataAvailable();
-                LOG.info("#######################     count.get()   ######################  "+count.get());
-                while (count.get() > 0) {
-                    //int  result  =StreamHelpers.readAll(reader, readBuffer, 0, readBuffer.length);
-                    byte[]  result  =StreamHelpers.readAll(reader, count.get());
-                    LOG.info("#######################     RECEIVED IMAGE DATA   ######################  "+result);
-                    // Test whether we are able to create  same image or not
-                    //ImageToByteArray.createImage(result);
-               }
-            }
-            catch(Exception e)
-            {
-                e.printStackTrace();
-            }
-            finally
-            {
-                reader.close();
-            }
+            // create an output sink to print to stdout for verification
+            events.printToErr();
 
+            // execute within the Flink environment
+            env.execute("IMAGE Reader");
+
+            LOG.info("########## IMAGE READER END #############");
+            // Test whether we are able to create  same image or not
+            //ImageToByteArray.createImage(result);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-
 
 
     public static void main(String[] args) {
         final String scope = CommonParams.getScope();
         final String streamName = CommonParams.getStreamName();
         final URI controllerURI = CommonParams.getControllerURI();
-        LOG.info("#######################     SCOPE   ###################### "+scope);
-        LOG.info("#######################     streamName   ###################### "+streamName);
-        LOG.info("#######################     controllerURI   ###################### "+controllerURI);
+        LOG.info("#######################     SCOPE   ###################### " + scope);
+        LOG.info("#######################     streamName   ###################### " + streamName);
+        LOG.info("#######################     controllerURI   ###################### " + controllerURI);
         ImageReader imageReader = new ImageReader(scope, streamName, controllerURI);
         imageReader.run();
     }

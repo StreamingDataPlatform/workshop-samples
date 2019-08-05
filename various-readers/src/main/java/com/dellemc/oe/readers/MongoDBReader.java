@@ -10,6 +10,7 @@
  */
 package com.dellemc.oe.readers;
 
+import com.dellemc.oe.db.MongoDBSink;
 import com.dellemc.oe.model.JSONData;
 import com.dellemc.oe.serialization.JsonDeserializationSchema;
 import com.dellemc.oe.util.CommonParams;
@@ -26,17 +27,40 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 
+import org.bson.Document;
+import org.bson.BSONObject;
+import org.bson.types.ObjectId;
+import com.mongodb.DBObject;
+import com.mongodb.BasicDBObject;
+import com.mongodb.BasicDBObjectBuilder;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
+import com.mongodb.client.MongoCollection;
+/*import com.mongodb.hadoop.io.BSONWritable;
+import com.mongodb.hadoop.io.MongoUpdateWritable;
+import com.mongodb.hadoop.MongoOutput;*/
+
+import org.apache.flink.configuration.Configuration;
+import org.apache.flink.api.common.functions.MapFunction;
+
+import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.api.java.tuple.Tuple3;
+
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
+
 /*
  *  This flink application demonstrates the JSON Data reading
  */
-public class JSONReader {
+public class MongoDBReader {
 
     // Logger initialization
-    private static final Logger LOG = LoggerFactory.getLogger(JSONReader.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MongoDBReader.class);
     private static final int READER_TIMEOUT_MS = 3000;
 
     public static void main(String[] args) throws Exception {
-        LOG.info("########## READER START #############");
+        LOG.info("########## MongoDBReader START #############");
 
         final String scope = CommonParams.getScope();
         String streamName = CommonParams.getStreamName();
@@ -92,11 +116,12 @@ public class JSONReader {
                     .addSource(flinkPravegaReader)
                     .name("events");
 
+            events.addSink(new MongoDBSink());
             // create an output sink to print to stdout for verification
             events.printToErr();
 
             // execute within the Flink environment
-            env.execute("JSON Reader");
+            env.execute("MONGO-DB Reader");
 
             LOG.info("########## JSON READER END #############");
 

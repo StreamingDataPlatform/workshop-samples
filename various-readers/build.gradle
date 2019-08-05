@@ -41,6 +41,10 @@ dependencies {
     if (includePravegaCredentials.toBoolean()) {
         compile "io.pravega:pravega-keycloak-credentials:${pravegaCredentialsVersion}"
     }
+    // MongoDB
+    // https://mvnrepository.com/artifact/org.mongodb/mongodb-driver
+    compile group: 'org.mongodb', name: 'mongodb-driver', version: '3.11.0-rc0'
+  
     // common-library dependencies
     compile "com.google.guava:guava:20.0"
     compile "org.xerial:sqlite-jdbc:3.20.0"
@@ -65,6 +69,22 @@ task startJSONReader(type: JavaExec) {
         args System.getProperty("exec.args").split()
     }
 }
+// Build examples
+task scriptImageReader(type: CreateStartScripts) {
+    outputDir = file('build/scripts')
+    mainClassName = 'com.dellemc.oe.readers.ImageReader'
+    applicationName = 'imageWriter'
+    classpath = files(jar.archivePath) + sourceSets.main.runtimeClasspath
+}
+
+task startImageReader(type: JavaExec) {
+    main = "com.dellemc.oe.readers.ImageReader"
+    classpath = sourceSets.main.runtimeClasspath
+    if(System.getProperty("exec.args") != null) {
+        args System.getProperty("exec.args").split()
+    }
+}
+
 shadowJar {
     dependencies {
         exclude(dependency("org.scala-lang:scala-library"))
@@ -95,19 +115,20 @@ distributions {
     }
 
     publishing {
-        repositories {
-            maven {
-                credentials {
-                    username "nautilus"
-                    password "password"
-                }
-                url = "http://localhost:9090/maven2"
-            }
-        }
-        publications {
-            shadow(MavenPublication) { publication ->
-                project.shadow.component(publication)
-            }
-        }
+       repositories {
+           maven {
+               credentials {
+                   username userName
+                   password passWord
+               }
+               url projectRepoUrl
+           } 
+       }
+
+       publications {
+           shadow(MavenPublication) { publication ->
+               project.shadow.component(publication)
+           }
+       }
     }
 }
