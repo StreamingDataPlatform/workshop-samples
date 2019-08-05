@@ -1,0 +1,106 @@
+/*
+ * Copyright (c) 2017 Dell Inc., or its subsidiaries. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ */
+
+apply plugin: "distribution"
+apply plugin: "java"
+apply plugin: "maven"
+apply plugin: "application"
+apply plugin: "maven-publish"
+
+sourceCompatibility = 1.8
+archivesBaseName = 'operational'
+
+group = "com.dellemc.oe.operations"
+version = samplesVersion
+archivesBaseName = "operational"
+description = "operational"
+mainClassName = "com.dellemc.oe.operations.StreamCreator"
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+
+dependencies {
+    compile project(':common')
+    compile "io.pravega:pravega-client:${pravegaVersion}"
+    if (includePravegaCredentials.toBoolean()) {
+        print " Adding Credential jar for operational module"
+        runtime files ('../common/lib/pravega-keycloak-credentials-0.5.0-2302.7592022-0.11.7-001.29d9682-shadow.jar')
+    }
+}
+
+apply plugin: 'com.github.johnrengelman.shadow'
+
+shadowJar {
+    dependencies {
+        exclude(dependency("org.scala-lang:scala-library"))
+        exclude(dependency("org.scala-lang:scala-reflect"))
+        exclude(dependency("org.scala-lang:scala-compiler"))
+    }
+
+    relocate "com.google", "com.dell.nautilus.analytics.shaded.com.google"
+    relocate "io.netty", "com.dell.nautilus.analytics.shaded.io.netty"
+
+    classifier = ""
+
+    zip64 true
+}
+
+// Build examples
+
+task scriptScopeCreator(type: CreateStartScripts) {
+    outputDir = file('build/scripts')
+    mainClassName = 'com.dellemc.oe.operations.ScopeCreator'
+    applicationName = 'scopeCreator'
+    classpath = files(jar.archivePath) + sourceSets.main.runtimeClasspath
+}
+
+task scriptStreamCreator(type: CreateStartScripts) {
+    outputDir = file('build/scripts')
+    mainClassName = 'com.dellemc.oe.operations.StreamCreator'
+    applicationName = 'streamCreator'
+    classpath = files(jar.archivePath) + sourceSets.main.runtimeClasspath
+}
+
+task startScopeCreator(type: JavaExec) {
+    main = "com.dellemc.oe.operations.ScopeCreator"
+    classpath = sourceSets.main.runtimeClasspath
+    if(System.getProperty("exec.args") != null) {
+        args System.getProperty("exec.args").split()
+    }
+}
+
+task startStreamCreator(type: JavaExec) {
+    main = "com.dellemc.oe.operations.StreamCreator"
+    classpath = sourceSets.main.runtimeClasspath
+    if(System.getProperty("exec.args") != null) {
+        args System.getProperty("exec.args").split()
+    }
+}
+
+distributions {
+    main {
+        baseName = archivesBaseName
+        contents {
+            into('bin') {
+                from project.scriptStreamCreator
+            }
+            into('lib') {
+                from(jar)
+                from(project.configurations.runtime)
+                from shadowJar
+                from(project.configurations.shadow)                
+            }
+            into('conf') {
+                from(project.file('src/main/resources/logback.xml'))
+            }
+        }
+    }
+}

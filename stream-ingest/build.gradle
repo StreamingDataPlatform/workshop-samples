@@ -1,0 +1,132 @@
+/*
+ * Copyright (c) 2017 Dell Inc., or its subsidiaries. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ */
+apply plugin: "distribution"
+apply plugin: "java"
+apply plugin: "maven"
+apply plugin: "application"
+apply plugin: "maven-publish"
+
+sourceCompatibility = 1.8
+archivesBaseName = 'stream-ingest'
+
+group = "com.dellemc.oe.ingest"
+version = samplesVersion
+archivesBaseName = "stream-ingest"
+description = "stream-ingest"
+mainClassName = "com.dellemc.oe.ingest.EventWriter"
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+ext {
+    scalaJava8CompatVersion = '0.7.0'
+}
+
+dependencies {
+    compile project(':common')
+    compile "io.pravega:pravega-client:${pravegaVersion}"
+    if (includePravegaCredentials.toBoolean()) {
+        print " Adding Credential jar for stream-ingest module"
+        runtime files ('../common/lib/pravega-keycloak-credentials-0.5.0-2302.7592022-0.11.7-001.29d9682-shadow.jar')
+    }
+    compile "org.slf4j:slf4j-api:1.6.6"
+    compile "ch.qos.logback:logback-classic:1.2.3"
+    compile "ch.qos.logback:logback-core:1.2.3"
+    compile "net.logstash.logback:logstash-logback-encoder:4.11"
+    compile "com.fasterxml.jackson.core:jackson-databind:2.9.1"
+}
+
+apply plugin: 'com.github.johnrengelman.shadow'
+
+shadowJar {
+    dependencies {
+        exclude(dependency("org.scala-lang:scala-library"))
+        exclude(dependency("org.scala-lang:scala-reflect"))
+        exclude(dependency("org.scala-lang:scala-compiler"))
+    }
+
+    relocate "com.google", "com.dell.nautilus.analytics.shaded.com.google"
+    relocate "io.netty", "com.dell.nautilus.analytics.shaded.io.netty"
+
+    classifier = ""
+
+    zip64 true
+}
+
+// Build examples
+task scriptEventWriter(type: CreateStartScripts) {
+    outputDir = file('build/scripts')
+    mainClassName = 'com.dellemc.oe.ingest.EventWriter'
+    applicationName = 'eventWriter'
+    classpath = files(jar.archivePath) + sourceSets.main.runtimeClasspath
+}
+
+task startEventWriter(type: JavaExec) {
+    main = "com.dellemc.oe.ingest.EventWriter"
+    classpath = sourceSets.main.runtimeClasspath
+    if(System.getProperty("exec.args") != null) {
+        args System.getProperty("exec.args").split()
+    }
+}
+
+// Build examples
+task scriptJSONWriter(type: CreateStartScripts) {
+    outputDir = file('build/scripts')
+    mainClassName = 'com.dellemc.oe.ingest.JSONWriter'
+    applicationName = 'jsonWriter'
+    classpath = files(jar.archivePath) + sourceSets.main.runtimeClasspath
+}
+
+task startJSONWriter(type: JavaExec) {
+    main = "com.dellemc.oe.ingest.JSONWriter"
+    classpath = sourceSets.main.runtimeClasspath
+    if(System.getProperty("exec.args") != null) {
+        args System.getProperty("exec.args").split()
+    }
+}
+
+distributions {
+    main {
+        baseName = archivesBaseName
+        contents {
+            into('bin') {
+                from project.scriptEventWriter
+                from project.scriptJSONWriter
+            }
+            into('lib') {
+                from(jar)
+                from(project.configurations.runtime)
+                from shadowJar
+                from(project.configurations.shadow)                
+            }
+            into('conf') {
+                from(project.file('src/main/resources/logback.xml'))
+            }
+        }
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            credentials {
+                username userName
+                password passWord
+            }
+            url projectRepoUrl
+        }
+    }
+
+       publications {
+           shadow(MavenPublication) { publication ->
+               project.shadow.component(publication)
+           }
+       }
+    }
