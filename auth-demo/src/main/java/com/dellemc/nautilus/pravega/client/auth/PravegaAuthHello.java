@@ -14,12 +14,16 @@ import io.pravega.client.stream.impl.JavaSerializer;
 import io.pravega.client.admin.StreamInfo;
 
 import com.dellemc.oe.util.CommonParams;
+import io.pravega.client.stream.impl.StreamImpl;
+import jdk.nashorn.internal.ir.debug.JSONWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class PravegaAuthHello {
 
-    private final static String CONTROLLER_URI = "tcp://10.247.118.176:9090";
-    private final static String SCOPE_NAME = "workshop-samples";
+    // Logger initialization
+    private static final Logger LOG = LoggerFactory.getLogger(PravegaAuthHello.class);
 
     public final String scope;
     public final String streamName;
@@ -32,19 +36,25 @@ public class PravegaAuthHello {
     }
 
     public void run() {
-        StreamManager streamManager = StreamManager.create(controllerURI);
-        java.util.Iterator streamsList = streamManager.listStreams(scope);
+        try(StreamManager streamManager = StreamManager.create(controllerURI);) {
+            java.util.Iterator streamsList = streamManager.listStreams(scope);
 
-        /*System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ streamsList :  "+streamsList.hasNext());
-        // same as above -- just different syntax
-        while(streamsList.hasNext() ) {
-            System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ streamsList Loop @@@@@@@@@@@:  ");
-            String name = (String)streamsList.next();
-            System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Stream :  "+name);
-        }*/
+            //  List Streams API not exposed by Pravega. This code can be uncommented when the API is supported.
+            if (CommonParams.isPravegaStandalone()) {
+                LOG.info("@@@@@@@@@@@@@@@@@@@@@ streamsList :  " + streamsList.hasNext());
+                // same as above -- just different syntax
+                while (streamsList.hasNext()) {
+                    StreamImpl streamImpl = (StreamImpl) streamsList.next();
+                    LOG.info("@@@@@@@@@@@@@@@@@@@@ Stream :  " + streamImpl.getStreamName());
+                }
+            }
 
-        StreamInfo  streamInfo=streamManager.getStreamInfo(scope,streamName);
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ streamInfo  @@@@@@@@@@@:  "+streamInfo.toString());
+            StreamInfo streamInfo = streamManager.getStreamInfo(scope, streamName);
+            LOG.info("@@@@@@@@@@@@@@@@@@@@streamInfo  @@@@@@@@@@@:  " + streamInfo.toString());
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static void main(String[] args) {

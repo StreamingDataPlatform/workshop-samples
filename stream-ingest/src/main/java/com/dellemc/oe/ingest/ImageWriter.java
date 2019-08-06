@@ -13,6 +13,7 @@ package com.dellemc.oe.ingest;
 
 import com.dellemc.oe.util.CommonParams;
 import com.dellemc.oe.util.ImageToByteArray;
+import com.dellemc.oe.util.Utils;
 import io.pravega.client.ByteStreamClientFactory;
 import io.pravega.client.ClientConfig;
 import io.pravega.client.admin.StreamManager;
@@ -52,36 +53,31 @@ public class ImageWriter {
 
     public void run(String routingKey, String message) {
 
-        try {
             //String scope = "image-scope";
             String streamName = "image-stream";
             // Create client config
-            ClientConfig   clientConfig = ClientConfig.builder().controllerURI(controllerURI).build();
-            StreamManager streamManager = StreamManager.create(clientConfig);
-            StreamConfiguration streamConfig = StreamConfiguration.builder().build();
-            if (CommonParams.isPravegaStandalone()) {
-                streamManager.createScope(scope);
-            }
-            streamManager.createStream(scope, streamName, streamConfig);
+            ClientConfig clientConfig = ClientConfig.builder().controllerURI(controllerURI).build();
+            //  create stream
+            boolean  streamCreated = Utils.createStream(scope, streamName, controllerURI);
+            LOG.info(" @@@@@@@@@@@@@@@@ STREAM  =  "+streamName+ "  CREATED = "+ streamCreated);
 
             // Create ByteStreamClientFactory
-            ByteStreamClientFactory clientFactory = ByteStreamClientFactory.withScope(scope, clientConfig);
+           try( ByteStreamClientFactory clientFactory = ByteStreamClientFactory.withScope(scope, clientConfig);) {
+               ByteStreamWriter writer = clientFactory.createByteStreamWriter(streamName);
+               //  Read a image and convert to byte[]
+               byte[] payload = ImageToByteArray.readImage();
 
-            ByteStreamWriter writer = clientFactory.createByteStreamWriter(streamName);
-            //  Read a image and convert to byte[]
-            byte[] payload = ImageToByteArray.readImage();
 
+               while (true) {
+                   // write image data.
+                   writer.write(payload);
+                   LOG.info("@@@@@@@@@@@@@ DATA >>>  " + payload);
+                   Thread.sleep(5000);
+               }
 
-            while (true) {
-                // write image data.
-                writer.write(payload);
-                LOG.info("@@@@@@@@@@@@@ DATA >>>  " + payload);
-                Thread.sleep(5000);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
 
     }
 }

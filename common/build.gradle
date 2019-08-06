@@ -10,6 +10,7 @@ dependencies {
  	testCompile 'junit:junit:4.11'
 	compile "io.pravega:pravega-connectors-flink_${flinkScalaVersion}:${pravegaFlinkConnectorVersion}"
 	compile "org.apache.flink:flink-streaming-java_${flinkScalaVersion}:${flinkVersion}"
+	
 	// MongoDB
 	// https://mvnrepository.com/artifact/org.mongodb/mongodb-driver
 	compile group: 'org.mongodb', name: 'mongodb-driver', version: '3.11.0-rc0'

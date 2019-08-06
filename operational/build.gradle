@@ -25,6 +25,7 @@ group = "com.dellemc.oe.operations"
 version = samplesVersion
 archivesBaseName = "operational"
 description = "operational"
+mainClassName = "com.dellemc.oe.operations.StreamCreator"
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 

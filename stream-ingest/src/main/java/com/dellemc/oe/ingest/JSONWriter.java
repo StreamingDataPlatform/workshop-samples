@@ -12,6 +12,7 @@ package com.dellemc.oe.ingest;
 
 import com.dellemc.oe.serialization.JsonNodeSerializer;
 import com.dellemc.oe.util.CommonParams;
+import com.dellemc.oe.util.Utils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -72,33 +73,29 @@ public class JSONWriter {
 
     public void run(String routingKey) {
 
-        try {
-            String streamName = "json-stream";
-            // Create client config
-            ClientConfig clientConfig = ClientConfig.builder().controllerURI(controllerURI).build();
-            StreamManager streamManager = StreamManager.create(clientConfig);
-            StreamConfiguration streamConfig = StreamConfiguration.builder().build();
-            if (CommonParams.isPravegaStandalone()) {
-                streamManager.createScope(scope);
-            }
-            streamManager.createStream(scope, streamName, streamConfig);
+                String streamName = "json-stream";
+                // Create client config
+                ClientConfig clientConfig = ClientConfig.builder().controllerURI(controllerURI).build();
+                //  create stream
+                boolean  streamCreated = Utils.createStream(scope, streamName, controllerURI);
+                LOG.info(" @@@@@@@@@@@@@@@@ STREAM  =  "+streamName+ "  CREATED = "+ streamCreated);
+                // Create EventStreamClientFactory
+                try( EventStreamClientFactory clientFactory = EventStreamClientFactory.withScope(scope, clientConfig);
 
-            // Create EventStreamClientFactory
-            EventStreamClientFactory clientFactory = EventStreamClientFactory.withScope(scope, clientConfig);
+                // Create event writer
+                EventStreamWriter<JsonNode> writer = clientFactory.createEventWriter(
+                        streamName,
+                        new JsonNodeSerializer(),
+                        EventWriterConfig.builder().build())) {
+                // same data write every 1 sec
+                while (true) {
+                    ObjectNode data = createJSONData();
+                    writer.writeEvent(routingKey, data);
+                    Thread.sleep(1000);
+                }
 
-            // Create event writer
-            EventStreamWriter<JsonNode> writer = clientFactory.createEventWriter(
-                    streamName,
-                    new JsonNodeSerializer(),
-                    EventWriterConfig.builder().build());
-            // same data write every 1 sec
-            while (true) {
-                ObjectNode data = createJSONData();
-                writer.writeEvent(routingKey, data);
-                Thread.sleep(1000);
-            }
-
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new RuntimeException(e);
         }
 

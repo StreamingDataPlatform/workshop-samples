@@ -10,10 +10,13 @@
  */
 package com.dellemc.oe.util;
 
+import io.pravega.client.ClientConfig;
 import io.pravega.client.admin.StreamManager;
 import io.pravega.client.stream.Stream;
 import io.pravega.client.stream.StreamConfiguration;
 import io.pravega.connectors.flink.PravegaConfig;
+
+import java.net.URI;
 
 public class Utils {
 
@@ -47,5 +50,29 @@ public class Utils {
         }
 
         return stream;
+    }
+
+    /**
+     * Creates a Pravega stream with a given configuration.
+     *
+     * @param scope the Pravega configuration.
+     * @param streamName the stream name (qualified or unqualified).
+     * @param controllerURI the stream configuration (scaling policy, retention policy).
+     */
+    public static boolean  createStream(String  scope, String streamName, URI controllerURI) {
+        boolean result = false;
+        // Create client config
+        ClientConfig clientConfig = ClientConfig.builder().controllerURI(controllerURI).build();
+        try(StreamManager streamManager = StreamManager.create(clientConfig);)
+        {
+            if (CommonParams.isPravegaStandalone()) {
+                streamManager.createScope(scope);
+            }
+           result = streamManager.createStream(scope, streamName, StreamConfiguration.builder().build());
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return result;
     }
 }

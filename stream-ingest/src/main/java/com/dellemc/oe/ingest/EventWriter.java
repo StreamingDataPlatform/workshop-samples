@@ -13,6 +13,8 @@ package com.dellemc.oe.ingest;
 import java.net.URI;
 
 import java.util.concurrent.CompletableFuture;
+
+import com.dellemc.oe.util.Utils;
 import io.pravega.client.ClientConfig;
 import io.pravega.client.ClientFactory;
 import io.pravega.client.admin.StreamManager;
@@ -44,26 +46,24 @@ public class EventWriter {
     public void run(String routingKey, String message) {
         LOG.info(" @@@@@@@@@@@@@@@@ URI " + controllerURI.toString());
 
-        // Create client config
-        ClientConfig clientConfig = ClientConfig.builder().controllerURI(controllerURI).build();
-        StreamManager streamManager = StreamManager.create(clientConfig);
-        StreamConfiguration streamConfig = StreamConfiguration.builder().build();
-        // Create the scope
-        if (CommonParams.isPravegaStandalone()) {
-            streamManager.createScope(scope);
-        }
-        streamManager.createStream(scope, streamName, streamConfig);
+        //  create stream
+        boolean  streamCreated = Utils.createStream(scope, streamName, controllerURI);
+        LOG.info(" @@@@@@@@@@@@@@@@ STREAM  =  "+streamName+ "  CREATED = "+ streamCreated);
+
         // Create EventStreamClientFactory
         try (ClientFactory clientFactory = ClientFactory.withScope(scope, controllerURI);
              EventStreamWriter<String> writer = clientFactory.createEventWriter(streamName,
                      new UTF8StringSerializer(),
                      EventWriterConfig.builder().build())) {
-
-            LOG.info("Writing message: '%s' with routing-key: '%s' to stream '%s / %s'%n",
-                    message, routingKey, scope, streamName);
-            final CompletableFuture writeFuture = writer.writeEvent(routingKey, message);
-            writeFuture.get();
-        } catch(Exception e){
+            while(true) {
+                System.out.format("Writing message: '%s' with routing-key: '%s' to stream '%s / %s'%n",
+                        message, routingKey, scope, streamName);
+                final CompletableFuture writeFuture = writer.writeEvent(routingKey, message);
+                writeFuture.get();
+                Thread.sleep(1000);
+            }
+        }
+        catch(Exception e){
             throw new RuntimeException(e);
         }
     }

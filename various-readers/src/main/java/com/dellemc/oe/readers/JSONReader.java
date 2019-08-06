@@ -54,23 +54,11 @@ public class JSONReader {
             streamName = "json-stream";
             // Create client config
             PravegaConfig pravegaConfig = null;
-            if (CommonParams.isPravegaStandalone()) {
-                pravegaConfig = PravegaConfig.fromDefaults()
-                        .withControllerURI(controllerURI)
-                        .withDefaultScope(scope)
-                        .withCredentials(new DefaultCredentials(CommonParams.getPassword(), CommonParams.getUser()))
-                        .withHostnameValidation(false);
-                try (StreamManager streamManager = StreamManager.create(pravegaConfig.getClientConfig())) {
-                    // create the requested scope (if necessary)
-                    streamManager.createScope(scope);
-                }
 
-            } else {
                 pravegaConfig = PravegaConfig.fromDefaults()
                         .withControllerURI(controllerURI)
                         .withDefaultScope(scope)
                         .withHostnameValidation(false);
-            }
 
             LOG.info("==============  pravegaConfig  =============== " + pravegaConfig);
 

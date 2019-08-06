@@ -31,10 +31,18 @@ public class ScopeCreator {
     }
 
     public void run() {
-        StreamManager streamManager = StreamManager.create(controllerURI);
-        final boolean scopeIsNew = streamManager.createScope(scope);
-        if (scopeIsNew) {
-            LOG.info("succeed in creating scope '%s'", scope);
+        try(StreamManager streamManager = StreamManager.create(controllerURI);) {
+            final boolean scopeIsNew = streamManager.createScope(scope);
+            if (scopeIsNew) {
+                LOG.info("succeed in creating scope  '"+scope);
+            }
+            else
+            {
+                LOG.info("already exists scope  '"+scope);
+            }
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

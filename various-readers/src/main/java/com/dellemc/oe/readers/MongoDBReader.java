@@ -81,14 +81,7 @@ public class MongoDBReader {
                     .withControllerURI(controllerURI)
                     .withDefaultScope(scope)
                     .withHostnameValidation(false);
-            if (CommonParams.isPravegaStandalone()) {
-                try (StreamManager streamManager = StreamManager.create(pravegaConfig.getClientConfig())) {
-                    // create the requested scope (if necessary)
-                    streamManager.createScope(scope);
-                }
-            }
-
-            LOG.info("==============  pravegaConfig  =============== " + pravegaConfig);
+           LOG.info("==============  pravegaConfig  =============== " + pravegaConfig);
 
             // create the Pravega input stream (if necessary)
             Stream stream = Utils.createStream(

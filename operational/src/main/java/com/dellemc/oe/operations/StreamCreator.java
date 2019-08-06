@@ -11,6 +11,8 @@
 package com.dellemc.oe.operations;
 
 import java.net.URI;
+
+import com.dellemc.oe.util.Utils;
 import io.pravega.client.admin.StreamManager;
 import io.pravega.client.stream.ScalingPolicy;
 import io.pravega.client.stream.StreamConfiguration;
@@ -35,14 +37,10 @@ public class StreamCreator {
     }
 
     public void run() {
-        StreamManager streamManager = StreamManager.create(controllerURI);
-        final boolean scopeIsNew = streamManager.createScope(scope);
-
-        StreamConfiguration streamConfig = StreamConfiguration.builder()
-                .scalingPolicy(ScalingPolicy.fixed(1))
-                .build();
-        final boolean streamIsNew = streamManager.createStream(scope, streamName, streamConfig);
-        if (streamIsNew) {
+        //  create stream
+        boolean  streamCreated = Utils.createStream(scope, streamName, controllerURI);
+        LOG.info(" @@@@@@@@@@@@@@@@ STREAM  =  "+streamName+ "  CREATED = "+ streamCreated);
+        if (streamCreated) {
             LOG.info("succeed in creating stream '%s' under scope '%s'", streamName, scope);
         }
     }
