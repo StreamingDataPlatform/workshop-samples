@@ -56,9 +56,8 @@ public class EventWithTimestampWriter {
             LOG.info("@@@@@@@@@@@@@ DATA >>>  " + message.toString());
             return message;
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return message;
     }
 
     public static void main(String[] args) {
@@ -75,23 +74,14 @@ public class EventWithTimestampWriter {
         try {
             String streamName = "json-stream";
             // Create client config
-            ClientConfig clientConfig = null;
-            if (CommonParams.isPravegaStandaloneAuth()) {
-                clientConfig = ClientConfig.builder().controllerURI(URI.create(controllerURI.toString()))
-                        .credentials(new DefaultCredentials(CommonParams.getPassword(), CommonParams.getUser()))
-                        .build();
-            } else {
-                clientConfig = ClientConfig.builder().controllerURI(URI.create(controllerURI.toString())).build();
-            }
-
+            ClientConfig clientConfig = ClientConfig.builder()
+                    .controllerURI(controllerURI).build();
             StreamManager streamManager = StreamManager.create(clientConfig);
             StreamConfiguration streamConfig = StreamConfiguration.builder().build();
-            if (CommonParams.isPravegaStandaloneAuth()) {
+            if (CommonParams.isPravegaStandalone()) {
                 streamManager.createScope(scope);
             }
             streamManager.createStream(scope, streamName, streamConfig);
-
-
             // Create EventStreamClientFactory
             EventStreamClientFactory clientFactory = EventStreamClientFactory.withScope(scope, clientConfig);
 
@@ -108,8 +98,7 @@ public class EventWithTimestampWriter {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
-            LOG.error("====== ERROR ==========");
+            throw new RuntimeException(e);
         }
 
     }

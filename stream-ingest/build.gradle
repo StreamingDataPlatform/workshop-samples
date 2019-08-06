@@ -13,51 +13,28 @@ apply plugin: "java"
 apply plugin: "maven"
 apply plugin: "application"
 apply plugin: "maven-publish"
+apply plugin: 'com.github.johnrengelman.shadow'
 
-sourceCompatibility = 1.8
 archivesBaseName = 'stream-ingest'
 
 group = "com.dellemc.oe.ingest"
 version = samplesVersion
-archivesBaseName = "stream-ingest"
+
 description = "stream-ingest"
 mainClassName = "com.dellemc.oe.ingest.EventWriter"
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-ext {
-    scalaJava8CompatVersion = '0.7.0'
-}
-
 dependencies {
     compile project(':common')
     compile "io.pravega:pravega-client:${pravegaVersion}"
-    if (includePravegaCredentials.toBoolean()) {
-        print " Adding Credential jar for stream-ingest module"
-        runtime files ('../common/lib/pravega-keycloak-credentials-0.5.0-2302.7592022-0.11.7-001.29d9682-shadow.jar')
-    }
-    compile "org.slf4j:slf4j-api:1.6.6"
-    compile "ch.qos.logback:logback-classic:1.2.3"
-    compile "ch.qos.logback:logback-core:1.2.3"
-    compile "net.logstash.logback:logstash-logback-encoder:4.11"
+    compile "org.slf4j:slf4j-api:${slf4jApiVersion}"
+    compile "ch.qos.logback:logback-classic:${logbackVersion}"
+    compile "ch.qos.logback:logback-core:${logbackVersion}"
     compile "com.fasterxml.jackson.core:jackson-databind:2.9.1"
-}
-
-apply plugin: 'com.github.johnrengelman.shadow'
-
-shadowJar {
-    dependencies {
-        exclude(dependency("org.scala-lang:scala-library"))
-        exclude(dependency("org.scala-lang:scala-reflect"))
-        exclude(dependency("org.scala-lang:scala-compiler"))
+    if (includePravegaCredentials.toBoolean()) {
+        compile "io.pravega:pravega-keycloak-credentials:${pravegaCredentialsVersion}"
     }
-
-    relocate "com.google", "com.dell.nautilus.analytics.shaded.com.google"
-    relocate "io.netty", "com.dell.nautilus.analytics.shaded.io.netty"
-
-    classifier = ""
-
-    zip64 true
 }
 
 // Build examples
@@ -91,28 +68,24 @@ task startJSONWriter(type: JavaExec) {
         args System.getProperty("exec.args").split()
     }
 }
-
 distributions {
     main {
         baseName = archivesBaseName
         contents {
             into('bin') {
-                from project.scriptEventWriter
-                from project.scriptJSONWriter
+
             }
             into('lib') {
                 from(jar)
                 from(project.configurations.runtime)
                 from shadowJar
-                from(project.configurations.shadow)                
+                from(project.configurations.shadow)
             }
             into('conf') {
                 from(project.file('src/main/resources/logback.xml'))
             }
         }
     }
-}
-
 publishing {
     repositories {
         maven {
@@ -123,10 +96,10 @@ publishing {
             url projectRepoUrl
         }
     }
-
-       publications {
-           shadow(MavenPublication) { publication ->
-               project.shadow.component(publication)
-           }
-       }
+    publications {
+        shadow(MavenPublication) { publication ->
+             project.shadow.component(publication)
+            }
+        }
     }
+}

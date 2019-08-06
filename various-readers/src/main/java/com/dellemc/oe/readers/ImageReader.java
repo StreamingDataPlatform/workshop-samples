@@ -11,14 +11,12 @@
 package com.dellemc.oe.readers;
 
 import java.net.URI;
-
-import com.dellemc.oe.model.ImageData;
-import com.dellemc.oe.serialization.ByteArrayDeserializationSchema;
-import com.dellemc.oe.util.Utils;
 import io.pravega.client.admin.StreamManager;
 import io.pravega.client.stream.*;
 import com.dellemc.oe.util.CommonParams;
-import io.pravega.client.stream.impl.DefaultCredentials;
+import com.dellemc.oe.model.ImageData;
+import com.dellemc.oe.serialization.ByteArrayDeserializationSchema;
+import com.dellemc.oe.util.Utils;
 import io.pravega.connectors.flink.FlinkPravegaReader;
 import io.pravega.connectors.flink.PravegaConfig;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -50,25 +48,16 @@ public class ImageReader {
             //String scope = "image-scope";
             String streamName = "image-stream";
             // Create client config
-            PravegaConfig pravegaConfig = null;
-            if (CommonParams.isPravegaStandaloneAuth()) {
-                pravegaConfig = PravegaConfig.fromDefaults()
-                        .withControllerURI(controllerURI)
-                        .withDefaultScope(scope)
-                        .withCredentials(new DefaultCredentials(CommonParams.getPassword(), CommonParams.getUser()))
-                        .withHostnameValidation(false);
+            PravegaConfig pravegaConfig =  PravegaConfig.fromDefaults()
+                    .withControllerURI(controllerURI)
+                    .withDefaultScope(scope)
+                    .withHostnameValidation(false);;
+            if (CommonParams.isPravegaStandalone()) {
                 try (StreamManager streamManager = StreamManager.create(pravegaConfig.getClientConfig())) {
                     // create the requested scope (if necessary)
                     streamManager.createScope(scope);
                 }
-
-            } else {
-                pravegaConfig = PravegaConfig.fromDefaults()
-                        .withControllerURI(controllerURI)
-                        .withDefaultScope(scope)
-                        .withHostnameValidation(false);
             }
-
             LOG.info("==============  pravegaConfig  =============== " + pravegaConfig);
 
             // create the Pravega input stream (if necessary)
@@ -76,7 +65,6 @@ public class ImageReader {
                     pravegaConfig,
                     streamName);
             LOG.info("==============  stream  =============== " + stream);
-
             StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
             // create the Pravega source to read a stream of text
             FlinkPravegaReader<ImageData> flinkPravegaReader = FlinkPravegaReader.<ImageData>builder()
@@ -101,7 +89,7 @@ public class ImageReader {
 
 
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 

@@ -54,7 +54,7 @@ public class JSONReader {
             streamName = "json-stream";
             // Create client config
             PravegaConfig pravegaConfig = null;
-            if (CommonParams.isPravegaStandaloneAuth()) {
+            if (CommonParams.isPravegaStandalone()) {
                 pravegaConfig = PravegaConfig.fromDefaults()
                         .withControllerURI(controllerURI)
                         .withDefaultScope(scope)

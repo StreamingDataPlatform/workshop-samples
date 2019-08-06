@@ -12,8 +12,8 @@ package com.dellemc.oe.process;
 
 import java.net.URI;
 
+import io.pravega.client.admin.StreamManager;
 import io.pravega.client.stream.Stream;
-import io.pravega.client.stream.StreamConfiguration;
 import io.pravega.connectors.flink.FlinkPravegaReader;
 import io.pravega.connectors.flink.PravegaConfig;
 import io.pravega.connectors.flink.serialization.PravegaSerialization;
@@ -37,9 +37,13 @@ public class StreamProcess {
          PravegaConfig pravegaConfig = PravegaConfig.fromDefaults()
                 .withControllerURI(controllerURI)
                 .withDefaultScope(scope)
-                //.withCredentials(credentials)
                 .withHostnameValidation(false);
-
+        if (CommonParams.isPravegaStandalone()) {
+            try (StreamManager streamManager = StreamManager.create(pravegaConfig.getClientConfig())) {
+                // create the requested scope (if necessary)
+                streamManager.createScope(scope);
+            }
+        }
         // Retrieve the Pravega  stream (if necessary)
         Stream stream = pravegaConfig.resolve(streamName);
       		
