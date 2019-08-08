@@ -45,4 +45,20 @@ public class CommonParams {
         }
         return value;
     }
+
+    public static URI getGatewayURI() {
+        return URI.create(getEnvVar("GATEWAY_URI", "http://0.0.0.0:3000/"));
+    }
+
+    public static int getTargetRateEventsPerSec() {
+        return Integer.parseInt(getEnvVar("PRAVEGA_TARGET_RATE_EVENTS_PER_SEC", "100"));
+    }
+
+    public static int getScaleFactor() {
+        return Integer.parseInt(getEnvVar("PRAVEGA_SCALE_FACTOR", "2"));
+    }
+
+    public static int getMinNumSegments() {
+        return Integer.parseInt(getEnvVar("PRAVEGA_MIN_NUM_SEGMENTS", "1"));
+    }
 }
