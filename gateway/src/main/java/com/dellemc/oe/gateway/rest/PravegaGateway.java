@@ -1,74 +1,64 @@
 package com.dellemc.oe.gateway.rest;
 
 import com.dellemc.oe.util.CommonParams;
-
+import com.dellemc.oe.serialization.JsonNodeSerializer;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.pravega.client.ClientFactory;
+import io.pravega.client.admin.StreamManager;
+import io.pravega.client.stream.EventStreamWriter;
+import io.pravega.client.stream.EventWriterConfig;
+import io.pravega.client.stream.ScalingPolicy;
+import io.pravega.client.stream.StreamConfiguration;
+import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
+import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import org.glassfish.grizzly.http.server.Request;
-import java.util.concurrent.CompletableFuture;
+import java.net.URI;
 
-@Path("data")
-public class DataHandler {
-    private static final Logger Log = LoggerFactory.getLogger(DataHandler.class);
+public class PravegaGateway {
+    private static final Logger Log = LoggerFactory.getLogger(PravegaGateway.class);
+    private static EventStreamWriter<JsonNode> writer;
 
-    @POST
-    @Consumes({"application/json"})
-    @Produces({"application/json"})
-    public String postData(@Context Request request, String data) throws Exception {
-        try {
-            // Deserialize the JSON message.
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode tree = objectMapper.readTree(data);
+    /**
+     * Starts Grizzly HTTP server exposing JAX-RS resources defined in this application.
+     * @return Grizzly HTTP server.
+     */
+    private static HttpServer startServer() {
+        // Create a resource config that scans for JAX-RS resources and providers.
+        final ResourceConfig rc = new ResourceConfig().packages("com.dellemc.oe.gateway.rest");
 
-            ArrayNode arrayNode;
-            if (tree instanceof ArrayNode) {
-                arrayNode = (ArrayNode) tree;
-            } else if (tree instanceof ObjectNode) {
-                arrayNode = objectMapper.createArrayNode();
-                arrayNode.add(tree);
-            } else {
-                throw new java.lang.IllegalArgumentException("Parameter must be a JSON array or object");
-            }
+        // Create and start a new instance of grizzly http server exposing the Jersey application.
+        return GrizzlyHttpServerFactory.createHttpServer(CommonParams.getGatewayURI(), rc);
+    }
 
-            for (JsonNode jsonNode : arrayNode) {
-                ObjectNode message = (ObjectNode) jsonNode;
-                // Add the remote IP address to JSON message.
-                // TODO: Make this optional.
-                String remoteAddr = request.getRemoteAddr();
-                message.put("remote_addr", remoteAddr);
+    public static void main(String[] args) throws Exception    {
+        Log.info("gateway PravegaGateway: BEGIN");
 
-                // Get or calculate the routing key.
-                String routingKeyAttributeName = CommonParams.getRoutingKeyAttributeName();
-                String routingKey;
-                if (routingKeyAttributeName.isEmpty()) {
-                    // TODO: Would it be better to use an empty routing key?
-                    routingKey = Double.toString(Math.random());
-                } else {
-                    JsonNode routingKeyNode = message.get(routingKeyAttributeName);
-                    routingKey = objectMapper.writeValueAsString(routingKeyNode);
-                }
+        URI controllerURI = CommonParams.getControllerURI();
+        StreamManager streamManager = StreamManager.create(controllerURI);
+        String scope = CommonParams.getScope();
+        streamManager.createScope(scope);
+        String streamName = CommonParams.getStreamName();
+        StreamConfiguration streamConfig = StreamConfiguration.builder()
+                .scalingPolicy(ScalingPolicy.byEventRate(
+                        CommonParams.getTargetRateEventsPerSec(), CommonParams.getScaleFactor(), CommonParams.getMinNumSegments()))
+                .build();
+        streamManager.createStream(scope, streamName, streamConfig);
 
-                // Write the message to Pravega.
-                Log.debug("routingKey={}, message={}", routingKey, message);
-                System.out.println("message=" + data);
-                final CompletableFuture writeFuture = PravegaGateway.getWriter().writeEvent(routingKey, message);
+        ClientFactory clientFactory = ClientFactory.withScope(scope, controllerURI);
+        writer = clientFactory.createEventWriter(
+                streamName,
+                new JsonNodeSerializer(),
+                EventWriterConfig.builder().build());
 
-                // Wait for acknowledgement that the event was durably persisted.
-                // TODO: Wait should be an option that can be set by each request.
-                //        writeFuture.get();
-            }
-            return "{}";
-        }
-        catch (Exception e) {
-            Log.error(e.toString());
-            throw e;
-        }
+        final HttpServer server = startServer();
+        Log.info("Gateway running at {}", CommonParams.getGatewayURI());
+        Log.info("gateway PravegaGateway: END");
+    }
+
+    public static EventStreamWriter<JsonNode> getWriter() {
+        return writer;
     }
 }
