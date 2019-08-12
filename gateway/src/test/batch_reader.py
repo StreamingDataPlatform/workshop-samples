@@ -9,7 +9,7 @@ import gzip
 
 def decode_stream_cut_text(text):
     """Based on StreamCutImpl.java"""
-    plaintext = gzip.decompress(base64.b64decode(text), 0).decode('utf-8')
+    plaintext = gzip.decompress(base64.b64decode(text)).decode('utf-8')
     split = plaintext.split(':', 5)
     stream = split[1]
     segment_numbers = [int(s) for s in split[2].split(',')]
