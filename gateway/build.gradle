@@ -14,7 +14,7 @@ group = "com.dellemc.oe.gateway"
 version = samplesVersion
 archivesBaseName = "gateway"
 description = "gateway"
-mainClassName = "com.dellemc.oe.gateway.rest.Main"
+mainClassName = "com.dellemc.oe.gateway.rest.PravegaGateway"
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -46,6 +46,38 @@ dependencies {
     compile group: 'javax.servlet', name: 'javax.servlet-api', version: '3.0.1'
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+// Build examples
+task scriptGrpcGateway(type: CreateStartScripts) {
+    outputDir = file('build/scripts')
+    mainClassName = 'com.dellemc.oe.gateway.grpc.PravegaGateway'
+    applicationName = 'grpcgateway'
+    classpath = files(jar.archivePath) + sourceSets.main.runtimeClasspath
+}
+
+task startGrpcGateway(type: JavaExec) {
+    main = "com.dellemc.oe.gateway.grpc.PravegaGateway"
+    classpath = sourceSets.main.runtimeClasspath
+    if(System.getProperty("exec.args") != null) {
+        args System.getProperty("exec.args").split()
+    }
+}
+
+// Build examples
+task scriptRestGateway(type: CreateStartScripts) {
+    outputDir = file('build/scripts')
+    mainClassName = 'com.dellemc.oe.gateway.rest.PravegaGateway'
+    applicationName = 'restgateway'
+    classpath = files(jar.archivePath) + sourceSets.main.runtimeClasspath
+}
+
+task startRestGateway(type: JavaExec) {
+    main = "com.dellemc.oe.gateway.rest.PravegaGateway"
+    classpath = sourceSets.main.runtimeClasspath
+    if(System.getProperty("exec.args") != null) {
+        args System.getProperty("exec.args").split()
+    }
 }
 
 protobuf {

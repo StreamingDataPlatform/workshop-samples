@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: io.pravega:pravega-shared-controller-api:0.5.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.pravega/pravega-shared-controller-api/0.5.0/e4f7ef646eefcbbabf618577ac56e652b0066c6c/pravega-shared-controller-api-0.5.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.pravega/pravega-shared-controller-api/0.5.0/8c41bd09ecf57b7e4789d6f23134e0820c0b7be1/pravega-shared-controller-api-0.5.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

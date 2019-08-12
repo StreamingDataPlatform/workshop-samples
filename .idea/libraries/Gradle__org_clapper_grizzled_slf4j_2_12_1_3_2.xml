@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.clapper:grizzled-slf4j_2.12:1.3.2">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.clapper/grizzled-slf4j_2.12/1.3.2/a41ef16fbcec3d992bcf323277d0519dba47ed5f/grizzled-slf4j_2.12-1.3.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.clapper/grizzled-slf4j_2.12/1.3.2/d8d5777024952e6e479d8baf732563d92a6d4f06/grizzled-slf4j_2.12-1.3.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

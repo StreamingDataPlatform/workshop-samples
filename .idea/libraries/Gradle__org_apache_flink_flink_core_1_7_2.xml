@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.apache.flink:flink-core:1.7.2">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.flink/flink-core/1.7.2/184443282d6269261e2783d5797d2aafbe88253/flink-core-1.7.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.flink/flink-core/1.7.2/42fba17adfc81223013d612741533ad4d2637631/flink-core-1.7.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

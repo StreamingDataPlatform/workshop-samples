@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.apache.flink:flink-streaming-scala_2.12:1.7.2">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.flink/flink-streaming-scala_2.12/1.7.2/ce2f0d0a065a81402f39beefcb6ff54406afba48/flink-streaming-scala_2.12-1.7.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.flink/flink-streaming-scala_2.12/1.7.2/61da753fe00953480baeec8f517379aee686cee6/flink-streaming-scala_2.12-1.7.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

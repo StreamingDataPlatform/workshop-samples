@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: io.pravega:pravega-common:0.5.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.pravega/pravega-common/0.5.0/8848a5543f4892e50ec1055e5221f666e06a85cb/pravega-common-0.5.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.pravega/pravega-common/0.5.0/8f8a298719814d398058408252981913b180c035/pravega-common-0.5.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.apache.flink:flink-hadoop-fs:1.7.2">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.flink/flink-hadoop-fs/1.7.2/3ea115df400e8d36f8fbc6949264024f04d4e12d/flink-hadoop-fs-1.7.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.flink/flink-hadoop-fs/1.7.2/95026394162c605d96bbcb8a1568a8f8055067da/flink-hadoop-fs-1.7.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
