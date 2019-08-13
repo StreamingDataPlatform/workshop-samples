@@ -58,7 +58,7 @@ public class DataHandler {
                 // Write the message to Pravega.
                 Log.debug("routingKey={}, message={}", routingKey, message);
                 System.out.println("message=" + data);
-                final CompletableFuture writeFuture = Main.getWriter().writeEvent(routingKey, message);
+                final CompletableFuture writeFuture = PravegaGateway.getWriter().writeEvent(routingKey, message);
 
                 // Wait for acknowledgement that the event was durably persisted.
                 // TODO: Wait should be an option that can be set by each request.

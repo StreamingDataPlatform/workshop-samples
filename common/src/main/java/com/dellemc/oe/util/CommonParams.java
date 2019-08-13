@@ -61,4 +61,8 @@ public class CommonParams {
     public static int getMinNumSegments() {
         return Integer.parseInt(getEnvVar("PRAVEGA_MIN_NUM_SEGMENTS", "1"));
     }
+
+    public static int getListenPort() {
+        return Integer.parseInt(getEnvVar("LISTEN_PORT", "54672"));
+    }
 }

@@ -17,8 +17,8 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 
-public class Main {
-    private static final Logger Log = LoggerFactory.getLogger(Main.class);
+public class PravegaGateway {
+    private static final Logger Log = LoggerFactory.getLogger(PravegaGateway.class);
     private static EventStreamWriter<JsonNode> writer;
 
     /**
@@ -34,7 +34,7 @@ public class Main {
     }
 
     public static void main(String[] args) throws Exception    {
-        Log.info("gateway main: BEGIN");
+        Log.info("gateway PravegaGateway: BEGIN");
 
         URI controllerURI = CommonParams.getControllerURI();
         StreamManager streamManager = StreamManager.create(controllerURI);
@@ -55,7 +55,7 @@ public class Main {
 
         final HttpServer server = startServer();
         Log.info("Gateway running at {}", CommonParams.getGatewayURI());
-        Log.info("gateway main: END");
+        Log.info("gateway PravegaGateway: END");
     }
 
     public static EventStreamWriter<JsonNode> getWriter() {

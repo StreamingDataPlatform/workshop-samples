@@ -38,12 +38,7 @@ public class StreamProcess {
                 .withControllerURI(controllerURI)
                 .withDefaultScope(scope)
                 .withHostnameValidation(false);
-        if (CommonParams.isPravegaStandalone()) {
-            try (StreamManager streamManager = StreamManager.create(pravegaConfig.getClientConfig())) {
-                // create the requested scope (if necessary)
-                streamManager.createScope(scope);
-            }
-        }
+        
         // Retrieve the Pravega  stream (if necessary)
         Stream stream = pravegaConfig.resolve(streamName);
       		
