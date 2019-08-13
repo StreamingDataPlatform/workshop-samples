@@ -10,6 +10,7 @@
  */
 package com.dellemc.oe.flink.wordcount;
 
+import com.dellemc.oe.serialization.UTF8StringDeserializationSchema;
 import com.dellemc.oe.util.CommonParams;
 import com.dellemc.oe.util.Utils;
 import io.pravega.client.admin.StreamManager;
@@ -88,7 +89,7 @@ public class WordCountReader {
         FlinkPravegaReader<String> source = FlinkPravegaReader.<String>builder()
                 .withPravegaConfig(pravegaConfig)
                 .forStream(stream)
-                .withDeserializationSchema(PravegaSerialization.deserializationFor(String.class))
+                .withDeserializationSchema(new UTF8StringDeserializationSchema())
                 .build();
         LOG.info("==============  SOURCE  =============== " + source);
         // count each word over a 10 second time period
@@ -100,7 +101,7 @@ public class WordCountReader {
 
         // create an output sink to print to stdout for verification
         dataStream.printToErr();
-        //dataStream.print().setParallelism(1);
+
         LOG.info("==============  PRINTED  ===============");
         Stream output_stream = getOrCreateStream(pravegaConfig, "output-stream", 3);
         // create the Pravega sink to write a stream of text
@@ -127,19 +128,7 @@ public class WordCountReader {
                 .scalingPolicy(ScalingPolicy.fixed(numSegments))
                 .build();
 
-        return createStream(pravegaConfig, streamName, streamConfig);
-    }
-
-    static Stream createStream(PravegaConfig pravegaConfig, String streamName, StreamConfiguration streamConfig) {
-        // resolve the qualified name of the stream
-        Stream stream = pravegaConfig.resolve(streamName);
-
-        try (StreamManager streamManager = StreamManager.create(pravegaConfig.getClientConfig())) {
-            // create the requested stream based on the given stream configuration
-            streamManager.createStream(stream.getScope(), stream.getStreamName(), streamConfig);
-        }
-
-        return stream;
+        return  Utils.createStream(pravegaConfig, streamName, streamConfig);
     }
 
     /*

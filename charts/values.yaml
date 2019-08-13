@@ -38,7 +38,7 @@ application:
   pravega:
     PRAVEGA_SCOPE: workshop-samples
     STREAM_NAME: workshop-stream
-    PRAVEGA_STANDALONE_AUTH: false
+    PRAVEGA_STANDALONE: false
 
     # Controls Created Streams
     streamSegments: 3

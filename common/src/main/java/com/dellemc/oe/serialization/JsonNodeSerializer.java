@@ -8,9 +8,10 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 
-public class JsonNodeSerializer implements Serializer<JsonNode>, Serializable {
+public class JsonNodeSerializer<T> implements Serializer<T> {
 
     private final ObjectMapper objectMapper;
+    private Class<T> valueType;
 
     public JsonNodeSerializer() {
         this.objectMapper = new ObjectMapper();
@@ -21,7 +22,7 @@ public class JsonNodeSerializer implements Serializer<JsonNode>, Serializable {
     }
 
     @Override
-    public ByteBuffer serialize(JsonNode value) {
+    public ByteBuffer serialize(T value) {
         try {
             byte[] result = objectMapper.writeValueAsBytes(value);
             return ByteBuffer.wrap(result);
@@ -31,12 +32,12 @@ public class JsonNodeSerializer implements Serializer<JsonNode>, Serializable {
     }
 
     @Override
-    public JsonNode deserialize(ByteBuffer serializedValue) {
+    public T deserialize(ByteBuffer serializedValue) {
         ByteArrayInputStream bin = new ByteArrayInputStream(serializedValue.array(),
                 serializedValue.position(),
                 serializedValue.remaining());
         try {
-            return objectMapper.readTree(bin);
+                      return objectMapper.readValue(objectMapper.readTree(bin).asText(), valueType);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

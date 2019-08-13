@@ -11,17 +11,25 @@
 package com.dellemc.oe.ingest;
 
 
+import com.dellemc.oe.model.ImageData;
+import com.dellemc.oe.serialization.JsonNodeSerializer;
 import com.dellemc.oe.util.CommonParams;
 import com.dellemc.oe.util.ImageToByteArray;
 import com.dellemc.oe.util.Utils;
-import io.pravega.client.ByteStreamClientFactory;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.gson.JsonObject;
 import io.pravega.client.ClientConfig;
-import io.pravega.client.admin.StreamManager;
-import io.pravega.client.byteStream.ByteStreamWriter;
-import io.pravega.client.stream.StreamConfiguration;
+import io.pravega.client.EventStreamClientFactory;
+import io.pravega.client.stream.EventStreamWriter;
+import io.pravega.client.stream.EventWriterConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.net.URI;
+import java.sql.Timestamp;
+import java.util.Base64;
+import java.util.Random;
 
 
 /**
@@ -61,23 +69,58 @@ public class ImageWriter {
             boolean  streamCreated = Utils.createStream(scope, streamName, controllerURI);
             LOG.info(" @@@@@@@@@@@@@@@@ STREAM  =  "+streamName+ "  CREATED = "+ streamCreated);
 
-            // Create ByteStreamClientFactory
-           try( ByteStreamClientFactory clientFactory = ByteStreamClientFactory.withScope(scope, clientConfig);) {
-               ByteStreamWriter writer = clientFactory.createByteStreamWriter(streamName);
-               //  Read a image and convert to byte[]
-               byte[] payload = ImageToByteArray.readImage();
+        try(EventStreamClientFactory clientFactory = EventStreamClientFactory.withScope(scope, clientConfig);
 
-
-               while (true) {
-                   // write image data.
-                   writer.write(payload);
-                   LOG.info("@@@@@@@@@@@@@ DATA >>>  " + payload);
-                   Thread.sleep(5000);
-               }
-
+                // Create event writer
+                EventStreamWriter<JsonNode> writer = clientFactory.createEventWriter(
+                         streamName,
+                        new JsonNodeSerializer(),
+                         EventWriterConfig.builder().build())) {
+                // same data write every 1 sec
+                while (true) {
+                    ObjectNode data = createJSONData();
+                    writer.writeEvent(routingKey, data);
+                    Thread.sleep(5000);
+                }
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
 
     }
+
+    // Create a JSON data for testing purpose
+    public static ObjectNode createJSONData() {
+        ObjectNode message = null;
+        try {
+            int ssrc = new Random().nextInt();
+            int camera = new Random().nextInt();
+            ImageData   imageData   =   new ImageData();
+            imageData.camera = camera;
+            imageData.ssrc = ssrc + camera;
+            imageData.timestamp = new Timestamp(System.currentTimeMillis()).toString();
+            //Convert byte[] to String
+            String encodedData = Base64.getEncoder().encodeToString( ImageToByteArray.readImage());
+            imageData.data = encodedData;
+           // imageData.hash = imageData.calculateHash();
+
+            JsonObject obj = new JsonObject();
+            obj.addProperty("camera", camera);
+            obj.addProperty("ssrc", ssrc);
+            obj.addProperty("timestamp",  imageData.timestamp);
+            obj.addProperty("data", encodedData);
+            String data = obj.toString();
+            LOG.info("@@@@@@@@@@@@@ DATA BEFORE >>>  " + data);
+
+            // Deserialize the JSON message.
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(data);
+            message = (ObjectNode) jsonNode;
+            LOG.info("@@@@@@@@@@@@@ DATA >>>  " + message.toString());
+            return message;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return message;
+    }
+
 }

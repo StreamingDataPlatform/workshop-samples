@@ -11,7 +11,10 @@
 package com.dellemc.oe.readers;
 
 import java.net.URI;
-import io.pravega.client.admin.StreamManager;
+
+import com.dellemc.oe.model.JSONData;
+import com.dellemc.oe.serialization.JsonDeserializationSchema;
+import com.dellemc.oe.serialization.UTF8StringDeserializationSchema;
 import io.pravega.client.stream.*;
 import com.dellemc.oe.util.CommonParams;
 import com.dellemc.oe.model.ImageData;
@@ -52,12 +55,7 @@ public class ImageReader {
                     .withControllerURI(controllerURI)
                     .withDefaultScope(scope)
                     .withHostnameValidation(false);;
-            if (CommonParams.isPravegaStandalone()) {
-                try (StreamManager streamManager = StreamManager.create(pravegaConfig.getClientConfig())) {
-                    // create the requested scope (if necessary)
-                    streamManager.createScope(scope);
-                }
-            }
+
             LOG.info("==============  pravegaConfig  =============== " + pravegaConfig);
 
             // create the Pravega input stream (if necessary)
@@ -70,7 +68,7 @@ public class ImageReader {
             FlinkPravegaReader<ImageData> flinkPravegaReader = FlinkPravegaReader.<ImageData>builder()
                     .withPravegaConfig(pravegaConfig)
                     .forStream(stream)
-                    .withDeserializationSchema(new ByteArrayDeserializationSchema())
+                    .withDeserializationSchema(new JsonDeserializationSchema(ImageData.class))
                     .build();
 
             DataStream<ImageData> events = env

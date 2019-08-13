@@ -3,8 +3,6 @@ package com.dellemc.oe.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Date;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class JSONData implements Serializable {

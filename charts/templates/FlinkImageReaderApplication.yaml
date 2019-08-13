@@ -19,15 +19,15 @@ spec:
 
   state: started
 
-  env:
+  parameters:
     - name: PRAVEGA_SCOPE
       value: "{{ $application.pravega.PRAVEGA_SCOPE }}"
 
     - name: STREAM_NAME
       value: "{{ $application.pravega.STREAM_NAME }}"
 
-    - name: PRAVEGA_STANDALONE_AUTH
-      value: "{{ $application.pravega.PRAVEGA_STANDALONE_AUTH }}"
+    - name: PRAVEGA_STANDALONE
+      value: "{{ $application.pravega.PRAVEGA_STANDALONE }}"
 
     - name: pravega_client_auth_method
       value: "{{ $application.reader.pravega_client_auth_method }}"
