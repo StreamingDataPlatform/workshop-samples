@@ -12,6 +12,7 @@ package com.dellemc.oe.process;
 
 import java.net.URI;
 
+import com.dellemc.oe.serialization.UTF8StringDeserializationSchema;
 import io.pravega.client.admin.StreamManager;
 import io.pravega.client.stream.Stream;
 import io.pravega.connectors.flink.FlinkPravegaReader;
@@ -26,9 +27,9 @@ import com.dellemc.oe.util.CommonParams;
  */
 public class StreamProcess {
 
-	
+
 	public static void main(String[] args) throws Exception {
- 
+
         final String scope = CommonParams.getScope();
         final String streamName = CommonParams.getStreamName();
         final URI controllerURI = CommonParams.getControllerURI();
@@ -38,10 +39,11 @@ public class StreamProcess {
                 .withControllerURI(controllerURI)
                 .withDefaultScope(scope)
                 .withHostnameValidation(false);
-        
+
         // Retrieve the Pravega  stream (if necessary)
         Stream stream = pravegaConfig.resolve(streamName);
-      		
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@"+stream);
+
 
         // initialize the Flink execution environment
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -50,12 +52,14 @@ public class StreamProcess {
         FlinkPravegaReader<String> source = FlinkPravegaReader.<String>builder()
                 .withPravegaConfig(pravegaConfig)
                 .forStream(stream)
-                .withDeserializationSchema(PravegaSerialization.deserializationFor(String.class))
-                .build();		
-		
+                .withDeserializationSchema(new UTF8StringDeserializationSchema())
+                .build();
+
+        //Reading from the stream and then converting the string to UpperCase
 		DataStream<String> dataStream = env.addSource(source).name(streamName).map(String::toUpperCase);
-	    dataStream.print();
-		
+		//Printing it to the Error stream, as it may be easy to read while debugging.
+	    dataStream.printToErr();
+
 		env.execute("Reading an exisitng stream");
 	}
 
