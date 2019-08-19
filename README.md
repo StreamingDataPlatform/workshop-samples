@@ -42,6 +42,8 @@ When running the example applications, you must set the following environment va
 export pravega_client_auth_method=Bearer
 export pravega_client_auth_loadDynamic=true
 export KEYCLOAK_SERVICE_ACCOUNT_FILE=${HOME}/keycloak.json
+export PRAVEGA_CONTROLLER_URI=tcp://<pravega uri>:<pravega port>
+export PRAVEGA_STANDALONE=false
 ```
 
 ## Setting up your IDE
