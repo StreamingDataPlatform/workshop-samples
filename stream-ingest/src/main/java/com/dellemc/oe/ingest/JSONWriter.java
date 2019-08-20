@@ -12,6 +12,7 @@ package com.dellemc.oe.ingest;
 
 import com.dellemc.oe.serialization.JsonNodeSerializer;
 import com.dellemc.oe.util.CommonParams;
+import com.dellemc.oe.util.Constants;
 import com.dellemc.oe.util.Utils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -63,11 +64,19 @@ public class JSONWriter {
     }
 
     public static void main(String[] args) {
-        final String scope = CommonParams.getScope();
+
+        /*final String scope = CommonParams.getScope();
         final String streamName = CommonParams.getStreamName();
         final String routingKey = CommonParams.getRoutingKeyAttributeName();
-        final URI controllerURI = CommonParams.getControllerURI();
+        final URI controllerURI = CommonParams.getControllerURI();*/
+
+        CommonParams.init(args);
+        final String scope = CommonParams.getParam(Constants.SCOPE);
+        final String streamName = CommonParams.getParam(Constants.STREAM_NAME);
+        final String routingKey = CommonParams.getParam(Constants.ROUTING_KEY_ATTRIBUTE_NAME);
+        final URI controllerURI = URI.create(CommonParams.getParam(Constants.CONTROLLER_URI));
         JSONWriter ew = new JSONWriter(scope, streamName, controllerURI);
+
         ew.run(routingKey);
     }
 

@@ -1,5 +1,7 @@
 package com.dellemc.oe.util;
 
+import org.apache.flink.api.java.utils.ParameterTool;
+
 import java.net.URI;
 
 // All parameters will come from environment variables. This makes it easy
@@ -64,5 +66,51 @@ public class CommonParams {
 
     public static int getListenPort() {
         return Integer.parseInt(getEnvVar("LISTEN_PORT", "54672"));
+    }
+
+    public static ParameterTool params = null;
+    public static void init(String[] args)
+    {
+        params = ParameterTool.fromArgs(args);
+    }
+
+    public static String getParam(String key)
+    {
+        if(params != null && params.has(key))
+        {
+            return params.get(key);
+        }
+        else
+        {
+            return  getDefaultParam(key);
+        }
+    }
+
+    private static String  getDefaultParam(String key)
+    {
+        String keyValue = null;
+        if(key != null)
+        {
+           switch (key) {
+                case "PRAVEGA_SCOPE":
+                    keyValue = "workshop-samples";
+                    break;
+                case "STREAM_NAME":
+                    keyValue = "workshop-stream";
+                    break;
+                case "CONTROLLER_URI":
+                    keyValue = "tcp://localhost:9090";
+                    break;
+                case "ROUTING_KEY_ATTRIBUTE_NAME":
+                    keyValue = "100";
+                    break;
+                case "PRAVEGA_STANDALONE":
+                    keyValue = "true";
+                    break;
+                default:
+                    keyValue = null;
+            }
+        }
+        return keyValue;
     }
 }
