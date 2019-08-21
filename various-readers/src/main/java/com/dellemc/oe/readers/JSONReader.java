@@ -13,6 +13,7 @@ package com.dellemc.oe.readers;
 import com.dellemc.oe.model.JSONData;
 import com.dellemc.oe.serialization.JsonDeserializationSchema;
 import com.dellemc.oe.util.CommonParams;
+import com.dellemc.oe.util.Constants;
 import com.dellemc.oe.util.Utils;
 import io.pravega.client.admin.StreamManager;
 import io.pravega.client.stream.Stream;
@@ -38,9 +39,13 @@ public class JSONReader {
     public static void main(String[] args) throws Exception {
         LOG.info("########## READER START #############");
 
-        final String scope = CommonParams.getScope();
+        /*final String scope = CommonParams.getScope();
         String streamName = CommonParams.getStreamName();
-        final URI controllerURI = CommonParams.getControllerURI();
+        final URI controllerURI = CommonParams.getControllerURI();*/
+        CommonParams.init(args);
+        final String scope = CommonParams.getParam(Constants.SCOPE);
+        final String streamName = CommonParams.getParam(Constants.STREAM_NAME);
+        final URI controllerURI = URI.create(CommonParams.getParam(Constants.CONTROLLER_URI));
 
         LOG.info("#######################     SCOPE   ###################### " + scope);
         LOG.info("#######################     streamName   ###################### " + streamName);
