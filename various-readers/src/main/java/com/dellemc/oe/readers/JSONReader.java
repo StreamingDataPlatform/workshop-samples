@@ -38,13 +38,9 @@ public class JSONReader {
 
     public static void main(String[] args) throws Exception {
         LOG.info("########## READER START #############");
-
-        /*final String scope = CommonParams.getScope();
-        String streamName = CommonParams.getStreamName();
-        final URI controllerURI = CommonParams.getControllerURI();*/
         CommonParams.init(args);
         final String scope = CommonParams.getParam(Constants.SCOPE);
-        final String streamName = CommonParams.getParam(Constants.STREAM_NAME);
+        String streamName = CommonParams.getParam(Constants.STREAM_NAME);
         final URI controllerURI = URI.create(CommonParams.getParam(Constants.CONTROLLER_URI));
 
         LOG.info("#######################     SCOPE   ###################### " + scope);

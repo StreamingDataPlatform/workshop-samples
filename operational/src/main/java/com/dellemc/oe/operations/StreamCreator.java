@@ -12,6 +12,7 @@ package com.dellemc.oe.operations;
 
 import java.net.URI;
 
+import com.dellemc.oe.util.Constants;
 import com.dellemc.oe.util.Utils;
 import io.pravega.client.admin.StreamManager;
 import io.pravega.client.stream.ScalingPolicy;
@@ -46,10 +47,11 @@ public class StreamCreator {
     }
 
     public static void main(String[] args) {
-        final URI controllerURI = CommonParams.getControllerURI();
-        final String scope = CommonParams.getScope();
-        final String stream = CommonParams.getStreamName();
-        StreamCreator sc = new StreamCreator(scope, stream, controllerURI);
+        CommonParams.init(args);
+        final String scope = CommonParams.getParam(Constants.SCOPE);
+        final String streamName = CommonParams.getParam(Constants.STREAM_NAME);
+        final URI controllerURI = URI.create(CommonParams.getParam(Constants.CONTROLLER_URI));
+        StreamCreator sc = new StreamCreator(scope, streamName, controllerURI);
         sc.run();
     }
 }

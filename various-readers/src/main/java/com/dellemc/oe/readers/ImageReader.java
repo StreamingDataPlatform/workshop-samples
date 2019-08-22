@@ -15,6 +15,7 @@ import java.net.URI;
 import com.dellemc.oe.model.JSONData;
 import com.dellemc.oe.serialization.JsonDeserializationSchema;
 import com.dellemc.oe.serialization.UTF8StringDeserializationSchema;
+import com.dellemc.oe.util.Constants;
 import io.pravega.client.stream.*;
 import com.dellemc.oe.util.CommonParams;
 import com.dellemc.oe.model.ImageData;
@@ -93,9 +94,10 @@ public class ImageReader {
 
 
     public static void main(String[] args) {
-        final String scope = CommonParams.getScope();
-        final String streamName = CommonParams.getStreamName();
-        final URI controllerURI = CommonParams.getControllerURI();
+        CommonParams.init(args);
+        final String scope = CommonParams.getParam(Constants.SCOPE);
+        String streamName = CommonParams.getParam(Constants.STREAM_NAME);
+        final URI controllerURI = URI.create(CommonParams.getParam(Constants.CONTROLLER_URI));
         LOG.info("#######################     SCOPE   ###################### " + scope);
         LOG.info("#######################     streamName   ###################### " + streamName);
         LOG.info("#######################     controllerURI   ###################### " + controllerURI);
