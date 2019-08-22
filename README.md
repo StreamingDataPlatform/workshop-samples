@@ -42,8 +42,9 @@ When running the example applications, you must set the following environment va
 export pravega_client_auth_method=Bearer
 export pravega_client_auth_loadDynamic=true
 export KEYCLOAK_SERVICE_ACCOUNT_FILE=${HOME}/keycloak.json
-export PRAVEGA_CONTROLLER_URI=tcp://<pravega uri>:<pravega port>
-export PRAVEGA_STANDALONE=false
+
+And also need to set following parameters according to your project and provide as program params.
+--PRAVEGA_SCOPE	workshop-samples --STREAM_NAME workshop-stream --PRAVEGA_CONTROLLER_URI tcp://localhost:9090 --PRAVEGA_STANDALONE true
 ```
 
 ## Setting up your IDE
