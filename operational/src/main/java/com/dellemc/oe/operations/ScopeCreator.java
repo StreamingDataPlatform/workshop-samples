@@ -10,6 +10,7 @@
  */
 package com.dellemc.oe.operations;
 
+import com.dellemc.oe.util.Constants;
 import io.pravega.client.admin.StreamManager;
 import com.dellemc.oe.util.CommonParams;
 import org.slf4j.Logger;
@@ -47,8 +48,9 @@ public class ScopeCreator {
     }
 
     public static void main(String[] args) {
-        final URI controllerURI = CommonParams.getControllerURI();
-        String scope = CommonParams.getScope();
+        CommonParams.init(args);
+        final String scope = CommonParams.getParam(Constants.SCOPE);
+        final URI controllerURI = URI.create(CommonParams.getParam(Constants.CONTROLLER_URI));
         ScopeCreator sc = new ScopeCreator(scope, controllerURI);
         sc.run();
     }

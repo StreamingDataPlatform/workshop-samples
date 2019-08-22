@@ -14,6 +14,7 @@ import java.net.URI;
 
 import java.util.concurrent.CompletableFuture;
 
+import com.dellemc.oe.util.Constants;
 import com.dellemc.oe.util.Utils;
 import io.pravega.client.ClientConfig;
 import io.pravega.client.ClientFactory;
@@ -69,11 +70,13 @@ public class EventWriter {
     }
 
     public static void main(String[] args) {
-        final String scope = CommonParams.getScope();
-        final String streamName = CommonParams.getStreamName();
-        final String routingKey = CommonParams.getRoutingKeyAttributeName();
-        final String message = CommonParams.getMessage();;
-        final URI controllerURI = CommonParams.getControllerURI();
+        CommonParams.init(args);
+        final String scope = CommonParams.getParam(Constants.SCOPE);
+        final String streamName = CommonParams.getParam(Constants.STREAM_NAME);
+        final String routingKey = CommonParams.getParam(Constants.ROUTING_KEY_ATTRIBUTE_NAME);
+        final URI controllerURI = URI.create(CommonParams.getParam(Constants.CONTROLLER_URI));
+        final String message = CommonParams.getParam(Constants.MESSAGE);
+
         EventWriter ew = new EventWriter(scope, streamName, controllerURI);
         ew.run(routingKey, message);
     }

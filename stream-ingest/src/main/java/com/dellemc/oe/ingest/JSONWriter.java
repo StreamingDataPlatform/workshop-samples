@@ -64,12 +64,6 @@ public class JSONWriter {
     }
 
     public static void main(String[] args) {
-
-        /*final String scope = CommonParams.getScope();
-        final String streamName = CommonParams.getStreamName();
-        final String routingKey = CommonParams.getRoutingKeyAttributeName();
-        final URI controllerURI = CommonParams.getControllerURI();*/
-
         CommonParams.init(args);
         final String scope = CommonParams.getParam(Constants.SCOPE);
         final String streamName = CommonParams.getParam(Constants.STREAM_NAME);

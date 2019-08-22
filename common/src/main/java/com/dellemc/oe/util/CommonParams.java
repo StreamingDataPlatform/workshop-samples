@@ -13,7 +13,7 @@ public class CommonParams {
     }
 
     public static boolean  isPravegaStandalone() {
-        return Boolean.parseBoolean(getEnvVar("PRAVEGA_STANDALONE", "true"));
+        return Boolean.parseBoolean(getParam(Constants.PRAVEGA_STANDALONE));
     }
 
     public static String getUser() {
@@ -98,7 +98,7 @@ public class CommonParams {
                 case "STREAM_NAME":
                     keyValue = "workshop-stream";
                     break;
-                case "CONTROLLER_URI":
+                case "PRAVEGA_CONTROLLER_URI":
                     keyValue = "tcp://localhost:9090";
                     break;
                 case "ROUTING_KEY_ATTRIBUTE_NAME":
@@ -107,6 +107,9 @@ public class CommonParams {
                 case "PRAVEGA_STANDALONE":
                     keyValue = "true";
                     break;
+               case "MESSAGE":
+                   keyValue = "To demonstrate Nautilus streams sending a string message";
+                   break;
                 default:
                     keyValue = null;
             }

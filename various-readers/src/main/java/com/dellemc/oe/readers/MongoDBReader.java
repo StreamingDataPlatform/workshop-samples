@@ -14,6 +14,7 @@ import com.dellemc.oe.db.MongoDBSink;
 import com.dellemc.oe.model.JSONData;
 import com.dellemc.oe.serialization.JsonDeserializationSchema;
 import com.dellemc.oe.util.CommonParams;
+import com.dellemc.oe.util.Constants;
 import com.dellemc.oe.util.Utils;
 import io.pravega.client.admin.StreamManager;
 import io.pravega.client.stream.Stream;
@@ -62,9 +63,10 @@ public class MongoDBReader {
     public static void main(String[] args) throws Exception {
         LOG.info("########## MongoDBReader START #############");
 
-        final String scope = CommonParams.getScope();
-        String streamName = CommonParams.getStreamName();
-        final URI controllerURI = CommonParams.getControllerURI();
+        CommonParams.init(args);
+        final String scope = CommonParams.getParam(Constants.SCOPE);
+        String streamName = CommonParams.getParam(Constants.STREAM_NAME);
+        final URI controllerURI = URI.create(CommonParams.getParam(Constants.CONTROLLER_URI));
 
         LOG.info("#######################     SCOPE   ###################### " + scope);
         LOG.info("#######################     streamName   ###################### " + streamName);

@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.dellemc.oe.util.Constants;
 import io.pravega.client.ClientFactory;
 import io.pravega.client.admin.StreamManager;
 import io.pravega.client.stream.EventStreamWriter;
@@ -58,9 +59,10 @@ public class PravegaAuthHello {
     }
 
     public static void main(String[] args) {
-        final String scope = CommonParams.getScope();
-        final String streamName = CommonParams.getStreamName();
-        final URI controllerURI = CommonParams.getControllerURI();
+        CommonParams.init(args);
+        final String scope = CommonParams.getParam(Constants.SCOPE);
+        final String streamName = CommonParams.getParam(Constants.STREAM_NAME);
+        final URI controllerURI = URI.create(CommonParams.getParam(Constants.CONTROLLER_URI));
         PravegaAuthHello hww = new PravegaAuthHello(scope,streamName,controllerURI);
         hww.run();
     }

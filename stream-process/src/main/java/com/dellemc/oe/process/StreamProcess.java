@@ -13,6 +13,7 @@ package com.dellemc.oe.process;
 import java.net.URI;
 
 import com.dellemc.oe.serialization.UTF8StringDeserializationSchema;
+import com.dellemc.oe.util.Constants;
 import io.pravega.client.admin.StreamManager;
 import io.pravega.client.stream.Stream;
 import io.pravega.connectors.flink.FlinkPravegaReader;
@@ -30,9 +31,10 @@ public class StreamProcess {
 
 	public static void main(String[] args) throws Exception {
 
-        final String scope = CommonParams.getScope();
-        final String streamName = CommonParams.getStreamName();
-        final URI controllerURI = CommonParams.getControllerURI();
+        CommonParams.init(args);
+        final String scope = CommonParams.getParam(Constants.SCOPE);
+        final String streamName = CommonParams.getParam(Constants.STREAM_NAME);
+        final URI controllerURI = URI.create(CommonParams.getParam(Constants.CONTROLLER_URI));
 
         // initialize the parameter utility tool in order to retrieve input parameters
          PravegaConfig pravegaConfig = PravegaConfig.fromDefaults()
