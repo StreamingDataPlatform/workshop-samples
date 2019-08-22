@@ -92,22 +92,22 @@ public class CommonParams {
         if(key != null)
         {
            switch (key) {
-                case "PRAVEGA_SCOPE":
+                case "pravega_scope":
                     keyValue = "workshop-samples";
                     break;
-                case "STREAM_NAME":
+                case "stream_name":
                     keyValue = "workshop-stream";
                     break;
-                case "PRAVEGA_CONTROLLER_URI":
+                case "pravega_controller_uri":
                     keyValue = "tcp://localhost:9090";
                     break;
-                case "ROUTING_KEY_ATTRIBUTE_NAME":
+                case "routing_key_attribute_name":
                     keyValue = "100";
                     break;
-                case "PRAVEGA_STANDALONE":
+                case "pravega_standalone":
                     keyValue = "true";
                     break;
-               case "MESSAGE":
+               case "message":
                    keyValue = "To demonstrate Nautilus streams sending a string message";
                    break;
                 default:
