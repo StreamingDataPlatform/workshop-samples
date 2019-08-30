@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * A simple example app that uses a Pravega Writer to write to a given scope and stream.
@@ -36,11 +37,13 @@ public class JSONWriter {
 
     public final String scope;
     public final String streamName;
+    public final String dataFile;
     public final URI controllerURI;
 
-    public JSONWriter(String scope, String streamName, URI controllerURI) {
+    public JSONWriter(String scope, String streamName, URI controllerURI,String dataFile) {
         this.scope = scope;
         this.streamName = streamName;
+        this.dataFile = dataFile;
         this.controllerURI = controllerURI;
     }
 
@@ -51,7 +54,8 @@ public class JSONWriter {
         final String streamName = CommonParams.getParam(Constants.STREAM_NAME);
         final String routingKey = CommonParams.getParam(Constants.ROUTING_KEY_ATTRIBUTE_NAME);
         final URI controllerURI = URI.create(CommonParams.getParam(Constants.CONTROLLER_URI));
-        JSONWriter ew = new JSONWriter(scope, streamName, controllerURI);
+        final String dataFile = CommonParams.getParam(Constants.DATA_FILE);
+        JSONWriter ew = new JSONWriter(scope, streamName, controllerURI,dataFile);
 
         ew.run(routingKey);
     }
@@ -74,7 +78,7 @@ public class JSONWriter {
                         new JsonNodeSerializer(),
                         EventWriterConfig.builder().build())) {
                     //  Coverst CSV  data to JSON
-                    String data = DataGenerator.convertCsvToJson();
+                    String data = DataGenerator.convertCsvToJson(dataFile);
                     // Deserialize the JSON message.
                     ObjectMapper objectMapper = new ObjectMapper();
                     JsonNode jsonArray = objectMapper.readTree(data);
@@ -82,7 +86,8 @@ public class JSONWriter {
                         for (JsonNode node : jsonArray) {
                             message = (ObjectNode) node;
                             LOG.info("@@@@@@@@@@@@@ DATA  @@@@@@@@@@@@@  "+message.toString());
-                            writer.writeEvent(routingKey, message);
+                            final CompletableFuture writeFuture = writer.writeEvent(routingKey, message);
+                            writeFuture.get();
                             Thread.sleep(10000);
                         }
 

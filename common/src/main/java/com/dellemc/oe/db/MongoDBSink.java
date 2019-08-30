@@ -24,12 +24,12 @@ public class MongoDBSink extends RichSinkFunction<JSONData> {
                 MongoDatabase db = mongoClient.getDatabase("test");
                 MongoCollection collection = db.getCollection("junk");
                 List<Document> list = new ArrayList<>();
-                //  {"id":0.6748568994039477,"name":"DELL EMC","building":3,"location":"India"}
+
                 Document doc = new Document();
-                doc.append("ID", value.ID);
-                doc.append("NAME", value.Latitude);
-                doc.append("BUILDING", value.Longitude);
-                doc.append("LOCATION", value.Status);
+                doc.append("DateTime", value.DateTime);
+                doc.append("Latitude", value.Latitude);
+                doc.append("Longitude", value.Longitude);
+                doc.append("Magnitude", value.Magnitude);
                 list.add(doc);
                 System.out.println("Insert Starting");
                 collection.insertMany(list);
