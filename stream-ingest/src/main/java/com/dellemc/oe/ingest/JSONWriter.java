@@ -13,21 +13,20 @@ package com.dellemc.oe.ingest;
 import com.dellemc.oe.serialization.JsonNodeSerializer;
 import com.dellemc.oe.util.CommonParams;
 import com.dellemc.oe.util.Constants;
+import com.dellemc.oe.util.DataGenerator;
 import com.dellemc.oe.util.Utils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.pravega.client.ClientConfig;
 import io.pravega.client.EventStreamClientFactory;
-import io.pravega.client.admin.StreamManager;
 import io.pravega.client.stream.EventStreamWriter;
 import io.pravega.client.stream.EventWriterConfig;
-import io.pravega.client.stream.StreamConfiguration;
-import io.pravega.client.stream.impl.DefaultCredentials;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * A simple example app that uses a Pravega Writer to write to a given scope and stream.
@@ -38,38 +37,25 @@ public class JSONWriter {
 
     public final String scope;
     public final String streamName;
+    public final String dataFile;
     public final URI controllerURI;
 
-    public JSONWriter(String scope, String streamName, URI controllerURI) {
+    public JSONWriter(String scope, String streamName, URI controllerURI,String dataFile) {
         this.scope = scope;
         this.streamName = streamName;
+        this.dataFile = dataFile;
         this.controllerURI = controllerURI;
     }
 
-    // Create a JSON data for testing purpose
-    public static ObjectNode createJSONData() {
-        ObjectNode message = null;
-        try {
-            String data = "{\"id\":" + Math.random() + ",\"name\":\"DELL EMC\",\"building\":3,\"location\":\"India\"}";
-            // Deserialize the JSON message.
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(data);
-            message = (ObjectNode) jsonNode;
-            LOG.info("@@@@@@@@@@@@@ DATA >>>  " + message.toString());
-            return message;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return message;
-    }
-
     public static void main(String[] args) {
+        // Get the Program parameters
         CommonParams.init(args);
         final String scope = CommonParams.getParam(Constants.SCOPE);
         final String streamName = CommonParams.getParam(Constants.STREAM_NAME);
         final String routingKey = CommonParams.getParam(Constants.ROUTING_KEY_ATTRIBUTE_NAME);
         final URI controllerURI = URI.create(CommonParams.getParam(Constants.CONTROLLER_URI));
-        JSONWriter ew = new JSONWriter(scope, streamName, controllerURI);
+        final String dataFile = CommonParams.getParam(Constants.DATA_FILE);
+        JSONWriter ew = new JSONWriter(scope, streamName, controllerURI,dataFile);
 
         ew.run(routingKey);
     }
@@ -77,6 +63,7 @@ public class JSONWriter {
     public void run(String routingKey) {
 
                 String streamName = "json-stream";
+                ObjectNode message = null;
                 // Create client config
                 ClientConfig clientConfig = ClientConfig.builder().controllerURI(controllerURI).build();
                 //  create stream
@@ -85,20 +72,30 @@ public class JSONWriter {
                 // Create EventStreamClientFactory
                 try( EventStreamClientFactory clientFactory = EventStreamClientFactory.withScope(scope, clientConfig);
 
-                // Create event writer
+                // Create  Pravega event writer
                 EventStreamWriter<JsonNode> writer = clientFactory.createEventWriter(
                         streamName,
                         new JsonNodeSerializer(),
                         EventWriterConfig.builder().build())) {
-                // same data write every 1 sec
-                while (true) {
-                    ObjectNode data = createJSONData();
-                    writer.writeEvent(routingKey, data);
-                    Thread.sleep(1000);
-                }
+                    //  Coverst CSV  data to JSON
+                    String data = DataGenerator.convertCsvToJson(dataFile);
+                    // Deserialize the JSON message.
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    JsonNode jsonArray = objectMapper.readTree(data);
+                    if (jsonArray.isArray()) {
+                        for (JsonNode node : jsonArray) {
+                            message = (ObjectNode) node;
+                            LOG.info("@@@@@@@@@@@@@ DATA  @@@@@@@@@@@@@  "+message.toString());
+                            final CompletableFuture writeFuture = writer.writeEvent(routingKey, message);
+                            writeFuture.get();
+                            Thread.sleep(10000);
+                        }
+
+                    }
 
         }
         catch (Exception e) {
+            LOG.error("@@@@@@@@@@@@@ ERROR  @@@@@@@@@@@@@  "+e.getMessage());
             throw new RuntimeException(e);
         }
 

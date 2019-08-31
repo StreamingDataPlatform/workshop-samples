@@ -67,7 +67,9 @@ public class EventWithTimestampWriter {
         final String streamName = CommonParams.getParam(Constants.STREAM_NAME);
         final String routingKey = CommonParams.getParam(Constants.ROUTING_KEY_ATTRIBUTE_NAME);
         final URI controllerURI = URI.create(CommonParams.getParam(Constants.CONTROLLER_URI));
-        JSONWriter ew = new JSONWriter(scope, streamName, controllerURI);
+        final String dataFile = CommonParams.getParam(Constants.DATA_FILE);
+        JSONWriter ew = new JSONWriter(scope, streamName, controllerURI,dataFile);
+
         ew.run(routingKey);
     }
 

@@ -107,6 +107,9 @@ public class CommonParams {
                 case "pravega_standalone":
                     keyValue = "true";
                     break;
+               case "data_file":
+                   keyValue = "earthquakes1970-2014.csv";
+                   break;
                case "message":
                    keyValue = "To demonstrate Nautilus streams sending a string message";
                    break;
