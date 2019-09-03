@@ -37,6 +37,7 @@ dependencies {
     compile "org.apache.flink:flink-streaming-scala_${flinkScalaVersion}:${flinkVersion}"
     compile "org.apache.flink:flink-ml_${flinkScalaVersion}:${flinkVersion}"
     compile "org.apache.flink:flink-table_${flinkScalaVersion}:${flinkVersion}"
+    compile group: 'org.apache.flink', name: 'flink-json', version: flinkVersion
     compile "io.pravega:pravega-client:${pravegaVersion}"
     if (includePravegaCredentials.toBoolean()) {
         compile "io.pravega:pravega-keycloak-credentials:${pravegaCredentialsVersion}"
