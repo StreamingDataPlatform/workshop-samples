@@ -41,13 +41,15 @@ cd flink-connectors
 git checkout r0.5
 ./gradlew install
 ```
-Plublish to local maven repo
+Once above builds successfull You can find the libraries at $/Pravega/flink-connectors/build/libs and $/Pravega/pravega/client/build/libs
+Change the build versions in mvn command to publish to local maven.
+Plublish to local maven repo.
 ```
 mvn install:install-file -Dfile=pravega-connectors-flink_2.12-0.5.1-156.54e86b0-SNAPSHOT.jar -DgroupId=io.pravega -DartifactId=pravega-connectors-flink -Dversion=0.5.1-156.54e86b0 -Dpackaging=jar
     
 mvn install:install-file -Dfile=pravega-client-0.5.0.jar -DgroupId=io.pravega -DartifactId=pravega-client -Dversion=0.5.0 -Dpackaging=jar
 ```
-
+   Open gradle.properties and change the pravegaFlinkConnectorVersion value to your build version. And also change pravegaVersion
 	Click on gradle tab at right side and click on Execute gradle task icon and type clean installDist 
 
 ![gradle installDist](/images/IntelliJ_4.png)
@@ -69,7 +71,7 @@ mvn install:install-file -Dfile=pravega-client-0.5.0.jar -DgroupId=io.pravega -D
 	Go to run  Edit Configurations  Select application and click + icon. Fill the details mentioned below screen. Add all below program parameters. 
 
 ```
---pravega_scope	workshop-samples --stream_name workshop-stream --pravega_controller_uri tcp://localhost:9090 --pravega_standalone true
+--pravega_scope	workshop-samples --stream_name workshop-stream --pravega_controller_uri tcp://localhost:9090 --pravega_standalone true --data_file earthquakes1970-2014.csv
 
 ```
 
