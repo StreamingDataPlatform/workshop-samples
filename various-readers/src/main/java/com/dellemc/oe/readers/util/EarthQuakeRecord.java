@@ -20,7 +20,7 @@ public class EarthQuakeRecord implements Serializable {
     {
         // Read data from the stream using Table reader
         TableSchema tableSchema = TableSchema.builder()
-                .field("DateTime", Types.STRING())
+                .field("DateTime", Types.STRING()) // TODO: Change Date Time fields to Types.SQL_TIMESTAMP()
                 .field("Latitude", Types.DOUBLE())
                 .field("Longitude", Types.DOUBLE())
                 .field("Depth", Types.DOUBLE())
@@ -40,7 +40,7 @@ public class EarthQuakeRecord implements Serializable {
     {
         // Read data from the stream using Table reader
         Schema schema = new Schema()
-                .field("DateTime", Types.STRING())
+                .field("DateTime", Types.STRING()) // TODO: Change Date Time fields to Types.SQL_TIMESTAMP()
                 .field("Latitude", Types.DOUBLE())
                 .field("Longitude", Types.DOUBLE())
                 .field("Depth", Types.DOUBLE())
