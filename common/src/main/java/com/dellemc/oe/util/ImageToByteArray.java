@@ -4,14 +4,17 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.InputStream;
 import java.net.URL;
 import javax.imageio.ImageIO;
 public class ImageToByteArray {
    public static  byte [] readImage() throws Exception{
 
-      File file =  new ImageToByteArray().getFileFromResources("nautilus.jpg");
+      //File file =  new ImageToByteArray().getFileFromResources("nautilus.jpg");
+      ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+      InputStream inputStream = classloader.getResourceAsStream("nautilus.jpg");
 
-      BufferedImage bImage = ImageIO.read(file);
+      BufferedImage bImage = ImageIO.read(inputStream);
       ByteArrayOutputStream bos = new ByteArrayOutputStream();
       ImageIO.write(bImage, "jpg", bos );
       byte [] data = bos.toByteArray();
