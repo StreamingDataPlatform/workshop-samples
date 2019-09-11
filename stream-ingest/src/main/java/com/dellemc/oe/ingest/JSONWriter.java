@@ -96,7 +96,6 @@ public class JSONWriter {
         }
         catch (Exception e) {
             LOG.error("@@@@@@@@@@@@@ ERROR  @@@@@@@@@@@@@  "+e.getMessage());
-            throw new RuntimeException(e);
         }
 
     }
