@@ -8,7 +8,7 @@ dependencies {
 	compile "io.pravega:pravega-client:${pravegaVersion}"
 	compile "com.fasterxml.jackson.core:jackson-databind:2.9.1"
  	testCompile 'junit:junit:4.11'
-	compile "io.pravega:pravega-connectors-flink_${flinkScalaVersion}:${pravegaFlinkConnectorVersion}"
+	compile "io.pravega:pravega-connectors-flink-${flinkShortVersion}_${flinkScalaVersion}:${pravegaFlinkConnectorVersion}"
 	compile "org.apache.flink:flink-streaming-java_${flinkScalaVersion}:${flinkVersion}"
 	
 	// MongoDB
