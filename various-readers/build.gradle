@@ -40,7 +40,7 @@ dependencies {
     compile group: 'org.apache.flink', name: 'flink-json', version: flinkVersion
     compile "io.pravega:pravega-client:${pravegaVersion}"
     if (includePravegaCredentials.toBoolean()) {
-        compile "io.pravega:pravega-keycloak-credentials:${pravegaCredentialsVersion}"
+        compile "com.dellemc.nautilus:pravega-keycloak-credentials:${pravegaCredentialsVersion}"
     }
     // MongoDB
     // https://mvnrepository.com/artifact/org.mongodb/mongodb-driver

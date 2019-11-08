@@ -12,17 +12,21 @@ applications: 1
 
 flinkVersion: 1.7.2
 
+flink:
+  applications:
+    switch:
+      jsonReader: true
+      imageReader: false
+      streamToStream: false
 # Detailed Project Control
 project:
   zookeeperReplicas: 3
-
   mavenStorage: 20Gi
   localStorage: 20Gi
 
 # Detailed FlinkCluster Control
 cluster:
   localStorage: 20Gi
-
   taskManager:
     replicas: 2
     memory: 1024M
@@ -32,25 +36,20 @@ cluster:
 # Detailed FlinkApplication Control
 application:
   mavenVersion: 0.1.0
-
   defaultParallelism: 3
 
   pravega:
-    PRAVEGA_SCOPE: workshop-samples
-    STREAM_NAME: workshop-stream
-    PRAVEGA_STANDALONE: false
-
+    pravega_scope: workshop-samples
+    stream_name: workshop-stream
+    pravega_standalone: false
+    controller: "tcp://nautilus-pravega-controller.nautilus-pravega.svc.cluster.local:9090"
     # Controls Created Streams
     streamSegments: 3
 
   writer:
     # How many instances of the Event generating Source to execute
     parallelism: 5
-    pravega_client_auth_method:  Bearer
-    pravega_client_auth_loadDynamic:  true
     
   reader:
     # How many readers
     parallelism: 5
-    pravega_client_auth_method:  Bearer
-    pravega_client_auth_loadDynamic:  true

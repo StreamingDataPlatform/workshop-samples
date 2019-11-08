@@ -8,11 +8,12 @@
 apiVersion: flink.nautilus.dellemc.com/v1beta1
 kind: "FlinkCluster"
 metadata:
-  name: "{{ $relname }}-{{ $clusterNum }}"
-  namespace: "{{ $relname }}"
+  name: workshop-{{ $clusterNum }}
+  labels:
+    name: workshop-{{ $clusterNum }}
 spec:
-  flinkVersion: {{ $flinkVersion }}
-
+  imageRef:
+    name: 1.7.2
   zookeeperUrl: zookeeper-client:2181
 
   # Specify Storage Options

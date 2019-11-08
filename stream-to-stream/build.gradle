@@ -31,7 +31,7 @@ dependencies {
     compile project(':common')
       
     if (includePravegaCredentials.toBoolean()) {
-        compile "io.pravega:pravega-keycloak-credentials:${pravegaCredentialsVersion}"
+        compile "com.dellemc.nautilus:pravega-keycloak-credentials:${pravegaCredentialsVersion}"
     }
 
     compile "org.slf4j:slf4j-api:${slf4jApiVersion}"
