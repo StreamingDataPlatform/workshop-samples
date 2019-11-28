@@ -33,7 +33,7 @@ dependencies {
     compile "ch.qos.logback:logback-core:${logbackVersion}"
     compile "com.fasterxml.jackson.core:jackson-databind:2.9.1"
     if (includePravegaCredentials.toBoolean()) {
-        compile "com.dellemc.nautilus:pravega-keycloak-credentials:${pravegaCredentialsVersion}"
+        compile "io.pravega:pravega-keycloak-client:${pravegaCredentialsVersion}"
     }
 }
 

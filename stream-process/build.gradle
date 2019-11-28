@@ -31,9 +31,8 @@ ext {
 
 dependencies {
     compile project(':common')
-
     if (includePravegaCredentials.toBoolean()) {
-        compile "com.dellemc.nautilus:pravega-keycloak-credentials:${pravegaCredentialsVersion}"
+        compile "io.pravega:pravega-keycloak-client:${pravegaCredentialsVersion}"
     }
     //compile "org.elasticsearch.client:elasticsearch-rest-high-level-client:6.5.4"
     compile "org.slf4j:slf4j-api:${slf4jApiVersion}"
