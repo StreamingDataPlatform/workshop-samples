@@ -1,14 +1,10 @@
-{{- $relname := .Release.Name -}}
-{{- $numApplications := .Values.applications -}}
-{{- $application := .Values.application -}}
+{{- if .Values.flink.applications.switch.imageReader }}
 {{- $flinkVersion := .Values.flinkVersion -}}
-{{- range $projectNum, $e := until (int .Values.projects)  }}
-{{- range $applicationNum, $e := until (int $numApplications) }}
+{{- $application := .Values.application -}}
 apiVersion: flink.nautilus.dellemc.com/v1beta1
 kind: "FlinkApplication"
 metadata:
   name: "image-reader"
-  namespace: {{ $relname }}
 spec:
   flinkVersion: {{ $flinkVersion }}
 
@@ -20,23 +16,19 @@ spec:
   state: started
 
   parameters:
-    - name: PRAVEGA_SCOPE
-      value: "{{ $application.pravega.PRAVEGA_SCOPE }}"
+    - name: pravega_scope
+      value: "{{ $application.pravega.pravega_scope }}"
 
-    - name: STREAM_NAME
-      value: "{{ $application.pravega.STREAM_NAME }}"
+    - name: stream_name
+      value: "{{ $application.pravega.stream_name }}"
 
-    - name: PRAVEGA_STANDALONE
-      value: "{{ $application.pravega.PRAVEGA_STANDALONE }}"
+    - name: pravega_standalone
+      value: "{{ $application.pravega.pravega_standalone }}"
 
-    - name: pravega_client_auth_method
-      value: "{{ $application.reader.pravega_client_auth_method }}"
-
-    - name: pravega_client_auth_loadDynamic
-      value: "{{ $application.reader.pravega_client_auth_loadDynamic }}"
+    - name: pravega_controller_uri
+      value:  "{{ $application.pravega.controller }}"
 
     - name: sourceParallelism
       value: "{{ $application.reader.parallelism }}"
----
 {{- end }}
-{{- end }}
+

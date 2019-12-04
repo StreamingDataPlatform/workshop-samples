@@ -26,32 +26,6 @@ Maven 3.6
 
 ![gradle wrapper](/images/IntelliJ_3.png)
 
-
-We need to build pravega client and pravega flink connector
-ans install it in local maven
-
-```
-git clone https://github.com/pravega/pravega
-cd pravega
-git checkout r0.5
-./gradlew install
-cd ..
-git clone https://github.com/pravega/flink-connectors
-cd flink-connectors
-git checkout r0.5
-./gradlew install
-```
-Once above builds successfull You can find the libraries at $/Pravega/flink-connectors/build/libs and $/Pravega/pravega/client/build/libs
-Change the build versions in mvn command to publish to local maven.
-Plublish to local maven repo.
-```
-mvn install:install-file -Dfile=pravega-connectors-flink_2.12-0.5.1-156.54e86b0-SNAPSHOT.jar -DgroupId=io.pravega -DartifactId=pravega-connectors-flink -Dversion=0.5.1-156.54e86b0 -Dpackaging=jar
-    
-mvn install:install-file -Dfile=pravega-client-0.5.0.jar -DgroupId=io.pravega -DartifactId=pravega-client -Dversion=0.5.0 -Dpackaging=jar
-```
-   Open gradle.properties and change the pravegaFlinkConnectorVersion value to your build version. And also change pravegaVersion
-	Click on gradle tab at right side and click on Execute gradle task icon and type clean installDist 
-
 ![gradle installDist](/images/IntelliJ_4.png)
 
 	It will take some time to download dependencies and complete build.
@@ -71,8 +45,11 @@ mvn install:install-file -Dfile=pravega-client-0.5.0.jar -DgroupId=io.pravega -D
 	Go to run  Edit Configurations  Select application and click + icon. Fill the details mentioned below screen. Add all below program parameters. 
 
 ```
---pravega_scope	workshop-samples --stream_name workshop-stream --pravega_controller_uri tcp://localhost:9090 --pravega_standalone true --data_file earthquakes1970-2014.csv
-
+--pravega_scope	workshop-samples
+--stream_name workshop-stream
+--pravega_controller_uri tcp://localhost:9090
+--pravega_standalone true
+--data_file earthquakes1970-2014.csv
 ```
 
 ![gradle installDist](/images/IntelliJ_5.png)
@@ -85,20 +62,13 @@ Click ok and Run JSONWriter
 ## Running the Samples with Nautilus cluster
 
 ### Configure Nautilus Authentication
-- Obtain the file pravega-keycloak-credentials-*.jar and place it in the lib directory.
-```
-PRAVEGA_CREDENTIALS_VERSION=0.5.0-2305.31c34b9-0.11.10-001.e597251
-sudo apt install maven
-mvn install:install-file \
--Dfile=lib/pravega-keycloak-credentials-${PRAVEGA_CREDENTIALS_VERSION}-shadow.jar \
--DgroupId=io.pravega -DartifactId=pravega-keycloak-credentials \
--Dversion=${PRAVEGA_CREDENTIALS_VERSION} -Dpackaging=jar
-```
+
 - Create a project `workshop-samples` in Nautilus UI
 - This will automatically create a scope `workshop-samples`
 -  Get the `keycloak.json` file by executing this command
 ```
-kubectl get secret workshop-samples-pravega -n workshop-samples -o jsonpath="{.data.keycloak\.json}" |base64 -d >  ${HOME}/keycloak.json
+kubectl get secret workshop-samples-pravega -n workshop-samples 
+-o jsonpath="{.data.keycloak\.json}" |base64 -d >  ${HOME}/keycloak.json
 chmod go-rw ${HOME}/keycloak.json
 ```
   output looks like the following:
@@ -123,7 +93,10 @@ export pravega_client_auth_loadDynamic=true
 export KEYCLOAK_SERVICE_ACCOUNT_FILE=${HOME}/keycloak.json
 
 And also need to set following parameters according to your project and provide as program params.
---pravega_scope	workshop-samples --stream_name workshop-stream --pravega_controller_uri tcp://localhost:9090 --pravega_standalone true
+--pravega_scope	workshop-samples
+--stream_name workshop-stream
+--pravega_controller_uri tcp://localhost:9090
+--pravega_standalone true
 ```
 
 
