@@ -10,29 +10,28 @@
  */
 package com.dellemc.oe.operations;
 
-import com.dellemc.oe.util.Constants;
+import com.dellemc.oe.util.AbstractApp;
+import io.pravega.client.ClientConfig;
 import io.pravega.client.admin.StreamManager;
-import com.dellemc.oe.util.CommonParams;
+import com.dellemc.oe.util.AppConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URI;
 /**
  * A simple example app that creates scope in Pravega
  */
-public class ScopeCreator {
+public class ScopeCreator extends AbstractApp {
 
     private static Logger LOG = LoggerFactory.getLogger(ScopeCreator.class);
-    public final String scope;
-    public final URI controllerURI;
 
-    public ScopeCreator(String scope, URI controllerURI) {
-        this.scope = scope;
-        this.controllerURI = controllerURI;
+    public ScopeCreator(AppConfiguration appConfiguration) {
+        super(appConfiguration);
     }
 
     public void run() {
-        try(StreamManager streamManager = StreamManager.create(controllerURI);) {
+        ClientConfig clientConfig = appConfiguration.getPravegaConfig().getClientConfig();
+        String scope = appConfiguration.getInputStreamConfig().getStream().getScope();
+        try(StreamManager streamManager = StreamManager.create(clientConfig)) {
             final boolean scopeIsNew = streamManager.createScope(scope);
             if (scopeIsNew) {
                 LOG.info("succeed in creating scope  '"+scope);
@@ -48,10 +47,8 @@ public class ScopeCreator {
     }
 
     public static void main(String[] args) {
-        CommonParams.init(args);
-        final String scope = CommonParams.getParam(Constants.SCOPE);
-        final URI controllerURI = URI.create(CommonParams.getParam(Constants.CONTROLLER_URI));
-        ScopeCreator sc = new ScopeCreator(scope, controllerURI);
+        AppConfiguration appConfiguration = new AppConfiguration(args);
+        ScopeCreator sc = new ScopeCreator(appConfiguration);
         sc.run();
     }
 }

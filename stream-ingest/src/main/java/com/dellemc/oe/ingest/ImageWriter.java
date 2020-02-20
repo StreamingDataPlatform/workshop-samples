@@ -13,10 +13,7 @@ package com.dellemc.oe.ingest;
 
 import com.dellemc.oe.model.ImageData;
 import com.dellemc.oe.serialization.JsonNodeSerializer;
-import com.dellemc.oe.util.CommonParams;
-import com.dellemc.oe.util.Constants;
-import com.dellemc.oe.util.ImageToByteArray;
-import com.dellemc.oe.util.Utils;
+import com.dellemc.oe.util.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -36,51 +33,36 @@ import java.util.Random;
 /**
  * A simple example app that uses a Pravega Writer to write to a given scope and stream.
  */
-public class ImageWriter {
+public class ImageWriter extends AbstractApp {
     // Logger initialization
     private static final Logger LOG = LoggerFactory.getLogger(ImageWriter.class);
 
-    public final String scope;
-    public final String streamName;
-    public final URI controllerURI;
-
-    public ImageWriter(String scope, String streamName, URI controllerURI) {
-        this.scope = scope;
-        this.streamName = streamName;
-        this.controllerURI = controllerURI;
+    public ImageWriter(AppConfiguration appConfiguration) {
+        super(appConfiguration);
     }
 
     public static void main(String[] args) {
-        CommonParams.init(args);
-        final String scope = CommonParams.getParam(Constants.SCOPE);
-        final String streamName = CommonParams.getParam(Constants.STREAM_NAME);
-        final String routingKey = CommonParams.getParam(Constants.ROUTING_KEY_ATTRIBUTE_NAME);
-        final URI controllerURI = URI.create(CommonParams.getParam(Constants.CONTROLLER_URI));
-        ImageWriter ew = new ImageWriter(scope, streamName, controllerURI);
-        ew.run(routingKey);
+        AppConfiguration appConfiguration = new AppConfiguration(args);
+        ImageWriter ew = new ImageWriter(appConfiguration);
+        ew.run();
     }
 
-    public void run(String routingKey) {
-
-            //String scope = "image-scope";
-            String streamName = "image-stream";
-            // Create client config
-            ClientConfig clientConfig = ClientConfig.builder().controllerURI(controllerURI).build();
-            //  create stream
-            boolean  streamCreated = Utils.createStream(scope, streamName, controllerURI);
-            LOG.info(" @@@@@@@@@@@@@@@@ STREAM  =  "+streamName+ "  CREATED = "+ streamCreated);
-
-        try(EventStreamClientFactory clientFactory = EventStreamClientFactory.withScope(scope, clientConfig);
-
-                // Create event writer
-                EventStreamWriter<JsonNode> writer = clientFactory.createEventWriter(
-                         streamName,
-                        new JsonNodeSerializer(),
-                         EventWriterConfig.builder().build())) {
+    public void run() {
+        //  create stream
+        createStream(appConfiguration.getInputStreamConfig());
+        AppConfiguration.StreamConfig streamConfig = appConfiguration.getInputStreamConfig();
+        // Create EventStreamClientFactory
+        ClientConfig clientConfig = appConfiguration.getPravegaConfig().getClientConfig();
+        try (EventStreamClientFactory clientFactory = EventStreamClientFactory.withScope(streamConfig.getStream().getScope(), clientConfig);
+             // Create  Pravega event writer
+             EventStreamWriter<JsonNode> writer = clientFactory.createEventWriter(
+                     streamConfig.getStream().getStreamName(),
+                     new JsonNodeSerializer(),
+                     EventWriterConfig.builder().build())) {
                 // same data write every 1 sec
                 while (true) {
                     ObjectNode data = createJSONData();
-                    writer.writeEvent(routingKey, data);
+                    writer.writeEvent(appConfiguration.getRoutingKey(), data);
                     Thread.sleep(5000);
                 }
             } catch (Exception e) {

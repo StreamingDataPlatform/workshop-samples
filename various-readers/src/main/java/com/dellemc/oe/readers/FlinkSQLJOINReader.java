@@ -12,8 +12,8 @@ package com.dellemc.oe.readers;
 
 import com.dellemc.oe.readers.model.HvacData;
 import com.dellemc.oe.readers.util.HvacRecord;
-import com.dellemc.oe.util.CommonParams;
-import com.dellemc.oe.util.Constants;
+import com.dellemc.oe.util.AbstractApp;
+import com.dellemc.oe.util.AppConfiguration;
 import io.pravega.client.stream.Stream;
 import io.pravega.connectors.flink.Pravega;
 import io.pravega.connectors.flink.PravegaConfig;
@@ -46,25 +46,16 @@ import org.slf4j.LoggerFactory;
 /*
  *  This flink application demonstrates the joining of two data sets with SQL. To execute this sample run the JSONWriter with data_file HVAC.csv as a input param along with other params.
  */
-public class FlinkSQLJOINReader {
+public class FlinkSQLJOINReader extends AbstractApp {
 
     // Logger initialization
     private static final Logger LOG = LoggerFactory.getLogger(FlinkSQLJOINReader.class);
 
-    public static void main(String[] args) throws Exception {
-        LOG.info("########## FlinkSQLJOINReader START #############");
-        CommonParams.init(args);
-        final String scope = CommonParams.getParam(Constants.SCOPE);
-        String streamName = CommonParams.getParam(Constants.STREAM_NAME);
-        final URI controllerURI = URI.create(CommonParams.getParam(Constants.CONTROLLER_URI));
-
-        LOG.info("#######################     SCOPE   ###################### " + scope);
-        LOG.info("#######################     streamName   ###################### " + streamName);
-        LOG.info("#######################     controllerURI   ###################### " + controllerURI);
-        run(scope, streamName, controllerURI);
+    public FlinkSQLJOINReader(AppConfiguration appConfiguration){
+        super(appConfiguration);
     }
 
-    public static void run(String scope, String streamName, URI controllerURI) {
+    public void run() {
 
         try {
             LOG.info("################## RUN START ################  ");
@@ -74,15 +65,12 @@ public class FlinkSQLJOINReader {
             // Read table as stream data
             StreamTableEnvironment tableEnv = TableEnvironment.getTableEnvironment(env);
 
-            // Read from json stream
-            streamName = "json-stream";
             // Create client config
-            PravegaConfig pravegaConfig =  PravegaConfig.fromDefaults()
-                        .withControllerURI(controllerURI)
-                        .withDefaultScope(scope);
+            PravegaConfig pravegaConfig =  appConfiguration.getPravegaConfig();
 
             // create the Pravega input stream (if necessary)
-            Stream stream = Stream.of(scope, streamName);
+            createStream(appConfiguration.getInputStreamConfig());
+            Stream stream = appConfiguration.getInputStreamConfig().getStream();
 
             // get the schema
             Schema   schema = HvacRecord.getHvacSchema();
@@ -165,6 +153,14 @@ public class FlinkSQLJOINReader {
             throw new RuntimeException(e);
         }
 
-    }    
+    }
+
+    public static void main(String[] args) throws Exception {
+        LOG.info("########## FlinkSQLJOINReader START #############");
+        AppConfiguration appConfiguration = new AppConfiguration(args);
+        FlinkSQLJOINReader sqlJoinReader = new FlinkSQLJOINReader(appConfiguration);
+        sqlJoinReader.run();
+    }
+
 
 }
