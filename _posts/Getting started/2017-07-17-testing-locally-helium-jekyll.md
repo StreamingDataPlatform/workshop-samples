@@ -1,6 +1,6 @@
 ---
 layout: post
-category: "Getting started"
+category: "Getting Started"
 subtitle: "How to test your Jekyll site locally"
 tags: [intro, beginner, jekyll, tutorial]
 img: helium-theme-post.jpg
