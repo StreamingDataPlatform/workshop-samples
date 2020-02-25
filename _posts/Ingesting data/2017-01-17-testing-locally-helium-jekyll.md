@@ -1,6 +1,6 @@
 ---
 layout: post
-category: "Ingesting data"
+category: "Ingesting Data"
 subtitle: "How to test your Jekyll site locally"
 tags: [intro, beginner, jekyll, tutorial]
 img: helium-theme-post.jpg

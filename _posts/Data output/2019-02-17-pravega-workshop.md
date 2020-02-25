@@ -1,6 +1,6 @@
 ---
 layout: post
-category: "Data output"
+category: "Data Output"
 tags: [pravega, java, ingest]
 subtitle: "Example helium post in markdown and html classes"
 img: portfolio/img-01.jpg

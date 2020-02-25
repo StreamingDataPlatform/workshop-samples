@@ -1,6 +1,6 @@
 ---
 layout: post
-category: "Processing data"
+category: "Processing Data"
 tags: [intro, beginner, jekyll, tutorial]
 subtitle: "Hello world post on helium jekyll"
 img: helloworld.jpg
