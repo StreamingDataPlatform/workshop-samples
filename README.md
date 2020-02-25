@@ -1,139 +1,64 @@
-# Nautilus Developer Workshop Code Samples
+# Code Hub
 
-## Pre-Requisites
-External connectivity enabled Nautilus cluster required to perform these samples. If Nautilus cluster not exists, applications can be developed using standalone pravega.
+The officical code hub for DellEMC App Dev team
 
-Use Ubuntu VM or Ubuntu for desktops
+## Development
 
-JDK 1.8
+### Running locally
 
-Gradle 4.0
+After you've got Jekyll [installed](https://jekyllrb.com/docs/installation/), make sure to install **jekyll-paginate** by execute `gem install jekyll-paginate`. Then clone or download this repo, `cd` into the folder and run `jekyll serve`.
 
-Maven 3.6
+### Hosting on GitHub
 
-##Setting up IntelliJ
-	Clone workshop-samples main branch from https://github.com/pravega/workshop-samples.git  
-	Start Intellij and File  Open –> Select the cloned workshop-sample folder
-![Open Project](/images/IntelliJ_1.png)
+1. Fork this repo and configure "Repository name" and "Source" on the settings page.
+2. Edit the `_config.yaml` file accordingly and commit.
 
+Your Jekyll blog should be up and running now.
 
-	Select Project  File  settings  plugins and install Lombok plugin.
-	Select Project  File  settings  Build,Execution,Deployment  Annotation Process  Select checkbox of Enable annotation processing
+### Contribution
 
-![Enable annotation](/images/IntelliJ_2.png)
-
-	Select Project  File  settings  Build Tools  Gradle  enable auto import and select gradle wrapper
-
-![gradle wrapper](/images/IntelliJ_3.png)
-
-![gradle installDist](/images/IntelliJ_4.png)
-
-	It will take some time to download dependencies and complete build.
-	Go to Build  Build Project
-	Go to the Nautilus UI and create a project workshop-samples.If you are running samples with Nautilus cluster.
-
-## Configuring Standalone Pravega and running
-	Clone Pravega from https://github.com/pravega/pravega.git and get required version.
-	Get proper release version Ex: pravega-r0.5
-
-	Run standalone Pravega 
-./gradlew startStandalone
-
-## Running the Samples from IntelliJ with Standalone Pravega
-
-	Running a JSONWriter
-	Go to run  Edit Configurations  Select application and click + icon. Fill the details mentioned below screen. Add all below program parameters. 
+#### Write a post
++ Put the following snippet at the beginning of the post and customerize accordingly.
 
 ```
---pravega_scope	workshop-samples
---stream_name workshop-stream
---pravega_controller_uri tcp://localhost:9090
---pravega_standalone true
---data_file earthquakes1970-2014.csv
+---
+layout: post
+category: docs
+tags: [jekyll, code, markdown]
+subtitle: some subtitle
+img: image.jpg
+author:
+    name: Author Name
+    description: Author Introduction
+    image: Author Portrait
+css:
+js:
+---
+
+Some excerpt to describe the post
+
+<!--more-->
 ```
 
-![gradle installDist](/images/IntelliJ_5.png)
+Tips:
 
++ ** layout **: Set to ***post*** unless you make another perfect layout.
++ ** category **: Choose an existing one or assign a new one and if you want the category to be categorized on the catalog page. Modify the ***JB.catalog*** value of ***_config.yml*** with the appropiate order.
++ ** tags **: Put as many as that are relevant. the tags will be shown as a new tag or +1 on the existing one on Tag page.
++ ** subtitle **: It will show beneath the title on this post
++ ** img **: Put the image in the path *** assets/heliumjk/images/ *** and have the name here(prepend the folder name if put the image in a subfolder). It will show as thumbnail on Catalog and All Blogs page, and the full version will show at the right of the title on this post.
++ ** author **: Fill in with the name, description and image(do the same way to img). It will shown on the Author panel of this post.
++ ** css & js **: Optional. If you have addtional CSS & JS file for this post, put the file name here. The CSS file goes to *** assets/heliumjk/css/ *** and the JS to  *** assets/heliumjk/js/ ***. 
++ ** excerpt **: Have some expert to describe the post above of ``<!--more-->``
 
-Click ok and Run JSONWriter
+Finish the rest of the content with markdown syntex. Put the post into the *** _post *** folder and consider to put in the subfolder with the same category name for best practice.
 
-	Configure other samples and run.
+#### Some other info
++ Refer to [list of supported languages and lexers](https://github.com/rouge-ruby/rouge/wiki/List-of-supported-languages-and-lexers) that supports highlight in code snippets.
++ Posts with the category of *** Demos *** with show up on the Demos page
 
-## Running the Samples with Nautilus cluster
+## Credits
 
-### Configure Nautilus Authentication
-
-- Create a project `workshop-samples` in Nautilus UI
-- This will automatically create a scope `workshop-samples`
--  Get the `keycloak.json` file by executing this command
-```
-kubectl get secret workshop-samples-pravega -n workshop-samples 
--o jsonpath="{.data.keycloak\.json}" |base64 -d >  ${HOME}/keycloak.json
-chmod go-rw ${HOME}/keycloak.json
-```
-  output looks like the following:
-```
-{
-  "realm": "nautilus",
-  "auth-server-url": "https://keycloak.p-test.nautilus-lab-wachusett.com/auth",
-  "ssl-required": "external",
-  "bearer-only": false,
-  "public-client": false,
-  "resource": "workshop-samples-pravega",
-  "confidential-port": 0,
-  "credentials": {
-    "secret": "c72c45f8-76b0-4ca2-99cf-1f1a03704c4f"
-  }
-}
-```
-When running the example applications, you must set the following environment variables. This can be done by setting the IntelliJ run configurations. If you set this in IntelliJ, you must manually replace ${HOME} with your actual home directory.
-```
-export pravega_client_auth_method=Bearer
-export pravega_client_auth_loadDynamic=true
-export KEYCLOAK_SERVICE_ACCOUNT_FILE=${HOME}/keycloak.json
-
-And also need to set following parameters according to your project and provide as program params.
---pravega_scope	workshop-samples
---stream_name workshop-stream
---pravega_controller_uri tcp://localhost:9090
---pravega_standalone true
-```
-
-
-## Running JSON Reader in Nautilus
-
-- You must make the Maven repo in Nautilus available to your development workstation.
-```
-kubectl port-forward service/repo 9090:80 --namespace workshop-samples &
-```
-- Build and publish your application JAR file.
-```
-./gradlew publish
-helm upgrade --install --timeout 600 jsonreader \
---wait --namespace workshop-samples charts
-
-```
-
-## About Samples
-	Go to the ingest module and find various writers.
-
-	Run JSONWriter,ImageWriter and EventWriter from IntelliJ
-
-$\workshop-samples\stream-ingest\src\main\java\com\dellemc\oe\ingest
-
-	JSONWriter demonstrates streaming a JSON data.
-
-	EventWriter demonstrate streaming a String Event
-
-	ImageWriter demonstrate streaming ImagaeData as a JSON
-
-	Go to various-readers module and run JSONReader and ImageReader Flink 
-apps
-
-$\workshop-samples\various-readers\src\main\java\com\dellemc\oe\readers
-
-	Go to stream to stream module and run WordCountReader
-
-$\workshop-samples\stream-to-stream\src\main\java\com\dellemc\oe\flink\wordcount
-
-This sample reads data from a stream written by EventWriter as a String and do some transformations and write to another stream.
+- spectral: [github](https://github.com/arkadianriver/spectral) [demo](http://arkadianriver.github.io/spectral/)
+- heliumjk: [github](https://github.com/heliumjk/heliumjk.github.io) [demo](https://heliumjk.github.io/)
+- huxpro: [github](https://github.com/Huxpro/huxpro.github.io) [demo](http://huangxuan.me/)
