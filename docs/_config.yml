@@ -1,5 +1,6 @@
 # Welcome to Jekyll!
 #
+encoding: UTF-8
 
 # Site settings
 baseurl: /codehub # the subpath of your site, e.g. /blog
