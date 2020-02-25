@@ -1,0 +1,11 @@
+{% capture jbcache %}
+    <!--
+        - Dynamically set liquid variables for working with URLs/paths
+    -->
+    {% if site.baseurl and site.baseurl != '' %}
+        {% assign BASE_PATH = site.baseurl %}
+    {% else %}
+        {% assign BASE_PATH = nil %}
+    {% endif %}
+{% endcapture %}
+{% assign jbcache = nil %}

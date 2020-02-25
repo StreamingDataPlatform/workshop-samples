@@ -1,0 +1,79 @@
+---
+layout: default
+title: Code samples
+navshown: true
+navorder: 1
+---
+{% include JB/catalog %}
+<!--Content Area Start-->
+<div id="content">
+    <div class="container">
+        <div class="divider-info ptb">
+            <div class="page-header-title">
+                <h2 class="heading-title text-center">{{ page.title }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <!--  for category in CATALOG 
+    <div class="container">
+        <h4 class="sub-title space-left">{{category[0]}}</h4>
+    </div>
+    <section>
+        <div class="container">
+            <div class="posts-carousel owl-carousel">
+                {% for post in category[1] %}
+                <div class="blog block carousel-post text-center">
+                    <div class="div-catalog-img">
+                        {% if post.img %}
+                        <img class="div-img" src="{{ site.baseurl }}/assets/heliumjk/images/{{ post.img }}" alt="{{ post.title }} image">
+                        {% else %}
+                        <img class="div-img" src="{{ site.baseurl }}/assets/heliumjk/images/blog.jpg" alt="{{ post.title }} image">
+                        {% endif %}
+                    </div>
+                    <h5>{{ post.title }}</h5>
+                    <p>{{ post.excerpt }}</p>
+                    <a href="{{ site.baseurl }}{{ post.url }}" class="btn std-btn btn-sm btn-common">Read More</a>
+                    <a href="{{ site.baseurl }}{{ post.url }}">Full Article <i class="fa fa-arrow-right" aria-hidden="true"></i></a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <div class="mb-60"></div>
+     endfor  -->
+
+    {% for category in CATALOG %}
+    <div class="container">
+        <!-- <h4 class="sub-title space-left">{{category[0]}}</h4> -->
+        <div class="sub-title">
+            <span>{{category[0]}}</span>
+        </div>
+        <div class="row">
+            {% for post in category[1] %}
+            <!-- Start card -->
+            <div class="col-sm-6 col-md-3">
+              <div class="card">
+                {% if post.img %}
+                <img class="card-img-top" src="{{ site.baseurl }}/assets/heliumjk/images/{{ post.img }}" alt="{{ post.title }} image">
+                {% else %}
+                <img class="card-img-top" src="{{ site.baseurl }}/assets/heliumjk/images/blog.jpg" alt="{{ post.title }} image">
+                {% endif %}
+                <div class="card-block">
+                    <h3 class="card-title">{{ post.title }}</h3>
+                    <p class="card-text">{{ post.excerpt }}</p>
+                    <a href="{{ site.baseurl }}{{ post.url }}" class="btn card-btn btn-common">Read More</a>
+                </div>
+              </div>
+            </div>
+            <!-- End card -->
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="mb-60"></div>
+
+    {% endfor %}
+
+</div>

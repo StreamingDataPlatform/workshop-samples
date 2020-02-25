@@ -1,0 +1,42 @@
+---
+layout: default
+title: Demos
+navshown: true
+navorder: 2
+---
+
+<!--Content Area Start-->
+<div id="content">
+    <div class="container">
+        <div class="divider-info ptb">
+            <div class="page-header-title">
+                <h2 class="heading-title text-center">{{ page.title }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- <h4 class="sub-title space-left">{{category[0]}}</h4> -->
+        <div class="row">
+            {% for post in site.categories.Demos %}
+            <!-- Start card -->
+            <div class="col-sm-6 col-md-3">
+              <div class="card">
+                {% if post.img %}
+                <img class="card-img-top" src="{{ site.baseurl }}/assets/heliumjk/images/{{ post.img }}" alt="{{ post.title }} image">
+                {% else %}
+                <img class="card-img-top" src="{{ site.baseurl }}/assets/heliumjk/images/about/layers.png" alt="{{ post.title }} image">
+                {% endif %}
+                <div class="card-block">
+                    <h3 class="card-title">{{ post.title }}</h3>
+                    <p class="card-text">{{ post.excerpt }}</p>
+                    <a href="{{ site.baseurl }}{{ post.url }}" class="btn card-btn btn-common">Read More</a>
+                </div>
+              </div>
+            </div>
+            <!-- End card -->
+            {% endfor %}
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,97 @@
+<!-- Footer -->
+<footer class="footer">
+    <!-- Container Starts -->
+    <div class="container">
+        <!-- Row Starts -->
+        <div class="row section">
+            <!-- Footer Widget Starts -->
+            <div class="footer-widget col-md-3 col-xs-12 wow fadeIn">
+                <h3 class="small-title">
+                    About Us
+                </h3>
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Omnis veritatis eius porro modi hic. Lorem
+                    ipsum dolor sit amet, consectetur adipisicing elit.
+                </p>
+                <!-- <div class="social-footer">
+                    <a href="#"><i class="fa fa-facebook icon-round"></i></a>
+                    <a href="#"><i class="fa fa-twitter icon-round"></i></a>
+                    <a href="#"><i class="fa fa-linkedin icon-round"></i></a>
+                    <a href="#"><i class="fa fa-google-plus icon-round"></i></a>
+                </div> -->
+            </div>
+            <!-- Footer Widget Ends -->
+
+            <!-- Footer Widget Starts -->
+            <div class="footer-widget col-md-3 col-xs-12 wow fadeIn" data-wow-delay=".2s">
+                <h3 class="small-title">
+                    Links
+                </h3>
+                <ul class="menu">
+                    <li><a href="{{ site.baseurl }}/index.html">Home</a></li>
+                    {% for nav in navs %}
+                        <li><a href="{{ nav.url | prepend: site.baseurl }}">{{ nav.title }}</a></li>
+                    {% endfor %}
+                    <li><a href="{{ site.baseurl }}/blog/index.html">All Blogs</a></li>
+                </ul>
+            </div>
+            <!-- Footer Widget Ends -->
+
+            <!-- Footer Widget Starts -->
+            <div class="footer-widget col-md-3 col-xs-12 wow fadeIn" data-wow-delay=".5s">
+                <h3 class="small-title">
+                    Featured Tags
+                </h3>
+                <div class="tags">
+                {% for tag in site.tags %}
+                    {% if tag[1].size > 0 %}
+                    <a data-sort="{{ site.posts.size | minus: tag[1].size | prepend: '0000' | slice: -4, 4 }}" 
+                        href="{{ site.baseurl }}/tags/?tag={{ tag[0] | url_encode }}"
+                        title="{{ tag[0] }}"
+                        rel="{{ tag[1].size }}">{{ tag[0] }}</a>
+                    {% endif %}
+                {% endfor %}
+                </div>
+            </div>
+            <!-- Footer Widget Ends -->
+
+            <!-- Footer Widget Starts -->
+            <div class="footer-widget col-md-3 col-xs-12 wow fadeIn" data-wow-delay=".8s">
+                <h3 class="small-title">
+                    Recent Post
+                </h3>
+                <div class="blog-posts-small">
+                    {% for post in site.posts limit:3 %}
+                    <div class="blog-post-small first-post">
+                        {% if post.img %}
+                        <img src="{{ site.baseurl }}/assets/heliumjk/images/{{ post.img }}" alt="">
+                        {% else %}
+                        <img src="{{ site.baseurl }}/assets/heliumjk/images/blog.jpg" alt="">
+                        {% endif %}
+                        <a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
+                        <p>Posted on <a href="#" class="post-date">{{post.date | date_to_string}}</a></p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <!-- Footer Widget Ends -->
+        </div>
+        <!-- Row Ends -->
+    </div>
+    <!-- Container Ends -->
+
+    <!-- Copyright -->
+    <div id="copyright">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-sm-6">
+                    <p class="copyright-text">
+                        Copyright &copy; 2019 {% if site.owner %}{{ site.owner }}{% else %}{{ site.title }}{% endif %}. All Rights Reserved.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Copyright  End-->
+
+</footer>

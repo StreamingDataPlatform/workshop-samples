@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>{% if page.title %}{{ page.title | escape }}{% else %}{{ site.title | escape }}{% endif %}</title>
+        <meta name="description" content="{% if page.excerpt %}{{ page.excerpt | strip_html | strip_newlines | truncate: 160 }}{% else %}{{ site.description }}{% endif %}">
+        <meta name="author" content="{{ site.author.name }}">    
+        <link rel="canonical" href="{{ page.url | replace:'index.html','' | prepend: site.baseurl }}">
+        
+        <!--Google Font link-->
+        <link href="https://fonts.googleapis.com/css?family=Ubuntu:300,300i,400,400i,500,500i,700,700i" rel="stylesheet">
+        
+        <!--Helium css-->
+        <link rel="stylesheet" href="{{ site.baseurl }}/assets/heliumjk/css/animate.css">
+        <link rel="stylesheet" href="{{ site.baseurl }}/assets/heliumjk/css/bootstrap.min.css">
+        <link rel="stylesheet" href="{{ site.baseurl }}/assets/heliumjk/css/font-awesome.min.css">
+        <link rel="stylesheet" href="{{ site.baseurl }}/assets/heliumjk/css/jasny-bootstrap.min.css">
+        <link rel="stylesheet" href="{{ site.baseurl }}/assets/heliumjk/css/main.css">
+        <link rel="stylesheet" href="{{ site.baseurl }}/assets/heliumjk/css/owl.carousel.css">
+        <link rel="stylesheet" href="{{ site.baseurl }}/assets/heliumjk/css/owl.theme.css">
+        <link rel="stylesheet" href="{{ site.baseurl }}/assets/heliumjk/css/responsive.css">
+        <link rel="stylesheet" href="{{ site.baseurl }}/assets/heliumjk/css/scrolling-nav.css">	
+        <link rel="stylesheet" href="{{ site.baseurl }}/assets/heliumjk/css/pygments-default.css">  
+        <link rel="stylesheet" href="{{ site.baseurl }}/assets/heliumjk/css/hux.css"> 
+        <!-- CSS loaded by the children page -->
+        {% if page.css %}<link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/assets/heliumjk/css/{{ page.css }}" />{% endif %}
+
+        <meta property="og:title" content="{{ page.title }}">
+        <meta property="og:description" content="{% if page.excerpt %}{{ page.excerpt | strip_html | strip_newlines | truncate: 160 }}{% else %}{{ site.description }}{% endif %}">
+        <meta property="og:url" content="{{ site.baseurl }}">
+        <meta name="twitter:card" content="summary_large_image">
+        <link rel="shortcut icon" href="{{ site.baseurl }}/favicon.ico" type="image/x-icon" />
+    </head>
+
+    <body>
+        <div class="wrapper">	  	  
+            <!--Home page style--> 
+            {% include themes/bootstrap/nav-bar.html %}  
+            {{ content }}
+            <br />
+            {% include themes/bootstrap/footer.html %}
+        </div>
+
+        <!-- {% include JB/analytics %}
+        
+        {% if site.JB.comments.disqus.short_name == true %}
+        <script id="dsq-count-scr" src="//{{ site.JB.comments.disqus.short_name }}.disqus.com/count.js" async></script>
+        {% endif %} -->
+
+        <!-- JS includes -->
+        <script src="{{ site.baseurl }}/assets/heliumjk/js/jquery.min.js"></script>
+        <script src="{{ site.baseurl }}/assets/heliumjk/js/jquery.nav.js"></script>
+	    <script src="{{ site.baseurl }}/assets/heliumjk/js/owl.carousel.min.js"></script>
+        <script src="{{ site.baseurl }}/assets/heliumjk/js/form-validator.min.js"></script>	  
+        <script src="{{ site.baseurl }}/assets/heliumjk/js/contact-form-script.js"></script>
+        <script src="{{ site.baseurl }}/assets/heliumjk/js/jasny-bootstrap.min.js"></script>
+        <script src="{{ site.baseurl }}/assets/heliumjk/js/jquery.mixitup.js"></script>	  
+        <script src="{{ site.baseurl }}/assets/heliumjk/js/jquery.countTo.js"></script>
+        <script src="{{ site.baseurl }}/assets/heliumjk/js/jquery.easing.min.js"></script>
+        <script src="{{ site.baseurl }}/assets/heliumjk/js/main.js"></script>	
+        <script src="{{ site.baseurl }}/assets/heliumjk/js/scrolling-nav.js"></script>
+        <script src="{{ site.baseurl }}/assets/heliumjk/js/tether.min.js"></script>
+        <script src="{{ site.baseurl }}/assets/heliumjk/js/bootstrap.min.js"></script>
+
+        <!-- ********************* Grads SCRIPTING ******************************-->
+        <!--Custom script loaded by children page-->
+        {% if page.js %}<script src="{{ site.baseurl }}/assets/heliumjk/js/{{ page.js }}"></script>{% endif %}
+
+        {% if page.title == 'Tags' %}
+        <!-- async load function -->
+        <script>
+            function async(u, c) {
+                var d = document, t = 'script',
+                    o = d.createElement(t),
+                    s = d.getElementsByTagName(t)[0];
+                o.src = u;
+                if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+                s.parentNode.insertBefore(o, s);
+            }
+        </script>
+        <!-- jquery.tagcloud.js -->
+        <script>
+            async('{{ "/assets/heliumjk/js/jquery.tagcloud.js" | prepend: site.baseurl }}',function(){
+                $.fn.tagcloud.defaults = {
+                    //size: {start: 1, end: 1, unit: 'em'},
+                    color: {start: '#EBBFC5', end: '#EB586F'},
+                };
+                $('#tag_cloud a').tagcloud();
+            })
+        </script>
+        <script src='{{ "/assets/heliumjk/js/tags.js" | prepend: site.baseurl }}'></script>
+        {% endif %}
+	  
+    </body>
+</html>

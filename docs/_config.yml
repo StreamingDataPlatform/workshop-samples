@@ -1,0 +1,60 @@
+# Welcome to Jekyll!
+#
+
+# Site settings
+baseurl: /codehub # the subpath of your site, e.g. /blog
+
+title: Code Hub
+description: |
+    Official site to     
+    demonstrate [Dell Emc](https://www.delltechnologies.com/)   
+    object data storage solutions
+owner: App Dev Team # or company name
+
+# Build settings
+# markdown: kramdown
+#sass:
+#  style: compressed
+
+exclude: ["README.md", "changelog.md"]
+
+paginate: 10
+paginate_path: "blog/page:num"
+
+# make sure you have this gem installed
+# `$ gem install jekyll-paginate`
+plugins: [jekyll-paginate]
+
+# All Jekyll-Bootstrap specific configurations are namespaced into this hash
+#
+JB :
+    # All links will be namespaced by BASE_PATH if defined.
+    # Links in your website should always be prefixed with {{BASE_PATH}}
+    # however this value will be dynamically changed depending on your deployment situation.
+    #
+    # CNAME (http://yourcustomdomain.com)
+    #   DO NOT SET BASE_PATH
+    #   (urls will be prefixed with "/" and work relatively)
+    #
+    # GitHub Pages (http://username.github.io)
+    #   DO NOT SET BASE_PATH
+    #   (urls will be prefixed with "/" and work relatively)
+    #
+    # GitHub Project Pages (http://username.github.io/project-name)
+    #
+    #   A GitHub Project site exists in the `gh-pages` branch of one of your repositories.
+    #  REQUIRED! Set BASE_PATH to: http://username.github.io/project-name
+    #
+    # CAUTION:
+    #   - When in Localhost, your site will run from root "/" regardless of BASE_PATH
+    #   - Only the following values are falsy: ["", null, false]
+    #   - When setting BASE_PATH it must be a valid url.
+    #     This means always setting the protocol (http|https) or prefixing with "/"
+    # BASE_PATH set by baseurl
+
+    # Settings for show the number of recent posts on post page
+    recent_limit: 3
+
+    # Settings for shown catogories with the specified order
+    # Leave blank to show all categories with the default order
+    catalog: ["Getting started", "Ingesting data", "Processing data", "Data output"]

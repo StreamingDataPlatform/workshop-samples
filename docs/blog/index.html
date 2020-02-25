@@ -1,0 +1,89 @@
+---
+layout: default
+title: Blog
+---
+
+<div class="container">
+    <div class="page-header-title">
+      <h2 class="heading-title color-title text-center">All Blogs</h2>
+    </div>
+</div>
+<!-- Blog content + sidebar -->
+<section class="blog">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-md-9">
+                {% for post in paginator.posts %}
+                <div class="blog-block post-content-area">
+                    <div class="div-blog-img">
+                        {% if post.img %}
+                        <img class="div-img" src="{{ site.baseurl }}/assets/heliumjk/images/{{ post.img }}" alt="{{ post.title }} image">
+                        {% else %}
+                        <img class="div-img" src="{{ site.baseurl }}/assets/heliumjk/images/blog.jpg" alt="{{ post.title }} image">
+                        {% endif %}
+                    </div>
+                    <div class="blog-post">
+                        <h3><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h3>
+                        <p>{{ post.excerpt }}</p>
+                        <a class="btn btn-common" href="{{ site.baseurl }}{{ post.url }}">Read More</a>
+                    </div>
+                </div>
+                <div class="mb-60"></div>
+                {% endfor %}
+
+                <!-- Pagination links -->
+                {% if paginator.total_pages > 1 %}
+                <nav aria-label="...">
+                    <ul class="pagination">
+                        {% if paginator.previous_page %}
+                        <li class="page-item">
+                        {% else %} 
+                        <li class="page-item disabled">
+                        {% endif %}
+                            <a class="page-link" href="{{ site.baseurl }}{{ paginator.previous_page_path }}">Previous</a>
+                        </li>
+                        <li class="page-item disabled static"><a class="page-link">Page: {{ paginator.page }} of {{ paginator.total_pages }}</a></li>              
+                        {% if paginator.next_page %}
+                        <li class="page-item">
+                        {% else %} 
+                        <li class="page-item disabled">
+                        {% endif %}
+                            <a class="page-link" href="{{ site.baseurl }}{{ paginator.next_page_path }}">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+                {% endif %}
+            </div>
+
+            <!-- Blog sidebar area -->
+            <div class="col-sm-12 col-md-3">
+                <div class="blog-block categories-sidebar-widget">
+                    <h4>Categories</h4>
+                    {% for category in site.categories %}
+                    <div class="post-category">
+                        <a href="#">{{ category[0] }} <span class="pull-right">{{ category[1].size }}</span></a>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-60"></div>
+
+                <div class="blog-block blog-posts-widget side-bar">
+                    <div class="widget-title">
+                        <h4>Featured Tags</h4>
+                    </div>
+                    <div class="tags">
+                    {% for tag in site.tags %}
+                        {% if tag[1].size > 0 %}
+                        <a data-sort="{{ site.posts.size | minus: tag[1].size | prepend: '0000' | slice: -4, 4 }}" 
+                            href="{{ site.baseurl }}/tags/?tag={{ tag[0] | url_encode }}"
+                            title="{{ tag[0] }}"
+                            rel="{{ tag[1].size }}">{{ tag[0] }}</a>
+                        {% endif %}
+                    {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
