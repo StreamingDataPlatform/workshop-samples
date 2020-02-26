@@ -82,7 +82,7 @@
                         <h4>Recent Posts</h4>
                     </div>
                     <div class="blog-posts-small">
-                        {% for post in site.posts limit:site.JB.recent_limit %}
+                        {% for post in site.posts limit:site.recent_limit %}
                         <div class="blog-post-small first-post">
                             {% if post.img %}
                             <img src="{{ site.baseurl }}/assets/heliumjk/images/{{ post.img }}" alt="">

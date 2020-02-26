@@ -4,15 +4,15 @@
 # Site settings
 baseurl: /workshop-samples # the subpath of your site, e.g. /blog
 
-title: Code Hub
+title: SDP Code Hub
 description: |
     Official site to     
-    demonstrate [Dell Emc](https://www.delltechnologies.com/)   
-    object data storage solutions
-owner: App Dev Team # or company name
+    demonstrate the usage of    
+    Dell Emc [Stream Data Platform](https://www.delltechnologies.com/en-us/storage/streaming-data-platform.htm)
+owner: Dell EMC # or company name
 
 # Build settings
-# markdown: kramdown
+markdown: kramdown
 #sass:
 #  style: compressed
 
@@ -27,12 +27,9 @@ paginate_path: "blog/page:num"
 # github page supports this plugin
 plugins: [jekyll-paginate]
 
-# All Jekyll-Bootstrap specific configurations are namespaced into this hash
-#
-JB :
-    # Settings for show the number of recent posts on post page
-    recent_limit: 3
+# Settings for show the number of recent posts on post page
+recent_limit: 3
 
-    # Settings for shown catogories with the specified order
-    # Leave blank to show all categories with the default order
-    catalog: ["Getting Started", "Ingesting Data", "Processing Data", "Data Output"]
+# Settings for shown catogories with the specified order
+# Leave blank to show all categories with the default order
+catalog: ["Getting Started", "Ingesting Data", "Processing Data", "Data Output"]

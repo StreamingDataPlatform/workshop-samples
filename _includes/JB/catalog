@@ -1,6 +1,6 @@
-{% if site.JB.catalog and site.JB.catalog != '' %}
+{% if site.catalog %}
     {% assign CATALOG = "" | split: "" %}
-    {% for category in site.JB.catalog %}
+    {% for category in site.catalog %}
         {% for cate in site.categories %}
             {% if cate[0] == category %}
                 {% assign CATALOG = CATALOG | push:cate %}

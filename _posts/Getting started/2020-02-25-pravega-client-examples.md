@@ -3,7 +3,7 @@ layout: post
 category: "Getting Started"
 tags: [pravega, java, pravega-client]
 subtitle: "Pravega Client Examples"
-img: pravega-bird.jpg
+img: pravega.png
 author: 
     name: Pravega Team
     description: 
