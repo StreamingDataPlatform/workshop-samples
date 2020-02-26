@@ -1,6 +1,6 @@
 ---
 layout: post
-category: "Data output"
+category: "Data Output"
 tags: [jekyll, code, markdown]
 subtitle: "Example helium post in markdown and html classes"
 img: markdown-samples.jpg

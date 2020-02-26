@@ -35,4 +35,4 @@ JB :
 
     # Settings for shown catogories with the specified order
     # Leave blank to show all categories with the default order
-    catalog: ["Getting started", "Ingesting data", "Processing data", "Data output"]
+    catalog: ["Getting Started", "Ingesting Data", "Processing Data", "Data Output"]

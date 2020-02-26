@@ -1,6 +1,6 @@
 ---
 layout: post
-category: "Getting started"
+category: "Getting Started"
 tags: [jekyll, code]
 subtitle: "Example how post on Jekyll Helium"
 img: syntax-hightlight.jpg

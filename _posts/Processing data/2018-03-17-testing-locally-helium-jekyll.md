@@ -1,6 +1,6 @@
 ---
 layout: post
-category: "Processing data"
+category: "Processing Data"
 subtitle: "How to test your Jekyll site locally"
 tags: [intro, beginner, jekyll, tutorial]
 img: helium-theme-post.jpg

@@ -1,6 +1,6 @@
 ---
 layout: post
-category: "Data output"
+category: "Data Output"
 tags: [intro, beginner, jekyll, tutorial]
 subtitle: "Hello world post on helium jekyll"
 img: helloworld.jpg

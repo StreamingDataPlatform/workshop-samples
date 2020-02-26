@@ -1,6 +1,6 @@
 ---
 layout: post
-category: "Getting started"
+category: "Getting Started"
 tags: [intro, beginner, jekyll, tutorial]
 subtitle: "Hello world post on helium jekyll"
 img: helloworld.jpg

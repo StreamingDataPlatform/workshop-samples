@@ -1,6 +1,6 @@
 ---
 layout: post
-category: "Data output"
+category: "Data Output"
 tags: [jekyll, code]
 subtitle: "Example how post on Jekyll Helium"
 img: syntax-hightlight.jpg

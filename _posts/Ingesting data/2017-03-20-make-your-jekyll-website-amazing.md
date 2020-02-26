@@ -1,6 +1,6 @@
 ---
 layout: post
-category: "Ingesting data"
+category: "Ingesting Data"
 tags: [bootstrap 4, web desing, jekyll]
 subtitle: "Using heliumjk.github.io"
 img: helium-jekyll.jpg

@@ -1,6 +1,6 @@
 ---
 layout: post
-category: "Ingesting data"
+category: "Ingesting Data"
 tags: [jekyll, code]
 subtitle: "Example how post on Jekyll Helium"
 img: syntax-hightlight.jpg
