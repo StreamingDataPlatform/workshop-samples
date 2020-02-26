@@ -18,40 +18,18 @@ owner: App Dev Team # or company name
 
 exclude: ["README.md", "changelog.md"]
 
+# paginate setting for all blogs page
 paginate: 10
 paginate_path: "blog/page:num"
 
-# make sure you have this gem installed
+# make sure you have this gem installed to dev locally
 # `$ gem install jekyll-paginate`
+# github page supports this plugin
 plugins: [jekyll-paginate]
 
 # All Jekyll-Bootstrap specific configurations are namespaced into this hash
 #
 JB :
-    # All links will be namespaced by BASE_PATH if defined.
-    # Links in your website should always be prefixed with {{BASE_PATH}}
-    # however this value will be dynamically changed depending on your deployment situation.
-    #
-    # CNAME (http://yourcustomdomain.com)
-    #   DO NOT SET BASE_PATH
-    #   (urls will be prefixed with "/" and work relatively)
-    #
-    # GitHub Pages (http://username.github.io)
-    #   DO NOT SET BASE_PATH
-    #   (urls will be prefixed with "/" and work relatively)
-    #
-    # GitHub Project Pages (http://username.github.io/project-name)
-    #
-    #   A GitHub Project site exists in the `gh-pages` branch of one of your repositories.
-    #  REQUIRED! Set BASE_PATH to: http://username.github.io/project-name
-    #
-    # CAUTION:
-    #   - When in Localhost, your site will run from root "/" regardless of BASE_PATH
-    #   - Only the following values are falsy: ["", null, false]
-    #   - When setting BASE_PATH it must be a valid url.
-    #     This means always setting the protocol (http|https) or prefixing with "/"
-    # BASE_PATH set by baseurl
-
     # Settings for show the number of recent posts on post page
     recent_limit: 3
 
