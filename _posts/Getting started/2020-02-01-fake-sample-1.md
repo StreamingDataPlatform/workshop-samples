@@ -1,17 +1,17 @@
 ---
 layout: post
-category: "Demos"
-tags: [intro, beginner, jekyll, tutorial]
-subtitle: "Hello world post on helium jekyll"
+category: "Getting Started"
+tags: [fake, ingest, example-post]
+subtitle: "FAKE example post #1"
 img: helloworld.jpg
 author: 
-    name: Antonio Trento
-    description: I&#39;m a web master interested in communication applied to web marketing.
+    name: Coder Guy
+    description: 
     image: social-image.png
 css: 
 js: 
 ---
-Hello world! Is the first post on helium jekyll
+This is a sample post used as a placeholder
 <!--more-->
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus consequat luctus neque eget commodo. Sed a molestie lorem. Fusce lectus mauris, vulputate sollicitudin ullamcorper ut, semper at risus. Nunc porta ut velit non fringilla. Pellentesque egestas eros vitae suscipit imperdiet. Cras imperdiet a velit sit amet placerat. Morbi dolor quam, semper ac venenatis ac, pretium at ex. Suspendisse fermentum mi sit amet risus congue ullamcorper. Sed sed ultrices libero. Cras pulvinar dui efficitur felis maximus, ac dictum leo egestas. Pellentesque ut dictum odio. Aliquam varius viverra orci, quis blandit mi blandit vitae. Donec non semper augue, ut consectetur ligula. Aenean tellus tortor, sagittis sed iaculis quis, imperdiet et ex. Mauris id libero sed diam euismod pharetra.
