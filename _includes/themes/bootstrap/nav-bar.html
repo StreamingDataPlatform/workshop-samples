@@ -26,7 +26,7 @@
         <div class="collapse navbar-collapse justify-content-end" id="navbar1">
             <ul class="navbar-nav">
                 <li class="nav-item"><a class="nav-link" href="{{ site.baseurl }}/index.html">Home</a></li>
-                {% assign navs = site.pages | where: "navshown", "true" | sort: "navorder" %}
+                {% assign navs = site.pages | where_exp: "item", "item.navorder > 0" | sort: "navorder" %}
                 {% for nav in navs %}
                 <li class="nav-item"><a class="nav-link" href="{{ nav.url | prepend: site.baseurl }}">{{ nav.title }}</a></li>
                 {% endfor %}

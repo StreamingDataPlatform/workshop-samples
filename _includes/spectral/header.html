@@ -8,7 +8,7 @@
                 <div id="menu">
                     <ul>
                         <li><a href="{{ site.baseurl }}/index.html">Home</a></li>
-                        {% assign navs = site.pages | where: "navshown", "true" | sort: "navorder" %}
+                        {% assign navs = site.pages | where_exp: "item", "item.navorder > 0" | sort: "navorder" %}
                         {% for nav in navs %}
                         <li><a href="{{ nav.url | prepend: site.baseurl }}">{{ nav.title }}</a></li>
                         {% endfor %}
