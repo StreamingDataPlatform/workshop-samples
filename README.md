@@ -1,29 +1,49 @@
-# Code Hub
+# SDP Code Hub
+The officical code hub for Dell EMC Streaming Data Platform.  This website hosts a comprehensive collection of code samples, demos, and connectors for Pravega streaming storage and Streaming Data Platform products.  The goal of the Code Hub site is to provide customers and users with enough information (between local and linked content) to get started developing applications that use these two products.  The site is extensible, and supports posting about virtually any public source project or website.  Anyone can contribute to the posts, so long as they meet the guidelines provided below and pass the review process.  
 
-The officical code hub for DellEMC App Dev team
+# Posting Process
+The following sections describe the necessary process to add a post to the code hub site.
 
-## Development
+## Fork and PR
+To add a post, you will need to fork this repository, and create a branch based on the head of the **gh-pages** branch.  When you are ready to submit your post, create a PR to this repository targetting the **gh-pages** branch.  The only addition that should be made in the PR is a single post file. 
 
-### Running locally
+## The Post File
+To create a post, add a file under the `_posts` directory (in the appropriate category subdirectory) with the following format:
+```
+{YEAR}-{MONTH}-{DAY}-{title}.{MARKUP}
+```
+Where **YEAR** is a four-digit number, **MONTH** and **DAY** are both two-digit numbers, and **MARKUP** is the file extension representing the format used in the file (typically `.md` for Markdown).
 
-After you've got Jekyll [installed](https://jekyllrb.com/docs/installation/), make sure to install **jekyll-paginate** by execute `gem install jekyll-paginate`. Then clone or download this repo, `cd` into the folder and run `jekyll serve`.
+## Source Project Requirements
+The origin project represented in the posting must meet the following requirements:
+* Project source must be public and links to the project and documentation should be included in the post
+* The project must be completely implemented, documented, and work on the latest release of Pravega and/or SDP
+* In addition to any content posted on the Code Hub, there must be a detailed readme or home page for the project that includes full instructions on how to configure and use it
 
-### Hosting on GitHub
+## Post Requirements
+All posts must meet the following requirements to be considered for publishing:
+* The identity of the poster must be clear; make sure your github profile is accurate and include your name and role in the author section
+* Must have a title and description that clearly explains the purpose and intent of the sample, demo, or connector
+* Must be appropriate and relevant, and align to the purpose of the Code Hub site
+* Each post must include a clear license statement, usage permissions, and any applicable copyright attributions 
+* The instructions (which may include linked readmes or documentation) should be clear, and anyone should be able to run or use the sample without trouble or confusion
 
-1. Fork this repo and configure "Repository name" and "Source" on the settings page.
-2. Edit the `_config.yaml` file accordingly and commit.
+## Review Process
+All posts will be reviewed by the SDP App Dev team, where we will do the following:
+* Check the above requirements are met, and note any gaps as PR review comments
+* Run the actual sample using the provided instructions; any issues encountered will also be added as review comments
+* Once approved, the PR will be merged and the post will be immediately published and visible
 
-Your Jekyll blog should be up and running now.
+**Note**: SDP Code Hub maintainers reserve the right to approve or deny posts for any reason.
 
-### Contribution
+# Post Details
 
-#### Write a post
-+ Put the following snippet at the beginning of the post and customerize accordingly.
-
+## Header
+Put the following snippet at the beginning of the post and customize accordingly:
 ```
 ---
 layout: post
-category: docs
+category: Getting Started
 tags: [jekyll, code, markdown]
 subtitle: some subtitle
 img: image.jpg
@@ -34,31 +54,37 @@ author:
 css:
 js:
 ---
+```
+### Header Fields
 
-Some excerpt to describe the post
++ **layout**: Set to ***post***.
++ **category**: Choose one of the following categories: ``Getting Started``, ``Ingesting Data``, ``Processing Data``, ``Data Output``, ``Demos``, ``Connectors``.
++ **tags**: Put as many as that are relevant. the tags will be shown as a new tag or +1 on the existing one on Tag page.
++ **subtitle**: It will show beneath the title on this post
++ **img**: Put the image in the path ``assets/heliumjk/images/`` and have the name here (prepend the folder name if put the image in a subfolder). It will show as thumbnail on the Catalog and All Blogs page, and the full version will show at the right of the title on this post.
++ **author**: Fill in with the name, description and image(do the same way to img). It will shown on the Author panel of this post.
++ **css & js**: Optional. If you have addtional CSS & JS file for this post, put the file name here. The CSS file goes to *** assets/heliumjk/css/ *** and the JS to  *** assets/heliumjk/js/ ***. 
++ **excerpt**: Have some expert to describe the post above of ``<!--more-->``
 
+## Content
+
+Finish the rest of the content with markdown syntex.
+```
+# Post title
+
+Some excerpt to describe the post.
+
+**Note:** the formatting is a subset of Markdown.
 <!--more-->
 ```
 
-Tips:
+## Additional info
+* Posts with the category of **Demos** with show up on the Demos page, and **Connectors** will show up on the Connectors page.  The rest will appear in the appropriate section of the Code Samples page.
+* Jekyll docs: https://jekyllrb.com/docs/posts/
+* Refer to [list of supported languages and lexers](https://github.com/rouge-ruby/rouge/wiki/List-of-supported-languages-and-lexers) that supports highlight in code snippets.
 
-+ ** layout **: Set to ***post*** unless you make another perfect layout.
-+ ** category **: Choose an existing one or assign a new one and if you want the category to be categorized on the catalog page. Modify the ***JB.catalog*** value of ***_config.yml*** with the appropiate order.
-+ ** tags **: Put as many as that are relevant. the tags will be shown as a new tag or +1 on the existing one on Tag page.
-+ ** subtitle **: It will show beneath the title on this post
-+ ** img **: Put the image in the path *** assets/heliumjk/images/ *** and have the name here(prepend the folder name if put the image in a subfolder). It will show as thumbnail on Catalog and All Blogs page, and the full version will show at the right of the title on this post.
-+ ** author **: Fill in with the name, description and image(do the same way to img). It will shown on the Author panel of this post.
-+ ** css & js **: Optional. If you have addtional CSS & JS file for this post, put the file name here. The CSS file goes to *** assets/heliumjk/css/ *** and the JS to  *** assets/heliumjk/js/ ***. 
-+ ** excerpt **: Have some expert to describe the post above of ``<!--more-->``
+# Testing locally
 
-Finish the rest of the content with markdown syntex. Put the post into the *** _post *** folder and consider to put in the subfolder with the same category name for best practice.
-
-#### Some other info
-+ Refer to [list of supported languages and lexers](https://github.com/rouge-ruby/rouge/wiki/List-of-supported-languages-and-lexers) that supports highlight in code snippets.
-+ Posts with the category of *** Demos *** with show up on the Demos page
-
-## Credits
-
-- spectral: [github](https://github.com/arkadianriver/spectral) [demo](http://arkadianriver.github.io/spectral/)
-- heliumjk: [github](https://github.com/heliumjk/heliumjk.github.io) [demo](https://heliumjk.github.io/)
-- huxpro: [github](https://github.com/Huxpro/huxpro.github.io) [demo](http://huangxuan.me/)
+1. [Install Jekyll](https://jekyllrb.com/docs/installation/)
+1. Install **jekyll-paginate** (`gem install jekyll-paginate`)
+1. In your local forked **gh-pages** branch, run `jekyll serve`
