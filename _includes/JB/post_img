@@ -1,0 +1,11 @@
+{% capture post_img %}
+{% if img_source %}
+    {% if img_source contains "https://" or img_source contains "http://" %}
+        {{ img_source }}
+    {% else %}
+        {{ site.baseurl }}/assets/heliumjk/images/{{ img_source }}
+    {% endif %}
+{% else %}
+{{ site.baseurl }}/assets/heliumjk/images/blog.svg
+{% endif %}
+{% endcapture %}

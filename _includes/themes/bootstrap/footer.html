@@ -62,11 +62,9 @@
                 <div class="blog-posts-small">
                     {% for post in site.posts limit:3 %}
                     <div class="blog-post-small first-post">
-                        {% if post.img %}
-                        <img src="{{ site.baseurl }}/assets/heliumjk/images/{{ post.img }}" alt="">
-                        {% else %}
-                        <img src="{{ site.baseurl }}/assets/heliumjk/images/blog.jpg" alt="">
-                        {% endif %}
+                        {% assign img_source = post.img %}
+                        {% include JB/post_img %}
+                        <img src="{{ post_img }}" alt="">
                         <a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
                         <p>Posted on <a href="#" class="post-date">{{post.date | date_to_string}}</a></p>
                     </div>

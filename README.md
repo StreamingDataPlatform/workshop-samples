@@ -54,6 +54,9 @@ author:
 css:
 js:
 ---
+
+some excerpt
+<!--more-->
 ```
 ### Header Fields
 
@@ -64,7 +67,7 @@ js:
 + **img**: Put the image in the path ``assets/heliumjk/images/`` and have the name here (prepend the folder name if put in a subfolder). It will show as thumbnail on the Catalog and All Blogs pages, and the full version will show at the right of the title on the post details page.
 + **author**: Fill in with your name, description (role) and image (optional - same location as img). This is shown on the Author panel of the post details page.
 + **css & js**: Optional. If you have additional CSS & JS files for this post, put the file names here. The CSS file goes to ``assets/heliumjk/css/`` and the JS to ``assets/heliumjk/js/``. 
-
++ **excerpt**: Brief introuduction of the post. The "excerpt" will show between "title" and "read more" on the post card
 ## Content
 
 The main content starts after the header, and supports markdown syntax.  Describe the details of the sample, its purpose, instructions, links to the source project, license info, etc.  There is no strict structure to these posts, but you can use the following as a template:

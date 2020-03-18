@@ -21,11 +21,9 @@ navorder: 2
             <!-- Start card -->
             <div class="col-sm-6 col-md-3">
               <div class="card">
-                {% if post.img %}
-                <img class="card-img-top" src="{{ site.baseurl }}/assets/heliumjk/images/{{ post.img }}" alt="{{ post.title }} image">
-                {% else %}
-                <img class="card-img-top" src="{{ site.baseurl }}/assets/heliumjk/images/about/layers.png" alt="{{ post.title }} image">
-                {% endif %}
+                {% assign img_source = post.img %}
+                {% include JB/post_img %}
+                <img class="card-img-top" src="{{ post_img }}" alt="{{ post.title }} image">
                 <div class="card-block">
                     <h3 class="card-title">{{ post.title }}</h3>
                     <p class="card-text">{{ post.excerpt }}</p>

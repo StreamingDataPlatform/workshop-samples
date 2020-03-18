@@ -16,11 +16,9 @@
             </div>
             <div class="col-xs-12 col-sm-6">
                 <figure>
-                    {% if page.img %}
-                    <img src="{{ site.baseurl }}/assets/heliumjk/images/{{ page.img }}" alt="">
-                    {% else %}
-                    <img src="{{ site.baseurl }}/assets/heliumjk/images/blog.jpg" alt="">
-                    {% endif %}
+                    {% assign img_source = page.img %}
+                    {% include JB/post_img %}
+                    <img src="{{ post_img }}" alt="">
                 </figure>
             </div>
         </div>
@@ -45,11 +43,9 @@
             <div class="col-sm-12 col-md-3">
                 {% if page.author.name %}
                 <div class="blog-block about-sidebar-widget side-bar">
-                    {% if page.author.image %}
-                    <img src="{{ site.baseurl }}/assets/heliumjk/images/{{ page.author.image }}">
-                    {% else %}
-                    <img src="{{ site.baseurl }}/assets/heliumjk/images/author.jfif">
-                    {% endif %}
+                    {% assign img_source = page.author.image %}
+                    {% include JB/author_img %}
+                    <img src="{{ author_img }}">
                     <h4><a href="{{ site.author.site }}">{{ page.author.name }}</a></h4>
                     <p>{{ page.author.description }}</p>
                 </div>
@@ -84,11 +80,9 @@
                     <div class="blog-posts-small">
                         {% for post in site.posts limit:site.recent_limit %}
                         <div class="blog-post-small first-post">
-                            {% if post.img %}
-                            <img src="{{ site.baseurl }}/assets/heliumjk/images/{{ post.img }}" alt="">
-                            {% else %}
-                            <img src="{{ site.baseurl }}/assets/heliumjk/images/blog.jpg" alt="">
-                            {% endif %}
+                            {% assign img_source = post.img %}
+                            {% include JB/post_img %}
+                            <img src="{{ post_img }}" alt="">
                             <a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
                             <p>Posted on <a href="#" class="post-date">{{post.date | date_to_string}}</a></p>
                         </div>
