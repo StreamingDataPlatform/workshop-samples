@@ -18,10 +18,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.JsonObject;
-import io.pravega.client.ClientConfig;
-import io.pravega.client.EventStreamClientFactory;
+import io.pravega.client.ClientFactory;
+import io.pravega.client.admin.StreamManager;
 import io.pravega.client.stream.EventStreamWriter;
 import io.pravega.client.stream.EventWriterConfig;
+import io.pravega.client.stream.ScalingPolicy;
+import io.pravega.client.stream.StreamConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.net.URI;
@@ -33,41 +35,45 @@ import java.util.Random;
 /**
  * A simple example app that uses a Pravega Writer to write to a given scope and stream.
  */
-public class ImageWriter extends AbstractApp {
+public class ImageWriter  {
     // Logger initialization
     private static final Logger LOG = LoggerFactory.getLogger(ImageWriter.class);
 
-    public ImageWriter(AppConfiguration appConfiguration) {
-        super(appConfiguration);
+    public ImageWriter() {
+
     }
 
     public static void main(String[] args) {
-        AppConfiguration appConfiguration = new AppConfiguration(args);
-        ImageWriter ew = new ImageWriter(appConfiguration);
+        ImageWriter ew = new ImageWriter();
         ew.run();
     }
 
     public void run() {
-        //  create stream
-        createStream(appConfiguration.getInputStreamConfig());
-        AppConfiguration.StreamConfig streamConfig = appConfiguration.getInputStreamConfig();
-        // Create EventStreamClientFactory
-        ClientConfig clientConfig = appConfiguration.getPravegaConfig().getClientConfig();
-        try (EventStreamClientFactory clientFactory = EventStreamClientFactory.withScope(streamConfig.getStream().getScope(), clientConfig);
-             // Create  Pravega event writer
-             EventStreamWriter<JsonNode> writer = clientFactory.createEventWriter(
-                     streamConfig.getStream().getStreamName(),
-                     new JsonNodeSerializer(),
-                     EventWriterConfig.builder().build())) {
-                // same data write every 1 sec
-                while (true) {
-                    ObjectNode data = createJSONData();
-                    writer.writeEvent(appConfiguration.getRoutingKey(), data);
-                    Thread.sleep(5000);
-                }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+        try{
+            URI controllerURI = Parameters.getControllerURI();
+            StreamManager streamManager = StreamManager.create(controllerURI);
+            String scope = Parameters.getScope();
+            String streamName = Parameters.getStreamName();
+            StreamConfiguration streamConfig = StreamConfiguration.builder()
+                    .scalingPolicy(ScalingPolicy.byEventRate(
+                            Parameters.getTargetRateEventsPerSec(), Parameters.getScaleFactor(), Parameters.getMinNumSegments()))
+                    .build();
+            streamManager.createStream(scope, streamName, streamConfig);
+
+            ClientFactory clientFactory = ClientFactory.withScope(scope, controllerURI);
+            // Create  Pravega event writer
+            EventStreamWriter<JsonNode> writer = clientFactory.createEventWriter(
+                    streamName,
+                    new JsonNodeSerializer(),
+                    EventWriterConfig.builder().build());
+            while (true) {
+                ObjectNode data = createJSONData();
+                writer.writeEvent(Parameters.getRoutingKey(), data);
+                Thread.sleep(5000);
             }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
     }
 

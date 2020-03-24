@@ -11,27 +11,30 @@
 package com.dellemc.oe.ingest;
 
 import com.dellemc.oe.serialization.JsonNodeSerializer;
-import com.dellemc.oe.util.AbstractApp;
 import com.dellemc.oe.util.AppConfiguration;
+import com.dellemc.oe.util.Parameters;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.pravega.client.ClientConfig;
-import io.pravega.client.EventStreamClientFactory;
+import io.pravega.client.ClientFactory;
+import io.pravega.client.admin.StreamManager;
 import io.pravega.client.stream.EventStreamWriter;
 import io.pravega.client.stream.EventWriterConfig;
+import io.pravega.client.stream.ScalingPolicy;
+import io.pravega.client.stream.StreamConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.net.URI;
 
 /**
  * A simple example app that uses a Pravega Writer to write to a given scope and stream.
  */
-public class EventWithTimestampWriter extends AbstractApp {
+public class EventWithTimestampWriter {
     // Logger initialization
     private static final Logger LOG = LoggerFactory.getLogger(JSONWriter.class);
 
-    public EventWithTimestampWriter(AppConfiguration appConfiguration) {
-        super(appConfiguration);
+    public EventWithTimestampWriter() {
+
     }
 
     // Create a JSON data for testing purpose
@@ -52,27 +55,31 @@ public class EventWithTimestampWriter extends AbstractApp {
 
     public static void main(String[] args) {
         AppConfiguration appConfiguration = new AppConfiguration(args);
-        JSONWriter ew = new JSONWriter(appConfiguration);
-
+        EventWithTimestampWriter ew = new EventWithTimestampWriter();
         ew.run();
     }
 
     public void run() {
-        AppConfiguration.StreamConfig streamConfig = appConfiguration.getInputStreamConfig();
-        //  create stream
-        createStream(appConfiguration.getInputStreamConfig());
-        // Create EventStreamClientFactory
-        ClientConfig clientConfig = appConfiguration.getPravegaConfig().getClientConfig();
-        try (EventStreamClientFactory clientFactory = EventStreamClientFactory.withScope(streamConfig.getStream().getScope(), clientConfig);
-             // Create  Pravega event writer
-             EventStreamWriter<JsonNode> writer = clientFactory.createEventWriter(
-                     streamConfig.getStream().getStreamName(),
-                     new JsonNodeSerializer(),
-                     EventWriterConfig.builder().build())) {
-            // same data write every 1 sec
+       try{
+           URI controllerURI = Parameters.getControllerURI();
+           StreamManager streamManager = StreamManager.create(controllerURI);
+           String scope = Parameters.getScope();
+           String streamName = Parameters.getStreamName();
+           StreamConfiguration streamConfig = StreamConfiguration.builder()
+                   .scalingPolicy(ScalingPolicy.byEventRate(
+                           Parameters.getTargetRateEventsPerSec(), Parameters.getScaleFactor(), Parameters.getMinNumSegments()))
+                   .build();
+           streamManager.createStream(scope, streamName, streamConfig);
+
+           ClientFactory clientFactory = ClientFactory.withScope(scope, controllerURI);
+           // Create  Pravega event writer
+           EventStreamWriter<JsonNode> writer = clientFactory.createEventWriter(
+                   streamName,
+                   new JsonNodeSerializer(),
+                   EventWriterConfig.builder().build());
             while (true) {
                 ObjectNode data = createJSONData();
-                writer.writeEvent(appConfiguration.getRoutingKey(), data);
+                writer.writeEvent(Parameters.getRoutingKey(), data);
                 Thread.sleep(1000);
             }
 
