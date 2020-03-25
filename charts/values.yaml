@@ -41,15 +41,5 @@ application:
   pravega:
     pravega_scope: workshop-samples
     stream_name: workshop-stream
-    pravega_standalone: false
-    controller: "tcp://nautilus-pravega-controller.nautilus-pravega.svc.cluster.local:9090"
-    # Controls Created Streams
-    streamSegments: 3
 
-  writer:
-    # How many instances of the Event generating Source to execute
-    parallelism: 5
-    
-  reader:
-    # How many readers
-    parallelism: 5
+

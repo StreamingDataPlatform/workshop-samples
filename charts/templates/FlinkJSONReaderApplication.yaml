@@ -16,18 +16,20 @@ spec:
   state: started
 
   parameters:
-    - name: pravega_scope
+    - name: scope
       value: "{{ $application.pravega.pravega_scope }}"
-
-    - name: stream_name
+    - name: input-stream
       value: "{{ $application.pravega.stream_name }}"
+    - name: minNumSegments
+      value: "3"
 
-    - name: pravega_standalone
-      value: "{{ $application.pravega.pravega_standalone }}"
-
-    - name: pravega_controller_uri
-      value:  "{{ $application.pravega.controller }}"
-
-    - name: sourceParallelism
-      value: "{{ $application.reader.parallelism }}"
+    # Flink Job Parameters
+    - name: job.checkpointInterval
+      value: "60000"
+    - name: job.disableCheckpoint
+      value: "false"
+    - name: job.disableOperatorChaining
+      value: "true"
+    - name: rebalance
+      value: "false"
 {{- end }}
