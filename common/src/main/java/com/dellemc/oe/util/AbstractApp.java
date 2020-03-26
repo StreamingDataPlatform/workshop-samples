@@ -27,9 +27,6 @@ public abstract class AbstractApp implements Runnable {
     public boolean createStream(AppConfiguration.StreamConfig streamConfig) {
         boolean result = false;
         try(StreamManager streamManager = StreamManager.create(appConfiguration.getPravegaConfig().getClientConfig())) {
-            // create the requested scope (if necessary)
-//            streamManager.createScope(streamConfig.stream.getScope());
-            // create the requested stream
             StreamConfiguration streamConfiguration = StreamConfiguration.builder()
                     .scalingPolicy(ScalingPolicy.byDataRate(streamConfig.targetRate, streamConfig.scaleFactor, streamConfig.minNumSegments))
                     .build();
@@ -60,12 +57,6 @@ public abstract class AbstractApp implements Runnable {
             env.enableCheckpointing(checkpointInterval, CheckpointingMode.EXACTLY_ONCE);
         }
         log.info("Parallelism={}, MaxParallelism={}", env.getParallelism(), env.getMaxParallelism());
-        // We can't use MemoryStateBackend because it can't store our large state.
-//        if (env.getStateBackend() == null || env.getStateBackend() instanceof MemoryStateBackend) {
-//            log.warn("Using FsStateBackend");
-//            env.setStateBackend(new FsStateBackend("file:///tmp/flink-state", true));
-//        }
-        //env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
         return env;
     }
 

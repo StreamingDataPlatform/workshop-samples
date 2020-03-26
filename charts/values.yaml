@@ -40,6 +40,6 @@ application:
 
   pravega:
     pravega_scope: workshop-samples
-    stream_name: workshop-stream
+    stream_name: json-stream
 
 
