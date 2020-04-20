@@ -46,6 +46,8 @@ layout: post
 category: Getting Started
 tags: [jekyll, code, markdown]
 subtitle: some subtitle
+license: Apache/MIT, etc
+support: Community/Commercial, etc
 img: image.jpg
 author:
     name: Author Name

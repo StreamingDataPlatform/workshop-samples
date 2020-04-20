@@ -21,7 +21,15 @@ title: Blogs
                         <img class="div-img" src="{{ post_img }}" alt="{{ post.title }} image">
                     </div>
                     <div class="blog-post">
-                        <h3><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h3>
+                        <h3 class="mb-1">
+                            <a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a>
+                        </h3>
+                        {% if post.license %}
+                        <span class="mr-3 text-default"><i class="fa fa-file-text-o" aria-hidden="true"></i> {{ post.license }} </span>
+                        {% endif %} 
+                        {% if post.support %} 
+                        <span class="text-default"><i class="fa fa-user-o" aria-hidden="true"></i> {{ post.support }} </span>
+                        {% endif %} 
                         <p>{{ post.excerpt }}</p>
                         <a class="btn btn-common" href="{{ site.baseurl }}{{ post.url }}">Read More</a>
                     </div>
