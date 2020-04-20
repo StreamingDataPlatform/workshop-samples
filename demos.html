@@ -25,7 +25,13 @@ navorder: 3
                 {% include JB/post_img %}
                 <img class="card-img-top" src="{{ post_img }}" alt="{{ post.title }} image">
                 <div class="card-block">
-                    <h3 class="card-title">{{ post.title }}</h3>
+                    <h3 class="card-title mb-1">{{ post.title }}</h3>
+                    {% if post.license %}
+                    <span class="mr-2 text-default"><i class="fa fa-file-text-o" aria-hidden="true"></i> {{ post.license }} </span>
+                    {% endif %} 
+                    {% if post.support %} 
+                    <span class="text-default"><i class="fa fa-user-o" aria-hidden="true"></i> {{ post.support }} </span>
+                    {% endif %} 
                     <p class="card-text">{{ post.excerpt }}</p>
                     <a href="{{ site.baseurl }}{{ post.url }}" class="btn card-btn btn-common">Read More</a>
                 </div>

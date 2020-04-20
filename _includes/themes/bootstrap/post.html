@@ -4,7 +4,24 @@
         <div class="row">
             <div class="col-xs-12 col-sm-6">
                 <div class="hero-content-v2" style="margin-top:10px!important;">
-                    <h3><strong>{{ page.title }}</strong></h3>
+                    <div class="mb-1">
+                        {% if page.license %}
+                        <span class="mr-3 text-default"><i class="fa fa-file-text-o" aria-hidden="true"></i> {{ page.license }} </span>
+                        {% endif %} 
+                        {% if page.support %} 
+                        <span class="text-default"><i class="fa fa-user-o" aria-hidden="true"></i> {{ page.support }} </span>
+                        {% endif %} 
+                    </div>
+                    <h3>
+                        <strong>{{ page.title }}</strong>
+                        <!-- <span class="label label-pill label-primary label-default-text">
+                            {% if page.license %} {{page.license}} {% else %} MIT {% endif %} License
+                        </span>
+                        <span class="label label-pill label-primary label-default-text">
+                            {% if page.support %} {{page.support}} {% else %} Community {% endif %} Supported
+                        </span> -->
+                    </h3>
+                   
                     {% if page.subtitle %}
                     <p> 
                         {{ page.subtitle }}
