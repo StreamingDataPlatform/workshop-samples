@@ -6,9 +6,8 @@ baseurl: /workshop-samples # the subpath of your site, e.g. /blog
 
 title: SDP Code Hub
 description: |
-    Official site to     
-    demonstrate the usage of    
-    Dell Emc [Stream Data Platform](https://www.delltechnologies.com/en-us/storage/streaming-data-platform.htm)
+    An essential collection of code samples, demos, and connectors<br>
+    to kick-start your projects on the Dell EMC [Streaming Data Platform](https://www.delltechnologies.com/en-us/storage/streaming-data-platform.htm)
 owner: Dell EMC # or company name
 
 # Build settings

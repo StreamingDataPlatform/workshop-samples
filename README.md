@@ -1,11 +1,16 @@
 # SDP Code Hub
-The officical code hub for Dell EMC Streaming Data Platform.  This website hosts a comprehensive collection of code samples, demos, and connectors for Pravega streaming storage and Streaming Data Platform products.  The goal of the Code Hub site is to provide customers and users with enough information (between local and linked content) to get started developing applications that use these two products.  The site is extensible, and supports posting about virtually any public source project or website.  Anyone can contribute to the posts, so long as they meet the guidelines provided below and pass the review process.  
+The official code hub for Dell EMC Streaming Data Platform. This website hosts an essential collection of code
+samples, demos, and connectors to kick-start your projects on Pravega streaming storage and Streaming Data Platform
+products. The goal of the Code Hub site is to provide customers and users with enough information (between local and
+linked content) to get started developing applications that use these two products. The site is extensible, and
+supports posting about virtually any relevant public source project or website. Anyone can contribute to the posts,
+so long as they meet the guidelines provided below and pass the review process.  
 
 # Posting Process
 The following sections describe the necessary process to add a post to the code hub site.
 
 ## Fork and PR
-To add a post, you will need to fork this repository, and create a branch based on the head of the **gh-pages** branch.  When you are ready to submit your post, create a PR to this repository targetting the **gh-pages** branch.  The only addition that should be made in the PR is a single post file. 
+To add a post, you will need to fork this repository, and create a branch based on the head of the **gh-pages** branch.  When you are ready to submit your post, create a PR to this repository targeting the **gh-pages** branch.  The only addition that should be made in the PR is a single post file. 
 
 ## The Post File
 To create a post, add a file under the `_posts` directory (in the appropriate category subdirectory) with the following format:
@@ -25,7 +30,8 @@ All posts must meet the following requirements to be considered for publishing:
 * The identity of the poster must be clear; make sure your github profile is accurate and include your name and role in the author section
 * Must have a title and description that clearly explains the purpose and intent of the sample, demo, or connector
 * Must be appropriate and relevant, and align to the purpose of the Code Hub site
-* Each post must include a clear license statement, usage permissions, and any applicable copyright attributions 
+* Each post must include a clear license statement, usage permissions, and any applicable copyright attributions
+    * Posts must also adhere to any license stipulations required by **all** linked source projects 
 * The instructions (which may include linked readmes or documentation) should be clear, and anyone should be able to run or use the sample without trouble or confusion
 
 ## Review Process
