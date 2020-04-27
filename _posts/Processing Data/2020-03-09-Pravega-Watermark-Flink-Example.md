@@ -2,8 +2,10 @@
 layout: post
 category: Processing Data
 tags: [stream processing, ingest, flink connector]
-subtitle: Code sample for Flink processing
+subtitle: To demo how to use 'Watermark'
 img: ico-infinite.png
+license: Apache
+support: Community
 author: 
     name: Luis Liu
     description: I'm focusing on the data stream solution development
@@ -11,12 +13,9 @@ author:
 css: 
 js: 
 ---
-This post explains what is flink event time and how to use watermark.
+This post explains what flink event time is and how to use watermark.
  
 <!--more-->
-
-## Public Repo
-[https://github.com/pravega/pravega-samples/tree/master/flink-connector-examples/doc/watermark](https://github.com/pravega/pravega-samples/tree/master/flink-connector-examples/doc/watermark)
 
 ## Event time and Watermark Introduction
 Flink offers [event-time characteristic](https://ci.apache.org/projects/flink/flink-docs-stable/dev/event_time.html).
@@ -109,8 +108,10 @@ Sample output:
 2> SensorData{sensorId=2, value=0.012627637468484188, timestamp=2017-07-14T11:13:20.000+0800}
 ...
 ```
+## Source
+[https://github.com/pravega/pravega-samples/tree/master/flink-connector-examples/doc/watermark](https://github.com/pravega/pravega-samples/tree/master/flink-connector-examples/doc/watermark)
 
-## Further readings
+## Documentation
 Flink implements many techniques from the Dataflow Model, and Pravega aligns with it.
 For a better knowledge about event time and watermarks, the following articles can be helpful.
 

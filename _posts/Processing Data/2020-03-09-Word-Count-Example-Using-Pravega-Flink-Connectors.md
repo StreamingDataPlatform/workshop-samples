@@ -2,8 +2,10 @@
 layout: post
 category: Processing Data
 tags: [stream processing, ingest, flink connector]
-subtitle: Code samples for Flink processing
+subtitle: WordCountWriter and WordCountReader
 img: post/word count example/word-counter.jpg
+license: Apache
+support: Community
 author: 
     name: Luis Liu
     description: I'm focusing on the data stream solution development
@@ -11,18 +13,15 @@ author:
 css: 
 js: 
 ---
-This example consists of two applications, a WordCountWriter and a WordCountReaders.
+This example consists of two applications, a WordCountWriter and a WordCountReader.
 <!--more-->
 
-## Public Repo
-The scripts can be found under the flink-examples directory in:
-[https://github.com/pravega/pravega-samples/tree/master/flink-connector-examples/doc/flink-wordcount](https://github.com/pravega/pravega-samples/tree/master/flink-connector-examples/doc/flink-wordcount)
-
-This example consists of two applications, a WordCountWriter that reads data from a network stream, transforms the data, and writes the data to a Pravega stream; and a WordCountReader that reads from a Pravega stream and prints the word counts summary.
+WordCountWriter reads data from a network stream, transforms the data, and writes the data to a Pravega stream; and WordCountReader reads from a Pravega stream and prints the word counts summary.
 You might want to run `WordCountWriter` in one window and `WordCountReader` in another.
 
+## Instructions
 
-## Start WordCountWriter
+### Start WordCountWriter
 The application reads text from a socket, once every 5 seconds prints the distinct words and counts from the previous 5 seconds, and writes the word counts to a Pravega stream and prints word counts.
 
 First, use `netcat` to start local server via
@@ -147,3 +146,6 @@ Repeat the steps above except
 
 - Run Configuration for `WordCountWriter`
 ![]({{site.baseurl}}/assets/heliumjk/images/post/word count example/flink-wordcount-intellij-04.png)
+
+## Source
+[https://github.com/pravega/pravega-samples/tree/master/flink-connector-examples/doc/flink-wordcount](https://github.com/pravega/pravega-samples/tree/master/flink-connector-examples/doc/flink-wordcount)
