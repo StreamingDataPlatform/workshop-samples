@@ -2,8 +2,10 @@
 layout: post
 category: Processing Data
 tags: [stream processing, ingest, flink connector]
-subtitle: Code sample for Flink processing
+subtitle: To demo the usage of 'Streamcut'
 img: ico-durability.png
+license: Apache
+support: Community
 author: 
     name: Luis Liu
     description: I'm focusing on the data stream solution development
@@ -15,9 +17,7 @@ This sample application demonstrates the use of a Pravega abstraction, the `Stre
 it easier for developers to write analytics applications.
 <!--more-->
 
-## Public Repo
-[https://github.com/pravega/pravega-samples/tree/master/flink-connector-examples/doc/streamcuts](https://github.com/pravega/pravega-samples/tree/master/flink-connector-examples/doc/streamcuts)
-
+## Design
 The objective of this sample is to demonstrate that:
 1. Flink applications may use `StreamCut`s to bookmark points of interest within a Pravega `Stream`
 2. `StreamCut`s can be stored as persistent bookmarks for a Pravega stream
@@ -47,7 +47,7 @@ this application creates a "slice" object that is persistently stored in a separ
 that reads the events within the specified slice and performs some computation (e.g., counting events for the sensor
 for which values are `< 0`). This is an example of bounded processing in Flink on a Pravega `Stream`.
 
-## Execution
+## Instructions
 
 First of all, as this example consists of 3 applications, we recommend to open 3 different terminals. 
 First, we run the `DataProducer` application:
@@ -70,7 +70,7 @@ $ bin/sliceProcessor
 
 Note that each application should run in a separate terminal.
 
-## Interpreting the Output
+### Interpreting the Output
 
 The output in `DataProducer` is simple to interpret. It shows log messages in which every line corresponds to a new
 `<sensorId, eventValue>` tuple. Note that we use as routing key for writing events the `sensorId`, so we keep strict
@@ -139,3 +139,6 @@ slice is read, `SliceProcessor` shows a log message as the first shown in the ou
 processing events which are defined by the input `StreamCut`s. Concretely, the processing tasks consists of counting the
 number of negative events in the slice for a specific sensor. The result of this computation corresponds to the second
 message of the output.
+
+## Source
+[https://github.com/pravega/pravega-samples/tree/master/flink-connector-examples/doc/streamcuts](https://github.com/pravega/pravega-samples/tree/master/flink-connector-examples/doc/streamcuts)

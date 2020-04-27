@@ -4,6 +4,8 @@ category: "Demos"
 tags: [pravega, java, ingest, Flink, CUDA, tensorflow]
 subtitle: Dell EMC Streaming Data Analytics - Hands-on
 img: post/object detection/architecture.png
+license: Apache
+support: Community
 author:
     name: Thejas Vidyasagar
     description: Nautilus app developer.
@@ -14,9 +16,6 @@ js:
 
 Hands-on lab to demo how to store, process, read, analyze video on Streaming Data Platform
 <!--more-->
-
-## Public Repo
-- [https://github.com/pravega/video-samples](https://github.com/pravega/video-samples)
 
 ## Components
 - [Streaming Data Platform](https://www.delltechnologies.com/en-us/storage/streaming-data-platform.htm): Streaming Data Platform allows for harnessing their real-time and historical data in a single, auto-scaling infrastructure and programming model.
@@ -35,3 +34,6 @@ Hands-on lab to demo how to store, process, read, analyze video on Streaming Dat
 1. Camera recorder collects the video feed into a stream
 2. Object Detector job collects the input video stream, and returns output from running on the pre-trained model to detect and identify objects detected into a stream
 3. Video Player displays the output video stream with bounding boxes and labels on detected objects
+
+## Source
+[https://github.com/pravega/video-samples](https://github.com/pravega/video-samples)
