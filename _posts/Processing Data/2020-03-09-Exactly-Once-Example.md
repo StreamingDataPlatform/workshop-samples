@@ -2,8 +2,10 @@
 layout: post
 category: Processing Data
 tags: [stream processing, ingest, flink connector]
-subtitle: Code sample for Flink processing
+subtitle: To demo how 'EXACTLY_ONCE' works
 img: ico-once.png
+license: Apache
+support: Community
 author: 
     name: Luis Liu
     description: I'm focusing on the data stream solution development
@@ -11,12 +13,10 @@ author:
 css: 
 js: 
 ---
-This example demonstrates how Pravega EXACTLY_ONCE mode works in conjection with Flink checkpointing and exactly-once mode. More information on Pravega EXACTLY_ONCE semantics can be found at [here](http://pravega.io/docs/latest/key-features/#exactly-once-semantics).
- 
+This example demonstrates how Pravega EXACTLY_ONCE mode works in conjection with Flink checkpointing and exactly-once mode.
 <!--more-->
 
-## Public Repo
-[https://github.com/pravega/pravega-samples/tree/master/flink-connector-examples/doc/exactly-once](https://github.com/pravega/pravega-samples/tree/master/flink-connector-examples/doc/exactly-once)
+## Design
 
 The example consists of two applications, a writer and a checker.
 
@@ -30,6 +30,8 @@ The writer application generates a set of "integer" events and introduces an art
 simulate transaction failure. It takes checkpoints periodically. It is configured to restore 
 from the latest Flink checkpoint in case of failures.
 For demo purpose, it also generates "start" and "end" events for the checker to detect duplicate events.
+
+## Instructions
 
 Start the ExactlyOnceChecker app in one window. Come back to the window to observe the output 
 after running the writer app.
@@ -105,3 +107,9 @@ The output should look like the followings:
 No duplicate found. EXACTLY_ONCE!
 ============== Checker ends  ===============
 ```
+
+## Source
+[https://github.com/pravega/pravega-samples/tree/master/flink-connector-examples/doc/exactly-once](https://github.com/pravega/pravega-samples/tree/master/flink-connector-examples/doc/exactly-once)
+
+## Documentation 
+More information on Pravega EXACTLY_ONCE semantics can be found at [here](http://pravega.io/docs/latest/key-features/#exactly-once-semantics).
