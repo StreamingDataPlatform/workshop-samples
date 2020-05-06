@@ -72,7 +72,7 @@ some excerpt
 + **category**: Choose one of the following categories: ``Getting Started``, ``Ingesting Data``, ``Processing Data``, ``Data Output``, ``Demos``, ``Connectors``.
 + **tags**: Put as many as are relevant. Tags will be shown on the Tags page.
 + **subtitle**: This will show beneath the title on the post details page
-+ **img**: Put the image in the path ``assets/heliumjk/images/`` and have the name here (prepend the folder name if put in a subfolder). It will show as thumbnail on the Catalog and All Blogs pages, and the full version will show at the right of the title on the post details page.
++ **img**: Put the image in the path ``assets/heliumjk/images/`` and have the name here (prepend the folder name if put in a subfolder). It will show as thumbnail on the Catalog and All Posts pages, and the full version will show at the right of the title on the post details page.
 + **author**: Fill in with your name, description (role) and image (optional - same location as img). This is shown on the Author panel of the post details page.
 + **css & js**: Optional. If you have additional CSS & JS files for this post, put the file names here. The CSS file goes to ``assets/heliumjk/css/`` and the JS to ``assets/heliumjk/js/``. 
 + **excerpt**: Brief introuduction of the post. The "excerpt" will show between "title" and "read more" on the post card
