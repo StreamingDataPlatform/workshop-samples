@@ -82,9 +82,23 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-6 col-sm-6">
-                    <p class="copyright-text">
+                    <!-- <p class="copyright-text">
                         Copyright &copy; 2020 {% if site.owner %}{{ site.owner }}{% else %}{{ site.title }}{% endif %}. All Rights Reserved.
-                    </p>
+                    </p> -->
+                    <ul class="copyright">
+                        <li> &copy; 2020
+                            {% if site.owner %}{{ site.owner }}{% else %}{{ site.title }}{% endif %}
+                        </li>
+                        <li>
+                            <a href="{{site.privacy_link}}" target="_blank">Privacy</a>
+                        </li>
+                        <li>
+                            <a href="{{site.tou_link}}" target="_blank">Terms of Use</a>
+                        </li>
+                        <li>
+                            All Rights Reserved
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>

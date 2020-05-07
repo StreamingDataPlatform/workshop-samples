@@ -14,8 +14,17 @@
 		{% endfor %}
 	</ul> -->
 	<ul class="copyright">
-		<li>Copyright &copy; 2020
-			{% if site.owner %}{{ site.owner }}{% else %}{{ site.title }}{% endif %}</li>
-		<li>All Rights Reserved</li>
+		<li> &copy; 2020
+			{% if site.owner %}{{ site.owner }}{% else %}{{ site.title }}{% endif %}
+		</li>
+		<li>
+			<a href="{{site.privacy_link}}" target="_blank">Privacy</a>
+		</li>
+		<li>
+			<a href="{{site.tou_link}}" target="_blank">Terms of Use</a>
+		</li>
+		<li>
+			All Rights Reserved
+		</li>
 	</ul>
 </footer>
