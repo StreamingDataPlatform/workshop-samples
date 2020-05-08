@@ -51,3 +51,6 @@ $('#image-slider').owlCarousel({
 });
 $('#image-slider').find('.owl-prev').html('<i class="fa fa-angle-left"></i>');
 $('#image-slider').find('.owl-next').html('<i class="fa fa-angle-right"></i>');
+
+$('[data-toggle="popover"]').popover()
+$('[data-toggle="tooltip"]').tooltip()

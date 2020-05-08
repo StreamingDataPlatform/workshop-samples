@@ -35,3 +35,4 @@ catalog: ["Getting Started", "Ingesting Data", "Processing Data", "Data Output"]
 
 privacy_link: https://www.dell.com/learn/us/en/uscorp1/policies-privacy
 tou_link: https://www.dell.com/learn/us/en/uscorp1/site-terms-of-use
+uoc: All text instructions and source code within the posts on this site are free to use for the express purpose of educating yourself or others about the Dell EMC Streaming Data Platform or Pravega streaming storage.
