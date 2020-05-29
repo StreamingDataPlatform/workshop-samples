@@ -8,7 +8,7 @@ title: SDP Code Hub
 description: |
     An essential collection of code samples, demos, and connectors<br>
     to kick-start your projects on the Dell EMC [Streaming Data Platform](https://www.delltechnologies.com/en-us/storage/streaming-data-platform.htm)
-owner: Dell EMC # or company name
+owner: Dell Inc., or its subsidiaries # or company name
 
 # Build settings
 markdown: kramdown
@@ -32,3 +32,8 @@ recent_limit: 3
 # Settings for shown catogories with the specified order
 # Leave blank to show all categories with the default order
 catalog: ["Getting Started", "Ingesting Data", "Processing Data", "Data Output"]
+
+privacy_link: https://www.dell.com/learn/us/en/uscorp1/policies-privacy
+tou_link: https://www.dell.com/learn/us/en/uscorp1/site-terms-of-use
+uoc: All text instructions and source code within the posts on this site are free to use under the respective license stated within each post.
+third_link: https://github.com/pravega/workshop-samples/tree/gh-pages/3rd-party-licenses

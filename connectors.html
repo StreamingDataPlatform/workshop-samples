@@ -27,10 +27,10 @@ navorder: 2
                 <div class="card-block">
                     <h3 class="card-title mb-1">{{ post.title }}</h3>
                     {% if post.license %}
-                    <span class="mr-2 text-default"><i class="fa fa-file-text-o" aria-hidden="true"></i> {{ post.license }} </span>
+                    <span class="mr-2 text-default" data-toggle="tooltip" data-placement="top" title="The author of this post has indicated that the license provided with the source code is {{ post.license }}."><i class="fa fa-file-text-o" aria-hidden="true"></i> {{ post.license }} </span>
                     {% endif %} 
                     {% if post.support %} 
-                    <span class="text-default"><i class="fa fa-user-o" aria-hidden="true"></i> {{ post.support }} </span>
+                    <span class="text-default" data-toggle="tooltip" data-placement="top" title="The source code referenced by this post is {{post.support}} supported. If you have an issue, you should report it to the original developer[s] through the project's code repository."><i class="fa fa-user-o" aria-hidden="true"></i> {{ post.support }} </span>
                     {% endif %}
                     <p class="card-text">{{ post.excerpt }}</p>
                     <a href="{{ site.baseurl }}{{ post.url }}" class="btn card-btn btn-common">Read More</a>

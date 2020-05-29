@@ -10,14 +10,8 @@
                     About Us
                 </h3>
                 <p>
-                    Dell EMC App Dev Team is aiming at empowering businesses and industries to shape the future with the Data Streaming Platform. Make things happen.
+                    The SDP App Dev team aims at empowering businesses and industries to shape the future with the Streaming Data Platform. Make things happen.
                 </p>
-                <!-- <div class="social-footer">
-                    <a href="#"><i class="fa fa-facebook icon-round"></i></a>
-                    <a href="#"><i class="fa fa-twitter icon-round"></i></a>
-                    <a href="#"><i class="fa fa-linkedin icon-round"></i></a>
-                    <a href="#"><i class="fa fa-google-plus icon-round"></i></a>
-                </div> -->
             </div>
             <!-- Footer Widget Ends -->
 
@@ -81,10 +75,27 @@
     <div id="copyright">
         <div class="container">
             <div class="row">
-                <div class="col-md-6 col-sm-6">
-                    <p class="copyright-text">
-                        Copyright &copy; 2020 {% if site.owner %}{{ site.owner }}{% else %}{{ site.title }}{% endif %}. All Rights Reserved.
-                    </p>
+                <div class="col-md-8 col-sm-8">
+                    <ul class="copyright">
+                        <li> &copy; 2020
+                            {% if site.owner %}{{ site.owner }}{% else %}{{ site.title }}{% endif %},
+                            all rights reserved
+                        </li>
+                    </ul>
+                    <ul class="copyright">
+                        <li>
+                            <a href="{{site.privacy_link}}" target="_blank">Privacy</a>
+                        </li>
+                        <li>
+                            <a href="{{site.tou_link}}" target="_blank">Terms of Use</a>
+                        </li>
+                        <li>
+                            <a tabindex="0" role="button" data-container="body" data-toggle="popover" data-trigger="focus" data-placement="top" data-content="{{site.uoc}}">Use of Content</a>
+                        </li>
+                        <li>
+                            <a href="{{site.third_link}}" target="_blank">Third Party Licenses</a>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
