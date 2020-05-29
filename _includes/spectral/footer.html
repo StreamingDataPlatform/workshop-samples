@@ -1,30 +1,23 @@
 <!-- Footer -->
 <footer id="footer">
-	<!-- <ul class="icons">
-		{% for socloc in site.social %}
-		{% if socloc[1] %}
-		{% if socloc[0] == 'email' %}
-		<li><a target="_blank" href="{{ socloc[1] }}" class="icon fa-envelope-o"><span class="label">E-mail</span></a>
-		</li>
-		{% else %}
-		<li><a target="_blank" href="{{ socloc[1] }}" class="icon fa-{{ socloc[0] }}"><span
-					class="label">{{ socloc[0] }}</span></a></li>
-		{% endif %}
-		{% endif %}
-		{% endfor %}
-	</ul> -->
 	<ul class="copyright">
 		<li> &copy; 2020
-			{% if site.owner %}{{ site.owner }}{% else %}{{ site.title }}{% endif %}
+			{% if site.owner %}{{ site.owner }}{% else %}{{ site.title }}{% endif %},
+			all rights reserved
 		</li>
+	</ul>
+	<ul class="copyright">
 		<li>
 			<a href="{{site.privacy_link}}" target="_blank">Privacy</a>
 		</li>
 		<li>
 			<a href="{{site.tou_link}}" target="_blank">Terms of Use</a>
 		</li>
-		<!-- <li>
+		<li>
 			<a tabindex="0" role="button" data-container="body" data-toggle="popover" data-trigger="focus" data-placement="top" data-content="{{site.uoc}}">Use of Content</a>
-		</li> -->
+		</li>
+		<li>
+			<a href="{{site.third_link}}" target="_blank">Third Party Licenses</a>
+		</li>
 	</ul>
 </footer>

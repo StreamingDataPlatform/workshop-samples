@@ -4,14 +4,6 @@
         <div class="row">
             <div class="col-xs-12 col-sm-6">
                 <div class="hero-content-v2" style="margin-top:0px!important;">
-                    <!-- <div class="mb-1">
-                        {% if page.license %}
-                        <span class="mr-3 text-default"><i class="fa fa-file-text-o" aria-hidden="true"></i> {{ page.license }} </span>
-                        {% endif %} 
-                        {% if page.support %} 
-                        <span class="text-default"><i class="fa fa-user-o" aria-hidden="true"></i> {{ page.support }} </span>
-                        {% endif %} 
-                    </div> -->
                     <h3>
                         <strong>{{ page.title }}</strong>
                     </h3>
@@ -70,7 +62,8 @@
                         <h4>License</h4>
                     </div>
                     <div class="post-category">
-                        <a href="#" data-toggle="tooltip" data-placement="top" title="The author of this post has indicated that the license provided with the source code is {{ page.license }}.">{{ page.license }} License</a>
+                        <a href="#" data-toggle="tooltip" data-placement="top"
+                           title="The author of this post has indicated that the license provided with the source code is {{ page.license }}.">{{ page.license }} License</a>
                     </div>
                     <div class="mb-25"></div>
                     {% endif %}
@@ -80,7 +73,8 @@
                         <h4>Support</h4>
                     </div>
                     <div class="post-category">
-                        <a href="#" data-toggle="tooltip" data-placement="top" title="The source code referenced by this post is {{ page.support }} supported. If you have an issue, you should report it to the original developer[s] through the project's code repository.">{{ page.support }} Supported</a>
+                        <a href="#" data-toggle="tooltip" data-placement="top"
+                           title="The source code referenced by this post is {{ page.support }} supported. If you have an issue, you should report it to the original developer[s] through the project's code repository.">{{ page.support }} Supported</a>
                     </div>
                     <div class="mb-25"></div>
                     {% endif %}

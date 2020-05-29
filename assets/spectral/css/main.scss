@@ -471,7 +471,7 @@ $baseurl: '../images';
 		&.major {
 			@include vendor('transform', 'rotate(-45deg)');
 			border-radius: 3px;
-			//border: solid 2px _palette(border);
+			border: solid 2px _palette(border);
 			display: inline-block;
 			font-size: 1.35em;
 			height: calc(3em + 2px);
@@ -487,10 +487,6 @@ $baseurl: '../images';
 
 			@include breakpoint(small) {
 				font-size: 1em;
-			}
-
-			img {
-				@include vendor('transform', 'rotate(45deg)');
 			}
 		}
 
