@@ -10,36 +10,26 @@
  */
 package com.dellemc.oe.operations;
 
-import java.net.URI;
-
-import com.dellemc.oe.util.Constants;
-import com.dellemc.oe.util.Utils;
-import io.pravega.client.admin.StreamManager;
-import io.pravega.client.stream.ScalingPolicy;
-import io.pravega.client.stream.StreamConfiguration;
-import com.dellemc.oe.util.CommonParams;
+import com.dellemc.oe.util.AbstractApp;
+import com.dellemc.oe.util.AppConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * A simple example app that creates stream in Pravega
  */
-public class StreamCreator {
+public class StreamCreator extends AbstractApp {
 
     private static Logger LOG = LoggerFactory.getLogger(StreamCreator.class);
-    public final String scope;
-    public final String streamName;
-    public final URI controllerURI;
-
-    public StreamCreator(String scope, String streamName, URI controllerURI) {
-        this.scope = scope;
-        this.streamName = streamName;
-        this.controllerURI = controllerURI;
+    public StreamCreator(AppConfiguration appConfiguration) {
+        super(appConfiguration);
     }
 
     public void run() {
         //  create stream
-        boolean  streamCreated = Utils.createStream(scope, streamName, controllerURI);
+        String streamName = appConfiguration.getInputStreamConfig().getStream().getStreamName();
+        String scope = appConfiguration.getInputStreamConfig().getStream().getScope();
+        Boolean streamCreated = createStream(appConfiguration.getInputStreamConfig());
         LOG.info(" @@@@@@@@@@@@@@@@ STREAM  =  "+streamName+ "  CREATED = "+ streamCreated);
         if (streamCreated) {
             LOG.info("succeed in creating stream '%s' under scope '%s'", streamName, scope);
@@ -47,11 +37,8 @@ public class StreamCreator {
     }
 
     public static void main(String[] args) {
-        CommonParams.init(args);
-        final String scope = CommonParams.getParam(Constants.SCOPE);
-        final String streamName = CommonParams.getParam(Constants.STREAM_NAME);
-        final URI controllerURI = URI.create(CommonParams.getParam(Constants.CONTROLLER_URI));
-        StreamCreator sc = new StreamCreator(scope, streamName, controllerURI);
+        AppConfiguration appConfiguration = new AppConfiguration(args);
+        StreamCreator sc = new StreamCreator(appConfiguration);
         sc.run();
     }
 }

@@ -10,20 +10,18 @@
  */
 package com.dellemc.oe.flink.wordcount;
 
+import com.dellemc.oe.serialization.JsonSerializationSchema;
 import com.dellemc.oe.serialization.UTF8StringDeserializationSchema;
-import com.dellemc.oe.util.CommonParams;
-import com.dellemc.oe.util.Constants;
-import com.dellemc.oe.util.Utils;
-import io.pravega.client.admin.StreamManager;
+import com.dellemc.oe.util.AbstractApp;
+import com.dellemc.oe.util.AppConfiguration;
+import io.pravega.client.ClientConfig;
 import io.pravega.client.stream.ScalingPolicy;
 import io.pravega.client.stream.Stream;
 import io.pravega.client.stream.StreamConfiguration;
-import io.pravega.client.stream.impl.DefaultCredentials;
 import io.pravega.connectors.flink.FlinkPravegaReader;
 import io.pravega.connectors.flink.FlinkPravegaWriter;
 import io.pravega.connectors.flink.PravegaConfig;
 import io.pravega.connectors.flink.PravegaEventRouter;
-import io.pravega.connectors.flink.serialization.PravegaSerialization;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -31,8 +29,6 @@ import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.URI;
 
 /*
  * At a high level, WordCountReader reads from a Pravega stream, and prints
@@ -46,91 +42,75 @@ import java.net.URI;
  *     controller - the Pravega controller URI, e.g., tcp://localhost:9090
  *                  Note that this parameter is automatically used by the PravegaConfig class
  */
-public class WordCountReader {
+public class WordCountReader extends AbstractApp {
 
     // Logger initialization
     private static final Logger LOG = LoggerFactory.getLogger(WordCountReader.class);
 
+
     // The application reads data from specified Pravega stream and once every 10 seconds
     // prints the distinct words and counts from the previous 10 seconds.
+    public WordCountReader(AppConfiguration appConfiguration){
+        super(appConfiguration);
+    }
+
+    public void run(){
+        try {
+            AppConfiguration.StreamConfig streamConfig = appConfiguration.getInputStreamConfig();
+            //  create stream
+            createStream(appConfiguration.getInputStreamConfig());
+            // Create EventStreamClientFactory
+            ClientConfig clientConfig = appConfiguration.getPravegaConfig().getClientConfig();
+            LOG.info("==============  stream  =============== " + streamConfig.getStream().getStreamName());
+
+            StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+            // create the Pravega source to read a stream of text
+            FlinkPravegaReader<String> source = FlinkPravegaReader.<String>builder()
+                    .withPravegaConfig(appConfiguration.getPravegaConfig())
+                    .forStream(streamConfig.getStream().getStreamName())
+                    .withDeserializationSchema(new UTF8StringDeserializationSchema())
+                    .build();
+            LOG.info("==============  SOURCE  =============== " + source);
+            // count each word over a 10 second time period
+            DataStream<WordCount> dataStream = env.addSource(source).name(streamConfig.getStream().getStreamName())
+                    .flatMap(new WordCountReader.Splitter())
+                    .keyBy("word")
+                    .timeWindow(Time.seconds(10))
+                    .sum("count");
+
+            // create an output sink to print to stdout for verification
+            dataStream.printToErr();
+
+            LOG.info("==============  PRINTED  ===============");
+            AppConfiguration.StreamConfig outputStreamConfig = appConfiguration.getOutputStreamConfig();
+            //  create stream
+            createStream(appConfiguration.getOutputStreamConfig());
+            FlinkPravegaWriter<WordCount> writer = FlinkPravegaWriter.<WordCount>builder()
+                    .withPravegaConfig(appConfiguration.getPravegaConfig())
+                    .forStream(outputStreamConfig.getStream().getStreamName())
+                    .withEventRouter(new EventRouter())
+                    .withSerializationSchema(new JsonSerializationSchema())
+                    .build();
+            dataStream.addSink(writer).name("OutputStream");
+
+            // create another output sink to print to stdout for verification
+
+            LOG.info("============== Final output ===============");
+            dataStream.printToErr();
+            // execute within the Flink environment
+            env.execute("WordCountReader");
+
+            LOG.info("Ending WordCountReader...");
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static void main(String[] args) throws Exception {
         LOG.info("Starting WordCountReader...");
-
-        CommonParams.init(args);
-        final String scope = CommonParams.getParam(Constants.SCOPE);
-        final String streamName = CommonParams.getParam(Constants.STREAM_NAME);
-        final URI controllerURI = URI.create(CommonParams.getParam(Constants.CONTROLLER_URI));
-
-        LOG.info("#######################     SCOPE   ###################### " + scope);
-        LOG.info("#######################     streamName   ###################### " + streamName);
-        LOG.info("#######################     controllerURI   ###################### " + controllerURI);
-
-        // Create client config
-        PravegaConfig pravegaConfig = PravegaConfig.fromDefaults()
-                    .withControllerURI(controllerURI)
-                    .withDefaultScope(scope)
-                    .withHostnameValidation(false);
-        LOG.info("==============  pravegaConfig  =============== " + pravegaConfig);
-
-        if (CommonParams.isPravegaStandalone()) {
-            try (StreamManager streamManager = StreamManager.create(pravegaConfig.getClientConfig())) {
-                // create the requested scope (if necessary)
-                streamManager.createScope(scope);
-            }
-        }
-
-        // create the Pravega input stream (if necessary)
-        Stream stream = Utils.createStream(
-                pravegaConfig,
-                streamName);
-        LOG.info("==============  stream  =============== " + stream);
-
-        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        // create the Pravega source to read a stream of text
-        FlinkPravegaReader<String> source = FlinkPravegaReader.<String>builder()
-                .withPravegaConfig(pravegaConfig)
-                .forStream(stream)
-                .withDeserializationSchema(new UTF8StringDeserializationSchema())
-                .build();
-        LOG.info("==============  SOURCE  =============== " + source);
-        // count each word over a 10 second time period
-        DataStream<WordCount> dataStream = env.addSource(source).name(streamName)
-                .flatMap(new WordCountReader.Splitter())
-                .keyBy("word")
-                .timeWindow(Time.seconds(10))
-                .sum("count");
-
-        // create an output sink to print to stdout for verification
-        dataStream.printToErr();
-
-        LOG.info("==============  PRINTED  ===============");
-        Stream output_stream = getOrCreateStream(pravegaConfig, "output-stream", 3);
-        // create the Pravega sink to write a stream of text
-        FlinkPravegaWriter<WordCount> writer = FlinkPravegaWriter.<WordCount>builder()
-                .withPravegaConfig(pravegaConfig)
-                .forStream(output_stream)
-                .withEventRouter(new EventRouter())
-                .withSerializationSchema(PravegaSerialization.serializationFor(WordCount.class))
-                .build();
-        dataStream.addSink(writer).name("OutputStream");
-
-        // create another output sink to print to stdout for verification
-
-        LOG.info("============== Final output ===============");
-        dataStream.printToErr();
-        // execute within the Flink environment
-        env.execute("WordCountReader");
-
-        LOG.info("Ending WordCountReader...");
-    }
-
-    static public Stream getOrCreateStream(PravegaConfig pravegaConfig, String streamName, int numSegments) {
-        StreamConfiguration streamConfig = StreamConfiguration.builder()
-                .scalingPolicy(ScalingPolicy.fixed(numSegments))
-                .build();
-
-        return  Utils.createStream(pravegaConfig, streamName, streamConfig);
+        AppConfiguration appConfiguration = new AppConfiguration(args);
+        WordCountReader wordCounter = new WordCountReader(appConfiguration);
+        wordCounter.run();
     }
 
     /*

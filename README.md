@@ -41,19 +41,14 @@ Maven 3.6
 
 ## Running the Samples from IntelliJ with Standalone Pravega
 
-	Running a JSONWriter
-	Go to run  Edit Configurations  Select application and click + icon. Fill the details mentioned below screen. Add all below program parameters. 
+###	Running a JSONWriter
+- Go to run -> Edit Configurations -> Select application and click + icon. Fill the details mentioned below screen. Add all below program environment variables. 
 
 ```
---pravega_scope	workshop-samples
---stream_name workshop-stream
---pravega_controller_uri tcp://localhost:9090
---pravega_standalone true
---data_file earthquakes1970-2014.csv
+PRAVEGA_CONTROLLER=tcp://localhost:9090
+PRAVEGA_SCOPE=workshop-samples
+PRAVEGA_STREAM=json-stream
 ```
-
-![gradle installDist](/images/IntelliJ_5.png)
-
 
 Click ok and Run JSONWriter
 
@@ -86,23 +81,42 @@ chmod go-rw ${HOME}/keycloak.json
   }
 }
 ```
-When running the example applications, you must set the following environment variables. This can be done by setting the IntelliJ run configurations. If you set this in IntelliJ, you must manually replace ${HOME} with your actual home directory.
+
+## Running [JSONWriter](../stream-ingest/src/main/java/com/dellemc/oe/ingest/JSONWriter.java) from Intelij
+
+- Set the following environment variables. This can be done by setting the IntelliJ run configurations.
+  (-> Go to run -> Edit Configurations -> Select JSONWriter application and click + icon. Fill the details mentioned below screen. Add all below program environment variables.)
 ```
-export pravega_client_auth_method=Bearer
-export pravega_client_auth_loadDynamic=true
-export KEYCLOAK_SERVICE_ACCOUNT_FILE=${HOME}/keycloak.json
+pravega_client_auth_method=Bearer
+pravega_client_auth_loadDynamic=true
+KEYCLOAK_SERVICE_ACCOUNT_FILE=${HOME}/keycloak.json
+PRAVEGA_CONTROLLER=tcp://<pravega controller>:9090
+PRAVEGA_SCOPE=workshop-samples
+PRAVEGA_STREAM=json-stream
+```
+- Save configuration and hit Run
 
-And also need to set following parameters according to your project and provide as program params.
---pravega_scope	workshop-samples
---stream_name workshop-stream
---pravega_controller_uri tcp://localhost:9090
---pravega_standalone true
+## Running [JSONWReader](../various-readers/src/main/java/com/dellemc/oe/readers/JSONReader.java) from Intelij
+
+- Set the following environment variables. This can be done by setting the IntelliJ run configurations.
+
+```
+pravega_client_auth_method=Bearer
+pravega_client_auth_loadDynamic=true
 ```
 
+- set the following under parameters in Intelij
+```$xslt
+--controller tcp://<pravega controller>:9090
+--scope workshop-samples
+--stream json-stream
+```
 
-## Running JSON Reader in Nautilus
+- Save configuration and hit Run
 
-- You must make the Maven repo in Nautilus available to your development workstation.
+## Running [JSONWReader](../various-readers/src/main/java/com/dellemc/oe/readers/JSONReader.java) in Nautilus
+
+-  You must make the Maven repo in Nautilus available to your development workstation.
 ```
 kubectl port-forward service/repo 9090:80 --namespace workshop-samples &
 ```

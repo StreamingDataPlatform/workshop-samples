@@ -2,7 +2,6 @@ package com.dellemc.oe.util;
 
 import java.io.File;
 import java.io.InputStream;
-import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -22,9 +21,9 @@ public class DataGenerator {
 
     public static void main(String[] args) throws Exception {
         // Get the Program parameters
-        CommonParams.init(args);
-        final String dataFile = CommonParams.getParam(Constants.DATA_FILE);
-       convertCsvToJson(dataFile);
+        AppConfiguration appConfiguration = new AppConfiguration(args);
+        final String dataFile = appConfiguration.getDataFile();
+        convertCsvToJson(dataFile);
     }
 
     /**
