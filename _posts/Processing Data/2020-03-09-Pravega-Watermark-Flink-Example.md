@@ -74,8 +74,8 @@ There are two occurrences of `createScope` method in this watermark example whic
 I. ```pravega-samples/flink-connector-examples/src/main/java/io/pravega/example/flink/Utils.java```  
 II. ```pravega-samples/flink-connector-examples/src/main/java/io/pravega/example/flink/watermark/PravegaWatermarkIngestion.java```
 
-##### 2. Follow the [this post]({{site.baseurl}}/Getting Started/2020/07/14/create-flink-project-on-streaming-data-platform.html) to learn how to create Flink projects and run on Dell EMC Streaming Data Platform
-If you choose to use the Gradle Build Tool, make sure the Maven repo in SDP available to your development workstation as mentioned in the [post]({{site.baseurl}}/Getting Started/2020/07/14/create-flink-project-on-streaming-data-platform.html). The following is an example of ```pravega-samples/flink-connector-examples/build.gradle``` file which only shows the modified section. Since the example uses shadow JARs, make sure to add `classifier = ""` and `zip64 true` to the `shadowJar` config. 
+##### 2. Follow the [this post]({{site.baseurl}}/getting started/2020/07/14/create-flink-project-on-streaming-data-platform.html) to learn how to create Flink projects and run on Dell EMC Streaming Data Platform
+If you choose to use the Gradle Build Tool, make sure the Maven repo in SDP available to your development workstation as mentioned in the [post]({{site.baseurl}}/getting started/2020/07/14/create-flink-project-on-streaming-data-platform.html). The following is an example of ```pravega-samples/flink-connector-examples/build.gradle``` file which only shows the modified section. Since the example uses shadow JARs, make sure to add `classifier = ""` and `zip64 true` to the `shadowJar` config. 
 ```
 shadowJar {
     dependencies {
