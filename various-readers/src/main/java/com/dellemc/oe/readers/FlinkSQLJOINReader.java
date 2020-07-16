@@ -23,7 +23,6 @@ import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.Table;
-import org.apache.flink.table.api.TableEnvironment;
 import org.apache.flink.table.api.Types;
 import org.apache.flink.table.api.java.StreamTableEnvironment;
 import org.apache.flink.table.descriptors.Json;
@@ -63,7 +62,7 @@ public class FlinkSQLJOINReader extends AbstractApp {
             StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
             env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
             // Read table as stream data
-            StreamTableEnvironment tableEnv = TableEnvironment.getTableEnvironment(env);
+            StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
 
             // Create client config
             PravegaConfig pravegaConfig =  appConfiguration.getPravegaConfig();
@@ -81,7 +80,7 @@ public class FlinkSQLJOINReader extends AbstractApp {
                     .withPravegaConfig(pravegaConfig);
 
             // Create Table descriptor
-            StreamTableDescriptor desc = tableEnv.connect(pravega)
+            StreamTableDescriptor desc = (StreamTableDescriptor) tableEnv.connect(pravega)
                     .withFormat(new Json().failOnMissingField(false).deriveSchema())
                     .withSchema(schema)
                     .inAppendMode();

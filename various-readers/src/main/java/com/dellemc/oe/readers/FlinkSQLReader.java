@@ -19,7 +19,6 @@ import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.java.StreamTableEnvironment;
 import org.apache.flink.table.api.Table;
-import org.apache.flink.table.api.TableEnvironment;
 import org.apache.flink.table.descriptors.Json;
 import org.apache.flink.table.descriptors.StreamTableDescriptor;
 import org.apache.flink.table.factories.StreamTableSourceFactory;
@@ -65,7 +64,7 @@ public class FlinkSQLReader extends AbstractApp {
             StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
             env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
             // Create Stream Table Environment
-            StreamTableEnvironment tableEnv = TableEnvironment.getTableEnvironment(env);
+            StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
 
             // get the Schema
             Schema   schema = EarthQuakeRecord.getSchema();
@@ -74,9 +73,8 @@ public class FlinkSQLReader extends AbstractApp {
             pravega.tableSourceReaderBuilder()
                     .forStream(stream)
                     .withPravegaConfig(pravegaConfig);
-
             // Create Table descriptor
-            StreamTableDescriptor desc = tableEnv.connect(pravega)
+            StreamTableDescriptor desc = (StreamTableDescriptor) tableEnv.connect(pravega)
                     .withFormat(new Json().failOnMissingField(false).deriveSchema())
                     .withSchema(schema)
                     .inAppendMode();
