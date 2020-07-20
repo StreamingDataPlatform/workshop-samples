@@ -15,7 +15,7 @@ import com.dellemc.oe.readers.util.HvacRecord;
 import com.dellemc.oe.util.AbstractApp;
 import com.dellemc.oe.util.AppConfiguration;
 import io.pravega.client.stream.Stream;
-import io.pravega.connectors.flink.Pravega;
+import io.pravega.connectors.flink.table.descriptors.Pravega;
 import io.pravega.connectors.flink.PravegaConfig;
 import org.apache.flink.api.java.tuple.Tuple2;
 

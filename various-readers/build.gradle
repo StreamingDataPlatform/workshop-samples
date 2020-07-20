@@ -35,7 +35,7 @@ dependencies {
     compile "io.pravega:pravega-connectors-flink-${flinkShortVersion}_${flinkScalaVersion}:${pravegaFlinkConnectorVersion}"
     compile "org.apache.flink:flink-streaming-java_${flinkScalaVersion}:${flinkVersion}"
     compile "org.apache.flink:flink-streaming-scala_${flinkScalaVersion}:${flinkVersion}"
-    compile "org.apache.flink:flink-ml-lib:${flinkVersion}"
+    compile "org.apache.flink:flink-ml-lib_${flinkScalaVersion}:${flinkVersion}"
 //    compile "org.apache.flink:flink-table-api-java-bridge_${flinkScalaVersion}:${flinkVersion}"
 //    compile "org.apache.flink:flink-table:${flinkVersion}"
     compile "org.apache.flink:flink-table-planner_${flinkScalaVersion}:${flinkVersion}"
@@ -101,6 +101,7 @@ task startSqlReader(type: JavaExec) {
 
 shadowJar {
     dependencies {
+//        include(dependency("io.pravega:pravega-connectors-flink-${flinkShortVersion}_${flinkScalaVersion}:${pravegaFlinkConnectorVersion}"))
         exclude(dependency("org.scala-lang:scala-library"))
         exclude(dependency("org.scala-lang:scala-reflect"))
         exclude(dependency("org.scala-lang:scala-compiler"))
