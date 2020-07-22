@@ -3,13 +3,13 @@ layout: post
 category: "Getting Started"
 tags: [flink, java, SDP, Pravega]
 subtitle: "Create Projects and Flink Clusters on Dell EMC Streaming Data Platform"
-img: sdp.jfif
+img: sdp.jpg
 license: Apache
 support: Community
 author: 
     name: Youmin Han
     description: Nautilus App Developer
-    image: 
+    image: batman.png
 css: 
 js: 
 ---
