@@ -99,8 +99,8 @@ distributions {
         repositories {
             maven {
                 credentials {
-                    username userName
-                    password passWord
+                    username System.getenv("MAVEN_USER")
+                    password System.getenv("MAVEN_PASSWORD")
                 }
                 url projectRepoUrl
             }

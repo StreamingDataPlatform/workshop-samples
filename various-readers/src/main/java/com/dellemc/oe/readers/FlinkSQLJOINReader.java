@@ -23,8 +23,9 @@ import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.Table;
-import org.apache.flink.table.api.Types;
+import org.apache.flink.table.api.DataTypes;
 import org.apache.flink.table.api.java.StreamTableEnvironment;
+import org.apache.flink.table.descriptors.ConnectTableDescriptor;
 import org.apache.flink.table.descriptors.Json;
 import org.apache.flink.table.descriptors.Schema;
 import org.apache.flink.table.descriptors.StreamTableDescriptor;
@@ -59,7 +60,7 @@ public class FlinkSQLJOINReader extends AbstractApp {
         try {
             LOG.info("################## RUN START ################  ");
             // Create Flink Execution environment
-            StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+            StreamExecutionEnvironment env = initializeFlinkStreaming();
             env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
             // Read table as stream data
             StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
@@ -80,7 +81,7 @@ public class FlinkSQLJOINReader extends AbstractApp {
                     .withPravegaConfig(pravegaConfig);
 
             // Create Table descriptor
-            StreamTableDescriptor desc = (StreamTableDescriptor) tableEnv.connect(pravega)
+            ConnectTableDescriptor desc = tableEnv.connect(pravega)
                     .withFormat(new Json().failOnMissingField(false).deriveSchema())
                     .withSchema(schema)
                     .inAppendMode();
@@ -118,11 +119,11 @@ public class FlinkSQLJOINReader extends AbstractApp {
             CsvTableSource buildingSource = new CsvTableSource.Builder()
                     .path(filePath)
                     .ignoreParseErrors()
-                    .field("BuildingID", Types.INT())
-                    .field("BuildingMgr", Types.STRING())
-                    .field("BuildingAge", Types.INT())
-                    .field("HVACproduct", Types.STRING())
-                    .field("Country", Types.STRING())
+                    .field("BuildingID", DataTypes.INT())
+                    .field("BuildingMgr", DataTypes.STRING())
+                    .field("BuildingAge", DataTypes.INT())
+                    .field("HVACproduct", DataTypes.STRING())
+                    .field("Country", DataTypes.STRING())
                     .build();
 
 

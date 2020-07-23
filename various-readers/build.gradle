@@ -84,28 +84,14 @@ task startImageReader(type: JavaExec) {
     }
 }
 
-task scriptSqlReader(type: CreateStartScripts) {
-    outputDir = file('build/scripts')
-    mainClassName = 'com.dellemc.oe.readers.FlinkSQLReader'
-    applicationName = 'sqlReader'
-    classpath = files(jar.archivePath) + sourceSets.main.runtimeClasspath
-}
-
-task startSqlReader(type: JavaExec) {
-    main = "com.dellemc.oe.readers.FlinkSQLReader"
-    classpath = sourceSets.main.runtimeClasspath
-    if(System.getProperty("exec.args") != null) {
-        args System.getProperty("exec.args").split()
-    }
-}
-
 shadowJar {
     dependencies {
-//        include(dependency("io.pravega:pravega-connectors-flink-${flinkShortVersion}_${flinkScalaVersion}:${pravegaFlinkConnectorVersion}"))
         exclude(dependency("org.scala-lang:scala-library"))
         exclude(dependency("org.scala-lang:scala-reflect"))
         exclude(dependency("org.scala-lang:scala-compiler"))
+        exclude(dependency("org.apache.flink:flink-table-planner_${flinkScalaVersion}:${flinkVersion}"))
     }
+    mergeServiceFiles()
     classifier = ""
     zip64 true
 }
@@ -128,13 +114,13 @@ distributions {
             }
         }
     }
-
+    logger.info("This is " + System.getenv("MAVEN_USER"))
     publishing {
        repositories {
            maven {
                credentials {
-                   username userName
-                   password passWord
+                   username System.getenv("MAVEN_USER")
+                   password System.getenv("MAVEN_PASSWORD")
                }
                url projectRepoUrl
            }

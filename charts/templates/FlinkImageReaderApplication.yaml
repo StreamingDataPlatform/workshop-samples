@@ -1,5 +1,5 @@
 {{- if .Values.flink.applications.switch.imageReader }}
-{{- $flinkVersion := .Values.flinkVersion -}}
+{{- $flinkVersion := .Values.flink.flinkVersion -}}
 {{- $application := .Values.application -}}
 apiVersion: flink.nautilus.dellemc.com/v1beta1
 kind: "FlinkApplication"
