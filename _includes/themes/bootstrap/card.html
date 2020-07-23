@@ -6,6 +6,12 @@
         <img class="card-img-top card-img" src="{{ post_img }}" alt="{{ post.title }} image">
     </div>
     <div class="card-block card-block-fixed">
+        {% if post.technologies[0] %}
+        <span class="mr-2 text-version">{{ post.technologies[0] }}</span>
+        {% endif %} 
+        {% if post.technologies[1] %} 
+        <span class="text-version">{{ post.technologies[1] }}</span>
+        {% endif %}
         <h3 class="card-title mb-1">{{ post.title }}</h3>
         {% if post.license %}
         <span class="mr-2 text-default" data-toggle="tooltip" data-placement="top" title="The author of this post has indicated that the license provided with the source code is {{ post.license }}."><i class="fa fa-file-text-o" aria-hidden="true"></i> {{ post.license }} </span>

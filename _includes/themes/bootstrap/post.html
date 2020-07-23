@@ -57,13 +57,27 @@
                 {% endif %}
 
                 <div class="blog-block blog-posts-widget side-bar sticky-top">
+                    {% if page.technologies[0] %}
+                    <div class="widget-title">
+                        <h4>Technologies</h4>
+                    </div>
+                    <div class="post-category">
+                        <a href="#">{{ page.technologies[0] }}</a>
+                    </div>
+                    {% if page.technologies[1] %}
+                    <div class="post-category">
+                        <a href="#">{{ page.technologies[1] }}</a>
+                    </div>
+                    {% endif %}
+                    <div class="mb-25"></div>
+                    {% endif %}
+
                     {% if page.license %}
                     <div class="widget-title">
                         <h4>License</h4>
                     </div>
                     <div class="post-category">
-                        <a href="#" data-toggle="tooltip" data-placement="top"
-                           title="The author of this post has indicated that the license provided with the source code is {{ page.license }}.">{{ page.license }} License</a>
+                        <a tabindex="1" role="button" data-container="body" data-toggle="popover" data-trigger="focus" data-placement="top" data-content="The author of this post has indicated that the license provided with the source code is {{ page.license }}.">{{ page.license }} License</a>
                     </div>
                     <div class="mb-25"></div>
                     {% endif %}
@@ -73,8 +87,7 @@
                         <h4>Support</h4>
                     </div>
                     <div class="post-category">
-                        <a href="#" data-toggle="tooltip" data-placement="top"
-                           title="The source code referenced by this post is {{ page.support }} supported. If you have an issue, you should report it to the original developer[s] through the project's code repository.">{{ page.support }} Supported</a>
+                        <a tabindex="2" role="button" data-container="body" data-toggle="popover" data-trigger="focus" data-placement="top" data-content="The source code referenced by this post is {{ page.support }} supported. If you have an issue, you should report it to the original developer[s] through the project's code repository.">{{ page.support }} Supported</a>
                     </div>
                     <div class="mb-25"></div>
                     {% endif %}
@@ -97,7 +110,7 @@
                         {% endfor %}
                     </div>
 
-                    <div class="mb-25"></div>
+                    <!-- <div class="mb-25"></div>
 
                     <div class="widget-title">
                         <h4>Recent Posts</h4>
@@ -112,7 +125,7 @@
                             <p>Posted on <a href="#" class="post-date">{{post.date | date_to_string}}</a></p>
                         </div>
                         {% endfor %}
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
