@@ -52,7 +52,7 @@ layout: post
 category: Getting Started
 tags: [jekyll, code, markdown]
 subtitle: some subtitle
-technologies: [flink 1.9, pravega 0.6, etc] 
+technologies: [flink, pravega, etc] 
 license: Apache/MIT, etc
 support: Community/Commercial, etc
 img: image.jpg

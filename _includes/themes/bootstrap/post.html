@@ -109,23 +109,6 @@
                         <a class="tag" href="{{ site.baseurl }}/tags/?tag={{ tag | url_encode }}" title="{{ tag }}">{{ tag }}</a>
                         {% endfor %}
                     </div>
-
-                    <!-- <div class="mb-25"></div>
-
-                    <div class="widget-title">
-                        <h4>Recent Posts</h4>
-                    </div>
-                    <div class="blog-posts-small">
-                        {% for post in site.posts limit:site.recent_limit %}
-                        <div class="blog-post-small first-post">
-                            {% assign img_source = post.img %}
-                            {% include JB/post_img %}
-                            <img src="{{ post_img }}" alt="">
-                            <a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
-                            <p>Posted on <a href="#" class="post-date">{{post.date | date_to_string}}</a></p>
-                        </div>
-                        {% endfor %}
-                    </div> -->
                 </div>
             </div>
         </div>
