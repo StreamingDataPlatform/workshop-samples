@@ -4,7 +4,7 @@ category: "Getting Started"
 tags: [pravega, java, pravega-client]
 subtitle: "Pravega Client Examples"
 img: pravega.png
-technologies: [pravega 0.7]
+technologies: [Pravega]
 license: Apache
 support: Community
 author: 
