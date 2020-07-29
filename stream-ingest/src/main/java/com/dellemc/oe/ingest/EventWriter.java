@@ -58,7 +58,7 @@ public class EventWriter {
             while(true) {
                 final CompletableFuture writeFuture = writer.writeEvent( Parameters.getRoutingKey(), Parameters.getMessage());
                 writeFuture.get();
-                Thread.sleep(10);
+                Thread.sleep(1000);
             }
         }
         catch(Exception e){
