@@ -1,4 +1,4 @@
-{{- if .Values.flink.applications.switch.jsonReader }}
+{{- if .Values.flink.applications.switch.sqlReader }}
 {{- $flinkVersion := .Values.flink.flinkVersion -}}
 {{- $application := .Values.application -}}
 apiVersion: flink.nautilus.dellemc.com/v1beta1

@@ -15,8 +15,9 @@ flink:
   applications:
     switch:
       jsonReader: true
-      imageReader: false
-      streamToStream: false
+      imageReader: true
+      streamToStream: true
+      sqlReader: true
   flinkVersion: 1.10.1
   flinkImage: 1.10.1-2.12
 # Detailed Project Control
@@ -30,7 +31,7 @@ cluster:
   localStorage: 20Gi
   taskManager:
     replicas: 2
-    memory: 1024M
+    memory: 1300M
     cpu: 900m
     taskSlots: 5
     heap: 700m
