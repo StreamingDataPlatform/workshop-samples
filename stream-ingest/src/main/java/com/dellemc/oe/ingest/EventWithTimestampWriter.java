@@ -16,7 +16,8 @@ import com.dellemc.oe.util.Parameters;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.pravega.client.ClientFactory;
+import io.pravega.client.ClientConfig;
+import io.pravega.client.EventStreamClientFactory;
 import io.pravega.client.admin.StreamManager;
 import io.pravega.client.stream.EventStreamWriter;
 import io.pravega.client.stream.EventWriterConfig;
@@ -71,7 +72,9 @@ public class EventWithTimestampWriter {
                    .build();
            streamManager.createStream(scope, streamName, streamConfig);
 
-           ClientFactory clientFactory = ClientFactory.withScope(scope, controllerURI);
+           ClientConfig config = ClientConfig.builder().controllerURI(controllerURI)
+                   .credentials(null).trustStore("").build();
+           EventStreamClientFactory clientFactory = EventStreamClientFactory.withScope(scope, config);
            // Create  Pravega event writer
            EventStreamWriter<JsonNode> writer = clientFactory.createEventWriter(
                    streamName,

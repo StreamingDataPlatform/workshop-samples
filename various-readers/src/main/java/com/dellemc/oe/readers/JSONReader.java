@@ -44,7 +44,7 @@ public class JSONReader extends AbstractApp {
             createStream(appConfiguration.getInputStreamConfig());
             Stream stream = appConfiguration.getInputStreamConfig().getStream();
 
-            StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+            StreamExecutionEnvironment env = initializeFlinkStreaming();
             // create the Pravega source to read a stream of text
             FlinkPravegaReader<JSONData> flinkPravegaReader = FlinkPravegaReader.builder()
                     .withPravegaConfig(pravegaConfig)

@@ -14,14 +14,14 @@ import com.dellemc.oe.readers.util.EarthQuakeRecord;
 import com.dellemc.oe.util.AbstractApp;
 import com.dellemc.oe.util.AppConfiguration;
 import io.pravega.client.stream.Stream;
-import io.pravega.connectors.flink.*;
+import io.pravega.connectors.flink.PravegaConfig;
+import io.pravega.connectors.flink.table.descriptors.Pravega;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.java.StreamTableEnvironment;
 import org.apache.flink.table.api.Table;
-import org.apache.flink.table.api.TableEnvironment;
-import org.apache.flink.table.descriptors.Json;
-import org.apache.flink.table.descriptors.StreamTableDescriptor;
+import org.apache.flink.table.descriptors.ConnectTableDescriptor;
+import org.apache.flink.table.descriptors.*;
 import org.apache.flink.table.factories.StreamTableSourceFactory;
 import org.apache.flink.table.factories.TableFactoryService;
 import org.apache.flink.table.sources.TableSource;
@@ -62,10 +62,11 @@ public class FlinkSQLReader extends AbstractApp {
             Stream stream = appConfiguration.getInputStreamConfig().getStream();
 
             // Create Flink Execution environment
-            StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+            StreamExecutionEnvironment env = initializeFlinkStreaming();
             env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
+
             // Create Stream Table Environment
-            StreamTableEnvironment tableEnv = TableEnvironment.getTableEnvironment(env);
+            StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
 
             // get the Schema
             Schema   schema = EarthQuakeRecord.getSchema();
@@ -74,9 +75,8 @@ public class FlinkSQLReader extends AbstractApp {
             pravega.tableSourceReaderBuilder()
                     .forStream(stream)
                     .withPravegaConfig(pravegaConfig);
-
             // Create Table descriptor
-            StreamTableDescriptor desc = tableEnv.connect(pravega)
+            ConnectTableDescriptor desc = tableEnv.connect(pravega)
                     .withFormat(new Json().failOnMissingField(false).deriveSchema())
                     .withSchema(schema)
                     .inAppendMode();
@@ -102,6 +102,7 @@ public class FlinkSQLReader extends AbstractApp {
 
         } catch (Exception e) {
             LOG.error("########## FlinkSQLReader ERROR  #############  "+e.getMessage());
+            e.printStackTrace();
         }
 
     }

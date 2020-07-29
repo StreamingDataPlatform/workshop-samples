@@ -10,7 +10,6 @@ clusters: 1
 # Number of Applications to be deployed per project
 applications: 1
 
-flinkVersion: 1.7.2
 
 flink:
   applications:
@@ -18,6 +17,9 @@ flink:
       jsonReader: true
       imageReader: false
       streamToStream: false
+      sqlReader: false
+  flinkVersion: 1.10.1
+  flinkImage: 1.10.1-2.12
 # Detailed Project Control
 project:
   zookeeperReplicas: 3
@@ -29,9 +31,10 @@ cluster:
   localStorage: 20Gi
   taskManager:
     replicas: 2
-    memory: 1024M
+    memory: 1300M
     cpu: 900m
     taskSlots: 5
+    heap: 700m
 
 # Detailed FlinkApplication Control
 application:

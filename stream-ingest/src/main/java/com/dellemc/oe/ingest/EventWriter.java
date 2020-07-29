@@ -13,7 +13,8 @@ package com.dellemc.oe.ingest;
 import java.net.URI;
 import java.util.concurrent.CompletableFuture;
 import com.dellemc.oe.util.Parameters;
-import io.pravega.client.ClientFactory;
+import io.pravega.client.ClientConfig;
+import io.pravega.client.EventStreamClientFactory;
 import io.pravega.client.admin.StreamManager;
 import io.pravega.client.stream.EventStreamWriter;
 import io.pravega.client.stream.EventWriterConfig;
@@ -46,7 +47,9 @@ public class EventWriter {
                     .build();
             streamManager.createStream(scope, streamName, streamConfig);
 
-            ClientFactory clientFactory = ClientFactory.withScope(scope, controllerURI);
+            ClientConfig config = ClientConfig.builder().controllerURI(controllerURI)
+                    .credentials(null).trustStore("").build();
+            EventStreamClientFactory clientFactory = EventStreamClientFactory.withScope(scope, config);
             // Create  Pravega event writer
             EventStreamWriter<String> writer = clientFactory.createEventWriter(
                     streamName,

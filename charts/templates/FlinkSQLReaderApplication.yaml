@@ -1,15 +1,15 @@
-{{- if .Values.flink.applications.switch.jsonReader }}
+{{- if .Values.flink.applications.switch.sqlReader }}
 {{- $flinkVersion := .Values.flink.flinkVersion -}}
 {{- $application := .Values.application -}}
 apiVersion: flink.nautilus.dellemc.com/v1beta1
 kind: "FlinkApplication"
 metadata:
-  name: "json-reader"
+  name: "sql-reader"
 spec:
   flinkVersion: {{ $flinkVersion }}
 
   mavenCoordinate: com.dellemc.oe.readers:various-readers:{{ $application.mavenVersion }}
-  mainClass: com.dellemc.oe.readers.JSONReader
+  mainClass: com.dellemc.oe.readers.FlinkSQLReader
 
   parallelism: {{ $application.defaultParallelism }}
 
@@ -32,4 +32,4 @@ spec:
       value: "true"
     - name: rebalance
       value: "false"
-{{- end }}
+  {{- end }}

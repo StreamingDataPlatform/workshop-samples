@@ -1,6 +1,6 @@
 {{- if .Values.flink.applications.switch.streamToStream }}
 {{- $application := .Values.application -}}
-{{- $flinkVersion := .Values.flinkVersion -}}
+{{- $flinkVersion := .Values.flink.flinkVersion -}}
 apiVersion: flink.nautilus.dellemc.com/v1beta1
 kind: "FlinkApplication"
 metadata:
