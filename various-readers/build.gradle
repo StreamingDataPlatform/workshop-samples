@@ -112,7 +112,6 @@ distributions {
             }
         }
     }
-    logger.info("This is " + System.getenv("MAVEN_USER"))
     publishing {
        repositories {
            maven {

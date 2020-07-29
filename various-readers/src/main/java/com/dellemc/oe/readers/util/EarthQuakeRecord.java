@@ -5,8 +5,6 @@ import org.apache.flink.table.api.TableSchema;
 import org.apache.flink.table.descriptors.Schema;
 import org.apache.flink.table.shaded.org.joda.time.format.DateTimeFormat;
 import org.apache.flink.table.shaded.org.joda.time.format.DateTimeFormatter;
-//import org.joda.time.format.DateTimeFormat;
-//import org.joda.time.format.DateTimeFormatter;
 import org.apache.flink.types.Row;
 
 import java.io.Serializable;
