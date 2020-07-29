@@ -11,32 +11,30 @@ Gradle 4.0
 
 Maven 3.6
 
-##Setting up IntelliJ
-	Clone workshop-samples main branch from https://github.com/pravega/workshop-samples.git  
-	Start Intellij and File  Open –> Select the cloned workshop-sample folder
+## Setting up IntelliJ
+-  	Clone workshop-samples main branch from https://github.com/pravega/workshop-samples.git  
+-  	Start Intellij and File -> Open –> Select the cloned workshop-sample folder
 ![Open Project](/images/IntelliJ_1.png)
 
 
-	Select Project  File  settings  plugins and install Lombok plugin.
-	Select Project  File  settings  Build,Execution,Deployment  Annotation Process  Select checkbox of Enable annotation processing
-
+- 	Select Project -> File -> settings -> plugins and install Lombok plugin.
+-	Select Project -> File -> settings -> Build,Execution,Deployment -> Annotation Process -> Select checkbox of Enable annotation processing
 ![Enable annotation](/images/IntelliJ_2.png)
 
-	Select Project  File  settings  Build Tools  Gradle  enable auto import and select gradle wrapper
-
+-	Select Project -> File -> settings -> Build Tools -> Gradle -> enable auto import and select gradle wrapper
 ![gradle wrapper](/images/IntelliJ_3.png)
 
 ![gradle installDist](/images/IntelliJ_4.png)
 
-	It will take some time to download dependencies and complete build.
-	Go to Build  Build Project
-	Go to the Nautilus UI and create a project workshop-samples.If you are running samples with Nautilus cluster.
+-	It will take some time to download dependencies and complete build.
+-	Go to Build -> Build Project
+-	Go to the Nautilus UI and create a project workshop-samples.If you are running samples with Nautilus cluster.
 
 ## Configuring Standalone Pravega and running
-	Clone Pravega from https://github.com/pravega/pravega.git and get required version.
-	Get proper release version Ex: pravega-r0.5
+-	Clone Pravega from https://github.com/pravega/pravega.git and get required version.
+-	Get proper release version Ex: pravega-r0.5
 
-	Run standalone Pravega 
+-	Run standalone Pravega 
 ./gradlew startStandalone
 
 ## Running the Samples from IntelliJ with Standalone Pravega
@@ -52,7 +50,7 @@ PRAVEGA_STREAM=json-stream
 
 Click ok and Run JSONWriter
 
-	Configure other samples and run.
+Configure other samples and run.
 
 ## Running the Samples with Nautilus cluster
 
@@ -118,36 +116,36 @@ pravega_client_auth_loadDynamic=true
 
 -  You must make the Maven repo in Nautilus available to your development workstation.
 ```
-kubectl port-forward service/repo 9090:80 --namespace workshop-samples &
+kubectl port-forward service/repo 9090:80 --namespace workshop-samples
 ```
-- Build and publish your application JAR file.
+-   Set the environment variable for maven user and password.
+```
+export MAVEN_USER=desdp
+export MAVEN_PASSWORD=password
+```
+-   Build and publish your application JAR file.
 ```
 ./gradlew publish
 helm upgrade --install --timeout 600 jsonreader \
 --wait --namespace workshop-samples charts
-
 ```
 
 ## About Samples
-	Go to the ingest module and find various writers.
+-   Go to the ingest module and find various writers. 
+-	Run JSONWriter,ImageWriter and EventWriter from IntelliJ
+``
+\workshop-samples\stream-ingest\src\main\java\com\dellemc\oe\ingest
+``  
+    1.  JSONWriter demonstrates streaming a JSON data.  
+    2.	EventWriter demonstrate streaming a String Event  
+    3.	ImageWriter demonstrate streaming ImagaeData as a JSON
 
-	Run JSONWriter,ImageWriter and EventWriter from IntelliJ
-
-$\workshop-samples\stream-ingest\src\main\java\com\dellemc\oe\ingest
-
-	JSONWriter demonstrates streaming a JSON data.
-
-	EventWriter demonstrate streaming a String Event
-
-	ImageWriter demonstrate streaming ImagaeData as a JSON
-
-	Go to various-readers module and run JSONReader and ImageReader Flink 
+-	Go to various-readers module and run JSONReader and ImageReader Flink 
 apps
+``\workshop-samples\various-readers\src\main\java\com\dellemc\oe\readers``
 
-$\workshop-samples\various-readers\src\main\java\com\dellemc\oe\readers
-
-	Go to stream to stream module and run WordCountReader
-
-$\workshop-samples\stream-to-stream\src\main\java\com\dellemc\oe\flink\wordcount
-
-This sample reads data from a stream written by EventWriter as a String and do some transformations and write to another stream.
+-	Go to stream to stream module and run WordCountReader
+``
+\workshop-samples\stream-to-stream\src\main\java\com\dellemc\oe\flink\wordcount
+``
+- This sample reads data from a stream written by EventWriter as a String and do some transformations and write to another stream.
