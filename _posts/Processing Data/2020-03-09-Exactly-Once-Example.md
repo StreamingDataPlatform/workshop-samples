@@ -7,7 +7,7 @@ img: ico-once.png
 license: Apache
 support: Community
 author: 
-    name: Luis Liu
+    name: Luis Liu, Youmin Han
     description: I'm focusing on the data stream solution development
     image: 
 css: 
@@ -32,81 +32,116 @@ from the latest Flink checkpoint in case of failures.
 For demo purpose, it also generates "start" and "end" events for the checker to detect duplicate events.
 
 ## Instructions
+#### A. Running example on a local cluster with support from Pravega
 
-Start the ExactlyOnceChecker app in one window. Come back to the window to observe the output 
-after running the writer app.
+##### 1. Setting up the Pravega and Flink environment
+Before you start, you need to download the latest Pravega release on the [github releases page](https://github.com/pravega/pravega/releases). See [here](http://pravega.io/docs/latest/getting-started/) for the instructions to build and run Pravega in standalone mode.  
 
+Besides, you also need to get the latest Flink binary from [Apache download page](https://flink.apache.org/downloads.html). Follow [this](https://ci.apache.org/projects/flink/flink-docs-stable/getting-started/tutorials/local_setup.html) tutorial to start a local Flink cluster. 
+
+##### 2. Build `pravega-samples` Repository
+
+`pravega-samples` repository provides code samples to connect analytics engines Flink with Pravega as a storage substrate for data streams. It has divided into sub-projects(`pravega-client-examples`, `flink-connector-examples` and `hadoop-connector-examples`), each one addressed to demonstrate a specific component. To build `pravega-samples` from source, follow the [instructions](https://github.com/pravega/pravega-samples#pravega-samples-build-instructions) to use the built-in gradle wrapper.  
+
+##### 3. Start the Pravega Exactly Once Example program
+
+There are multiple ways to run the program in Flink environment including submitting from terminal or Flink UI. Follow the latest instruction from the [github README](https://github.com/pravega/pravega-samples/tree/master/flink-connector-examples/doc/exactly-once) to learn more about the IDE setup and running process.
+
+#### B. Running example on Dell EMC Streaming Data Platform
+##### 1. Change the exactly-once example code to satisfy the SDP running requirements
+Since the original flink connector exactly-once example was designed to run on a standalone Pravega and Flink environment, the code used the `createScope` method from the StreamManager Interface in Pravega. However, due to the security reason, Dell EMC Streaming Data Platform does not allow to create a scope from the code. Please **comment out** `createScope` method from your code.   
+There is one occurrence of `createScope` method in this exactly-once example which locates on following Java file:   
+I. ```pravega-samples/flink-connector-examples/src/main/java/io/pravega/example/flink/Utils.java```  
+
+##### 2. Follow [this post]({{site.baseurl}}/getting started/2020/07/14/create-flink-project-on-streaming-data-platform.html) to learn how to create Flink projects and run on Dell EMC Streaming Data Platform
+If you choose to use the Gradle Build Tool, make sure the Maven repo in SDP is available to your development workstation as mentioned in the [post]({{site.baseurl}}/getting started/2020/07/14/create-flink-project-on-streaming-data-platform.html). The following is an example of ```pravega-samples/flink-connector-examples/build.gradle``` file which only shows the modified section. Since the example uses shadow JARs, make sure to add `classifier = ""` and `zip64 true` to the `shadowJar` config. 
 ```
-$ bin/exactlyOnceChecker --scope examples --stream mystream --controller tcp://localhost:9090
+shadowJar {
+    dependencies {
+        include dependency("org.scala-lang.modules:scala-java8-compat_${flinkScalaVersion}")
+        include dependency("io.pravega:pravega-connectors-flink-${flinkMajorMinorVersion}_${flinkScalaVersion}")
+        include dependency("io.pravega:pravega-keycloak-client:${pravegaKeycloakVersion}")
+    }
+    classifier = ""
+    zip64 true
+}
+
+publishing {
+    repositories {
+        maven {
+            url = "http://localhost:9090/maven2"
+            credentials {
+                username "desdp"
+                password "password"
+            }
+            authentication {
+                basic(BasicAuthentication)
+            }
+        }
+    }
+
+    publications {
+        shadow(MavenPublication) { publication ->
+                project.shadow.component(publication)
+        }
+    }
+}
+```
+The preferable **name/namespace/scope** for this project is ```exactlyonce```.  
+The **Flink Image** for creating the cluster is ```1.9.0```.  
+The **Main Class** for creating the new app is ```io.pravega.example.flink.primer.process.ExactlyOnceChecker```.   
+Please also make sure to pass the same parameters as discussed in the [original exactly-once post](https://github.com/pravega/pravega-samples/tree/master/flink-connector-examples/doc/exactly-once). The **controller** address in this case is: ```tcp://nautilus-pravega-controller.nautilus-pravega.svc.cluster.local:9090```   
+After finishing the above steps, the **State** for your Flink application should be shown as **Started**.
+
+##### 3. Connect the `ExactlyOnceWriter` application with the Pravega steam on Dell EMC Streaming Data Platform
+After setting up the Flink app on SDP, configure Streaming Data Platform authentication by getting the ```keycloak.json``` file. Run the following command in your terminal (you may need to change the name for namespace): 
+```
+kubectl get secret exactlyonce-pravega -n exactlyonce -o jsonpath="{.data.keycloak\.json}" |base64 -d >  ${HOME}/keycloak.json
+
+chmod go-rw ${HOME}/keycloak.json
+```
+The output should look like the following:
+```
+{
+  "realm": "nautilus",
+  "auth-server-url": "https://keycloak.p-test.nautilus-lab-wachusett.com/auth",
+  "ssl-required": "external",
+  "bearer-only": false,
+  "public-client": false,
+  "resource": "exactlyonce-pravega",
+  "confidential-port": 0,
+  "credentials": {
+    "secret": "c72c45f8-76b0-4ca2-99cf-1f1a03704c4f"
+  }
+}
+```
+In order to connect with Pravega controller, use `kubectl` to get the `EXTERNAL-IP` of the nautilus-pravega-controller service.
+```
+kubectl get service nautilus-pravega-controller -n nautilus-pravega
+
+NAME                          TYPE           CLUSTER-IP       EXTERNAL-IP     PORT(S)                          AGE
+nautilus-pravega-controller   LoadBalancer   10.100.200.243   11.111.11.111   10080:32217/TCP,9090:30808/TCP   6d5h
 ```
 
-
-In another window, start the ExactlyOnceWriter with EXACTLY_ONCE mode set to false.
-This is to demonstrate what happens when Pravega EXACTLY_ONCE mode not enabled 
-
+Before running the application, set the following environment variables. This can be done by setting the IntelliJ run configurations. (Go to run -> Edit Configurations -> Select ExactlyOnceWriter application -> Environment Variables -> click Browse icon. Fill the details mentioned below screen. Add all below program environment variables.) Make sure to change the `PRAVEGA_CONTROLLER` to the appropriate `EXTERNAL-IP` address. Notice that the assigned value for `PRAVEGA_SCOPE` and `PRAVEGA_STREAM` may need to be changed based on your settings when created the Flink project and application on SDP.
 ```
-$ bin/exactlyOnceWriter --controller tcp://localhost:9090 --scope examples --stream mystream --exactlyonce false
-```
-
-Snippets of output shown below:
-
-```
-......
-
-Start checkpointing at position 16
-Complete checkpointing at position 16
-Artificial failure at position 26
-05/02/2018 17:02:02	Source: Custom Source -> Map(1/1) switched to FAILED 
-io.pravega.examples.flink.primer.util.FailingMapper$IntentionalException: artificial failure
-
-......
-
-Restore from checkpoint at position 16
-Start checkpointing at position 50
-Complete checkpointing at position 50
-
-......
-
-```
-The app completes checkpointing at position 16, and in the meantime, continues to write to the 
-Pravega stream until it introduces an artificial exception to simulate transaction failure 
-at position 26. Upon the failure, the app restores from its last successful checkpoint 
-at position 16. Without the Pravega EXACTLY_ONCE enabled, it is likely that duplicate events, 
-from position 17 to 26, will be written to the Pravega stream. 
-
-And indeed, that's what checker app shows. Note that output of duplicate events may not necessarily 
-be within the checker start and end block. 
-
-```
-============== Checker starts ===============
-Duplicate event: 18
-Duplicate event: 20
-Duplicate event: 22
-Duplicate event: 24
-Duplicate event: 17
-Duplicate event: 19
-Duplicate event: 21
-Duplicate event: 23
-Found duplicates
-============== Checker ends  ===============
+pravega_client_auth_method=Bearer
+pravega_client_auth_loadDynamic=true
+KEYCLOAK_SERVICE_ACCOUNT_FILE=${HOME}/keycloak.json
+PRAVEGA_CONTROLLER=tcp://<pravega controller external-ip>:9090
+PRAVEGA_SCOPE=exactlyonce
+PRAVEGA_STREAM=mystream
 ```
 
-If you wish, run the writer app a few more times by specifying different values for --num-events option.
-The app will restore from different positions and the checker window should continue to show duplicate events. 
+In addition, make sure you to pass the same parameters as metioned in [original exactly-once post](https://github.com/pravega/pravega-samples/tree/master/flink-connector-examples/doc/exactly-once).  
+Then you can save the configuration and hit Run.
 
-Now run the ExactlyOnceWriter in EXACTLY_ONCE mode.
-
+##### 4. Check the result after running exactly-once example
+Unlike the standalone mode, the result will not be showing in the console output. You need to access the pod's log by using `kubectl`. The following is an example of using the command (namespace may change based on your settings):
 ```
-$ bin/exactlyOnceWriter --controller tcp://localhost:9090 --scope examples --stream mystream --num-events 50  --exactlyonce true
+kubectl logs -f exactlyonce-taskmanager-0 -n exactlyonce
 ```
-
-The output should look like the followings:
-
-```
-============== Checker starts ===============
-No duplicate found. EXACTLY_ONCE!
-============== Checker ends  ===============
-```
+You can find the same results as showed in the [post](https://github.com/pravega/pravega-samples/tree/master/flink-connector-examples/doc/exactly-once).
 
 ## Source
 [https://github.com/pravega/pravega-samples/tree/master/flink-connector-examples/doc/exactly-once](https://github.com/pravega/pravega-samples/tree/master/flink-connector-examples/doc/exactly-once)
