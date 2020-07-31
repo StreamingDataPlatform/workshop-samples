@@ -113,7 +113,7 @@ The Flink Image for creating the cluster is ```1.9.0```.
 The Main Class for creating the new app is ```io.pravega.example.flink.watermark.EventTimeAverage```. Please also make sure to pass the same parameters as discussed in the [original watermark post](https://github.com/pravega/pravega-samples/tree/master/flink-connector-examples/doc/watermark).  
 After finishing the above steps, the **State** for your Flink application should be shown as **Started**.
 
-##### 3. Connect the `PravegaWatermarkIngestion` application with the Pravega steam on Dell EMC Streaming Data Platform
+##### 3. Connect the `PravegaWatermarkIngestion` application with the Pravega stream on Dell EMC Streaming Data Platform
 After setting up the Flink app on SDP, configure Streaming Data Platform authentication by getting the ```keycloak.json``` file. Run the following command in your terminal (you may need to change the name for namespace): 
 ```
 kubectl get secret watermark-examples-pravega -n watermark-examples -o jsonpath="{.data.keycloak\.json}" |base64 -d >  ${HOME}/keycloak.json

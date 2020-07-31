@@ -93,7 +93,7 @@ The **Main Class** for creating the new app is ```io.pravega.example.flink.prime
 Please also make sure to pass the same parameters as discussed in the [original exactly-once post](https://github.com/pravega/pravega-samples/tree/master/flink-connector-examples/doc/exactly-once). The **controller** address in this case is: ```tcp://nautilus-pravega-controller.nautilus-pravega.svc.cluster.local:9090```   
 After finishing the above steps, the **State** for your Flink application should be shown as **Started**.
 
-##### 3. Connect the `ExactlyOnceWriter` application with the Pravega steam on Dell EMC Streaming Data Platform
+##### 3. Connect the `ExactlyOnceWriter` application with the Pravega stream on Dell EMC Streaming Data Platform
 After setting up the Flink app on SDP, configure Streaming Data Platform authentication by getting the ```keycloak.json``` file. Run the following command in your terminal (you may need to change the name for namespace): 
 ```
 kubectl get secret exactlyonce-pravega -n exactlyonce -o jsonpath="{.data.keycloak\.json}" |base64 -d >  ${HOME}/keycloak.json
