@@ -11,11 +11,8 @@
 rootProject.name = "workshop-samples"
 
 include "common"
-include "auth-demo"
 include "operational"
 include "stream-ingest"
-include "stream-process"
-include "stream-to-stream"
-include "various-readers"
-include "gateway"
+include "stream-processing"
+include "stream-readers"
 

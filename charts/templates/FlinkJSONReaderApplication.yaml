@@ -8,7 +8,7 @@ metadata:
 spec:
   flinkVersion: {{ $flinkVersion }}
 
-  mavenCoordinate: com.dellemc.oe.readers:various-readers:{{ $application.mavenVersion }}
+  mavenCoordinate: com.dellemc.oe.readers:stream-readers:{{ $application.mavenVersion }}
   mainClass: com.dellemc.oe.readers.JSONReader
 
   parallelism: {{ $application.defaultParallelism }}

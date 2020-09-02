@@ -1,14 +1,14 @@
-{{- if .Values.flink.applications.switch.streamToStream }}
+{{- if .Values.flink.applications.switch.streamProcess }}
 {{- $application := .Values.application -}}
 {{- $flinkVersion := .Values.flink.flinkVersion -}}
 apiVersion: flink.nautilus.dellemc.com/v1beta1
 kind: "FlinkApplication"
 metadata:
-  name: "stream-to-stream"
+  name: "stream-processing"
 spec:
   flinkVersion: {{ $flinkVersion }}
 
-  mavenCoordinate: com.dellemc.oe.flink.wordcount:stream-to-stream:{{ $application.mavenVersion }}
+  mavenCoordinate: com.dellemc.oe.flink.wordcount:stream-processing:{{ $application.mavenVersion }}
   mainClass: com.dellemc.oe.flink.wordcount.WordCountReader
 
   parallelism: {{ $application.defaultParallelism }}

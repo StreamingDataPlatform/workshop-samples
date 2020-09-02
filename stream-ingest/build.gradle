@@ -86,20 +86,4 @@ distributions {
             }
         }
     }
-publishing {
-    repositories {
-        maven {
-            credentials {
-                username System.getenv("MAVEN_USER")
-                password System.getenv("MAVEN_PASSWORD")
-            }
-            url projectRepoUrl
-        }
-    }
-    publications {
-        shadow(MavenPublication) { publication ->
-             project.shadow.component(publication)
-            }
-        }
-    }
 }

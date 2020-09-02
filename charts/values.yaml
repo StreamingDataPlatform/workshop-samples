@@ -16,8 +16,9 @@ flink:
     switch:
       jsonReader: true
       imageReader: false
-      streamToStream: false
+      streamProcess: false
       sqlReader: false
+      sqlJoinReader: false
   flinkVersion: 1.10.1
   flinkImage: 1.10.1-2.12
 # Detailed Project Control
@@ -30,7 +31,7 @@ project:
 cluster:
   localStorage: 20Gi
   taskManager:
-    replicas: 2
+    replicas: 1
     memory: 1300M
     cpu: 900m
     taskSlots: 5
@@ -44,5 +45,6 @@ application:
   pravega:
     pravega_scope: workshop-samples
     stream_name: json-stream
+    csv_stream: csv-stream
 
 

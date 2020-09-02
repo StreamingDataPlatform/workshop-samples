@@ -1,7 +1,7 @@
-# Nautilus Developer Workshop Code Samples
+# Dell EMC Streaming Data Platform Developer Workshop Code Samples
 
 ## Pre-Requisites
-External connectivity enabled Nautilus cluster required to perform these samples. If Nautilus cluster not exists, applications can be developed using standalone pravega.
+External connectivity enabled Dell EMC SDP cluster required to perform these samples. If SDP cluster not exists, applications can be developed using standalone pravega.
 
 Use Ubuntu VM or Ubuntu for desktops
 
@@ -16,23 +16,17 @@ Maven 3.6
 -  	Start Intellij and File -> Open –> Select the cloned workshop-sample folder
 ![Open Project](/images/IntelliJ_1.png)
 
-
 - 	Select Project -> File -> settings -> plugins and install Lombok plugin.
--	Select Project -> File -> settings -> Build,Execution,Deployment -> Annotation Process -> Select checkbox of Enable annotation processing
+-	Select Project -> File -> settings -> Build,Execution,Deployment Build Tools -> Gradle -> Select checkbox Download external annotations for dependencies
 ![Enable annotation](/images/IntelliJ_2.png)
-
--	Select Project -> File -> settings -> Build Tools -> Gradle -> enable auto import and select gradle wrapper
-![gradle wrapper](/images/IntelliJ_3.png)
-
-![gradle installDist](/images/IntelliJ_4.png)
 
 -	It will take some time to download dependencies and complete build.
 -	Go to Build -> Build Project
--	Go to the Nautilus UI and create a project workshop-samples.If you are running samples with Nautilus cluster.
+-	Go to the SDP UI and create a project workshop-samples. If you are running samples with SDP cluster.
 
 ## Configuring Standalone Pravega and running
 -	Clone Pravega from https://github.com/pravega/pravega.git and get required version.
--	Get proper release version Ex: pravega-r0.5
+-	Get proper release version Ex: pravega-r0.7
 
 -	Run standalone Pravega 
 ./gradlew startStandalone
@@ -52,11 +46,11 @@ Click ok and Run JSONWriter
 
 Configure other samples and run.
 
-## Running the Samples with Nautilus cluster
+## Running the Samples with SDP cluster
 
-### Configure Nautilus Authentication
+### Configure SDP Authentication
 
-- Create a project `workshop-samples` in Nautilus UI
+- Create a project `workshop-samples` in SDP UI
 - This will automatically create a scope `workshop-samples`
 -  Get the `keycloak.json` file by executing this command
 ```
@@ -80,7 +74,7 @@ chmod go-rw ${HOME}/keycloak.json
 }
 ```
 
-## Running [JSONWriter](../stream-ingest/src/main/java/com/dellemc/oe/ingest/JSONWriter.java) from Intelij
+## Running [JSONWriter](/stream-ingest/src/main/java/com/dellemc/oe/ingest/JSONWriter.java) from Intelij
 
 - Set the following environment variables. This can be done by setting the IntelliJ run configurations.
   (-> Go to run -> Edit Configurations -> Select JSONWriter application and click + icon. Fill the details mentioned below screen. Add all below program environment variables.)
@@ -94,7 +88,7 @@ PRAVEGA_STREAM=json-stream
 ```
 - Save configuration and hit Run
 
-## Running [JSONWReader](../various-readers/src/main/java/com/dellemc/oe/readers/JSONReader.java) from Intelij
+## Running [JSONWReader](/stream-readers/src/main/java/com/dellemc/oe/readers/JSONReader.java) from Intelij
 
 - Set the following environment variables. This can be done by setting the IntelliJ run configurations.
 
@@ -112,9 +106,9 @@ pravega_client_auth_loadDynamic=true
 
 - Save configuration and hit Run
 
-## Running [JSONWReader](../various-readers/src/main/java/com/dellemc/oe/readers/JSONReader.java) in Nautilus
+## Running [JSONWReader](/stream-readers/src/main/java/com/dellemc/oe/readers/JSONReader.java) in Dell EMC SDP
 
--  You must make the Maven repo in Nautilus available to your development workstation.
+-  You must make the Maven repo in SDP available to your development workstation.
 ```
 kubectl port-forward service/repo 9090:80 --namespace workshop-samples
 ```
@@ -126,26 +120,28 @@ export MAVEN_PASSWORD=password
 -   Build and publish your application JAR file.
 ```
 ./gradlew publish
-helm upgrade --install --timeout 600 jsonreader \
+helm upgrade --install --timeout 600s jsonreader \
 --wait --namespace workshop-samples charts
 ```
 
 ## About Samples
--   Go to the ingest module and find various writers. 
--	Run JSONWriter,ImageWriter and EventWriter from IntelliJ
+-  `stream-ingest` shows how to ingest data into a Pravega stream.   
 ``
 \workshop-samples\stream-ingest\src\main\java\com\dellemc\oe\ingest
 ``  
-    1.  JSONWriter demonstrates streaming a JSON data.  
-    2.	EventWriter demonstrate streaming a String Event  
-    3.	ImageWriter demonstrate streaming ImagaeData as a JSON
+    1.  `JSONWriter` demonstrates streaming a JSON data which convert from CSV file.  
+    2.	`EventWriter` demonstrate streaming a String Event  
+    3.	`ImageWriter` demonstrate streaming ImagaeData as a JSON
 
--	Go to various-readers module and run JSONReader and ImageReader Flink 
-apps
-``\workshop-samples\various-readers\src\main\java\com\dellemc\oe\readers``
+- `stream-processing` illustrates how to read from a Pravega stream and write to a different one.  
+``
+\workshop-samples\stream-processing\src\main\java\com\dellemc\oe\flink\wordcount
+``  
+This wordcount reads data from a stream written by EventWriter as a String and do some transformations and write to another stream.
 
--	Go to stream to stream module and run WordCountReader
-``
-\workshop-samples\stream-to-stream\src\main\java\com\dellemc\oe\flink\wordcount
-``
-- This sample reads data from a stream written by EventWriter as a String and do some transformations and write to another stream.
+- `stream-readers` exemplifies how to read the data from a Pravega stream.  
+``\workshop-samples\stream-readers\src\main\java\com\dellemc\oe\readers``  
+    1.  `JSONReader` reads the data generated by `JSONWriter` and prints to standard output.
+    2.	`ImageReader` reads the data generated by `ImageWriter` and prints the image data.
+    3.	`FlinkSQLReader` reads the data generated by `JSONWriter` and converts to a SQL table source.
+    4.  `FlinkSQLJOINReader` reads the data generated by `JSONWriter` and uses SQL to join another table.
