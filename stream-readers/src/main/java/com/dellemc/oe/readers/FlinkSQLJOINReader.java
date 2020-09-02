@@ -17,6 +17,7 @@ import com.dellemc.oe.util.AppConfiguration;
 import io.pravega.client.stream.Stream;
 import io.pravega.connectors.flink.table.descriptors.Pravega;
 import io.pravega.connectors.flink.PravegaConfig;
+import org.apache.commons.io.IOUtils;
 import org.apache.flink.api.java.tuple.Tuple2;
 
 import org.apache.flink.streaming.api.TimeCharacteristic;
@@ -36,6 +37,7 @@ import org.apache.flink.table.sources.TableSource;
 import org.apache.flink.types.Row;
 
 
+import java.io.*;
 import java.net.*;
 import java.util.Map;
 
@@ -110,22 +112,42 @@ public class FlinkSQLJOINReader extends AbstractApp {
            tableEnv.registerDataStream("hvacStream", dataStream);
 
             // load the static data from CSV.
+            String targetDirString = appConfiguration.getCsvDir();
+            File targetDir = new File(targetDirString);
+            if (targetDir.exists()){
+                LOG.info("################## Target Dir Exists: " +  targetDirString + " ################  ");
+            } else {
+                if (targetDir.mkdirs()) {
+                    LOG.info("################## Target Dir Create: " +  targetDirString + " ################  ");
+                } else {
+                    LOG.error("################## Cannot Create Target Dir: " +  targetDirString + " ################  ");
+                }
+            }
+
+            String filePath = targetDirString + "/building.csv";
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
-            URL resourceUrl = loader.getResource("building.csv");
-            String filePath = resourceUrl.getPath();
-            LOG.info("################## FILE PATH ################  "+filePath);
+            InputStream resourceStream = loader.getResourceAsStream("building.csv");
+
+            File file = new File(filePath);
+            try(OutputStream outputStream = new FileOutputStream(file)){
+                IOUtils.copy(resourceStream, outputStream);
+            } catch (FileNotFoundException e) {
+                LOG.warn("########## Building File ERROR  #############  " + e.getMessage());
+            } catch (IOException e) {
+                LOG.error("########## Building File ERROR  #############  " + e.getMessage());
+            }
 
             // This is a finite list of items which has an BuildingID,BuildingMgr,BuildingAge,HVACproduct,Country
             CsvTableSource buildingSource = new CsvTableSource.Builder()
                     .path(filePath)
                     .ignoreParseErrors()
+                    .ignoreFirstLine()
                     .field("BuildingID", DataTypes.INT())
                     .field("BuildingMgr", DataTypes.STRING())
                     .field("BuildingAge", DataTypes.INT())
                     .field("HVACproduct", DataTypes.STRING())
                     .field("Country", DataTypes.STRING())
                     .build();
-
 
             // Similarly, register this list of items as a table.
             tableEnv.registerTableSource("building", buildingSource);

@@ -1,15 +1,15 @@
-{{- if .Values.flink.applications.switch.imageReader }}
+{{- if .Values.flink.applications.switch.sqlJoinReader }}
 {{- $flinkVersion := .Values.flink.flinkVersion -}}
 {{- $application := .Values.application -}}
 apiVersion: flink.nautilus.dellemc.com/v1beta1
 kind: "FlinkApplication"
 metadata:
-  name: "image-reader"
+  name: "sql-join-reader"
 spec:
   flinkVersion: {{ $flinkVersion }}
 
   mavenCoordinate: com.dellemc.oe.readers:stream-readers:{{ $application.mavenVersion }}
-  mainClass: com.dellemc.oe.readers.ImageReader
+  mainClass: com.dellemc.oe.readers.FlinkSQLJOINReader
 
   parallelism: {{ $application.defaultParallelism }}
 
@@ -32,5 +32,4 @@ spec:
       value: "true"
     - name: rebalance
       value: "false"
-{{- end }}
-
+  {{- end }}

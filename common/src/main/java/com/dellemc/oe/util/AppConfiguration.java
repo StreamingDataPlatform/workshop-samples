@@ -23,6 +23,7 @@ public class AppConfiguration {
     private String routingKey;
     private String dataFile;
     private String message;
+    private String csvDir;
 
     public AppConfiguration(String[] args) {
         ParameterTool params = ParameterTool.fromArgs(args);
@@ -39,7 +40,10 @@ public class AppConfiguration {
         routingKey = params.get("routing-key", "default");
         dataFile = params.get("dataFile", "earthquakes1970-2014.csv");
         message = params.get("message", "hello world");
+        csvDir = params.get("csvDir", "/mnt/flink");
     }
+
+    public String getCsvDir() {return csvDir;}
 
     public String getMessage() {
         return message;
