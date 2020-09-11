@@ -110,7 +110,7 @@ pravega_client_auth_loadDynamic=true
 
 -  You must make the Maven repo in SDP available to your development workstation.
 ```
-kubectl port-forward service/repo 9090:80 --namespace workshop-samples
+kubectl port-forward service/repo 9092:80 --namespace workshop-samples
 ```
 -   Set the environment variable for maven user and password.
 ```
