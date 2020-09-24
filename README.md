@@ -117,11 +117,23 @@ kubectl port-forward service/repo 9092:80 --namespace workshop-samples
 export MAVEN_USER=desdp
 export MAVEN_PASSWORD=password
 ```
--   Build and publish your application JAR file.
+-   Build and publish your application JAR file. Make sure to replace the `release name` and `application values file` with appropriate values.
 ```
 ./gradlew publish
-helm upgrade --install --timeout 600s jsonreader \
---wait --namespace workshop-samples charts
+helm upgrade --install --timeout 600s --wait \
+    <Release Name> \
+    charts/workshop-samples \
+    --namespace workshop-samples \
+    -f values/<application values file> 
+```
+
+Here is an example for building the json reader application by using Helm Chart.
+```
+helm upgrade --install --timeout 600s --wait \
+    jsonreader \
+    charts/workshop-samples \
+    --namespace workshop-samples \
+    -f values/flink-json-reader.yaml
 ```
 
 ## About Samples

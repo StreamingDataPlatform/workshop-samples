@@ -1,0 +1,39 @@
+# Copyright (c) Dell Inc., or its subsidiaries. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+apiVersion: flink.nautilus.dellemc.com/v1beta1
+kind: FlinkCluster
+metadata:
+  labels:
+    name: {{ $.Release.Name }}
+  name: {{ $.Release.Name }}
+spec:
+  imageRef:
+    name: {{ $.Values.imageRef.name }}
+  localStorage:
+    replicas: {{ .Values.localStorage.replicas }}
+    volumeClaimTemplate:
+      accessModes: [ ReadWriteOnce ]
+      resources:
+        requests:
+          storage: {{ .Values.localStorage.size | quote }}
+      storageClassName: standard
+  volumes:
+{{ toYaml .Values.volumes | indent 4 }}
+  storage:
+    volumeSource:
+      persistentVolumeClaim:
+        claimName: data-project
+  zookeeperUrl: zookeeper-client:2181
+  jobManager:
+{{ toYaml .Values.jobManager | indent 4 }}
+  taskManager:
+{{ toYaml .Values.taskManager | indent 4 }}
+  configuration:
+{{ toYaml .Values.clusterConfiguration | indent 4 }}
+  logging:
+{{ toYaml .Values.logging | indent 4 }}
