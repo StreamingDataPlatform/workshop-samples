@@ -131,7 +131,7 @@ Here is an example for building the json reader application by using Helm Chart.
 ```
 helm upgrade --install --timeout 600s --wait \
     jsonreader \
-    charts/workshop-samples \
+    charts/flink-app \
     --namespace workshop-samples \
     -f values/flink-json-reader.yaml
 ```
