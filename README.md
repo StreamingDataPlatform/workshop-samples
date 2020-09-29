@@ -122,7 +122,7 @@ export MAVEN_PASSWORD=password
 ./gradlew publish
 helm upgrade --install --timeout 600s --wait \
     <Release Name> \
-    charts/workshop-samples \
+    charts/flink-app \
     --namespace workshop-samples \
     -f values/<application values file> 
 ```
