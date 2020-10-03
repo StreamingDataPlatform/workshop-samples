@@ -26,7 +26,7 @@ Maven 3.6
 
 ## Configuring Standalone Pravega and running
 -	Clone Pravega from https://github.com/pravega/pravega.git and get required version.
--	Get proper release version Ex: pravega-r0.7
+-	Get proper release version Ex: pravega-r0.8
 
 -	Run standalone Pravega 
 ./gradlew startStandalone
