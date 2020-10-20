@@ -101,7 +101,7 @@ pravega_client_auth_loadDynamic=true
 ```$xslt
 --controller tcp://<pravega controller>:9090
 --scope workshop-samples
---stream json-stream
+--input-stream json-stream
 ```
 
 - Save configuration and hit Run
