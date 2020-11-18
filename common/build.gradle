@@ -13,6 +13,8 @@ apply plugin: 'jacoco'
 apply plugin: 'java'
 
 version=samplesVersion
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 dependencies {
 	compile "io.pravega:pravega-client:${pravegaVersion}"
