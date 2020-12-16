@@ -5,10 +5,10 @@ The battery of code examples to demonstrate the capabilities of Pravega as a dat
 ## Deployment
 
 1. Create a project on SDP and upload the maven artifacts for [spark-connectors](https://github.com/pravega/spark-connectors) and [pravega-keycloak](https://github.com/pravega/pravega-keycloak) jar
-![SDP Maven](maven.png)
+![SDP Maven](images/maven.png)
 
 2. Upload the Python or Scala application file to the SDP
-![SDP File](files.png)
+![SDP File](images/files.png)
 
 3. Change any configurations such as spark version, dependencies, application name of the deployment `yaml` file
 
