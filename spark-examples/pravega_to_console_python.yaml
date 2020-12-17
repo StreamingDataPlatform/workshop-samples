@@ -12,7 +12,6 @@ spec:
   # Signifies what the `mainApplicationFile` value represents.  Valid Values: "Maven", "File", "Text".  Default: "Text"
   mainApplicationFileType: File
   # Main application file that will be passed to Spark Submit (interpreted according to `mainApplicationFileType`)
-  # mainApplicationFile: "stream_generated_data_to_pravega.py"
   mainApplicationFile: "stream_pravega_to_console.py"
   # Extra Maven dependencies to resolve from Maven Central (optional: Java/Scala ONLY)
   jars:
@@ -37,7 +36,6 @@ spec:
     # Number of seconds between each retry during application failures
     failureRetryInterval: 60
   # Defines shape of cluster to execute application
-  # clusterTemplate:
   # Reference to a RuntimeImage containing the Spark Runtime to use for the cluster
   runtime: spark-3.0.0
   # Driver Resource settings
