@@ -1,0 +1,74 @@
+apiVersion: spark.nautilus.dellemc.com/v1beta1
+kind: SparkApplication
+metadata:
+  name: pravega-to-console-python
+spec:
+  # Language type of application, Python, Scala, Java  (optional: Defaults to Java if not specified)
+  type: Python
+  # Can be Running, Finished or Stopped (required)
+  state: Running
+  # Main Java/Scala class to execute (required for type:Scala or Java)
+  # mainClass: org.apache.spark.examples.SparkPi
+  # Signifies what the `mainApplicationFile` value represents.  Valid Values: "Maven", "File", "Text".  Default: "Text"
+  mainApplicationFileType: File
+  # Main application file that will be passed to Spark Submit (interpreted according to `mainApplicationFileType`)
+  mainApplicationFile: "stream_pravega_to_console.py"
+  # Extra Maven dependencies to resolve from Maven Central (optional: Java/Scala ONLY)
+  jars:
+    - "{maven: io.pravega:pravega-connectors-spark:0.8.0}"
+    - "{maven: io.pravega:pravega-keycloak-client:0.8.0}"
+  parameters:
+    - name: timeout
+      value: "100000"
+  # Single value arguments passed to application (optional)
+  arguments:
+    - "--recreate"
+  # Directory in project storage which will be handed to Application as CHECKPOINT_DIR environment variable for Application checkpoint files (optional, SDP will use Analytic Project storage)
+  # checkpointPath: /spark-pi-checkpoint-d5722b45-8773-41db-93a4-bab2324d74d0
+  # Number of seconds SDP will wait after signalling shutdown to an application before forcabily killing the Driver POD (optional, default: 180 seconds)
+  gracefulShutdownTimeout: 180
+  # When to redeploy the application (optional, default: OnFailure, failureRetries: 3, failureRetryInterval: 10, submissionRetries: 0)
+  retryPolicy:
+    # Valid values: Never, Always, OnFailure
+    type: OnFailure
+    # Number of retries before Application is marked as failed
+    failureRetries: 5
+    # Number of seconds between each retry during application failures
+    failureRetryInterval: 60
+  # Defines shape of cluster to execute application
+  # Reference to a RuntimeImage containing the Spark Runtime to use for the cluster
+  runtime: spark-3.0.0
+  # Driver Resource settings
+  driver:
+    cores: 1
+    memory: 512M
+    # Kubernetes resources that should be applied to the POD (optional)
+    resources:
+        requests:
+          cpu: 1
+          memory: 1024Mi
+        limits:
+          cpu: 1
+          memory: 1024Mi
+
+
+  # Executor Resource Settings
+  executor:
+    replicas: 3
+    cores: 1
+    memory: 512M
+    # Kubernetes resources that should be applied to each executor POD
+    #resources:
+    #  requests:
+    #    nvidia.com/gpu: 2
+    #  limits:
+    #    nvidia.com/gpu: 2
+  # Extra key value/pairs to apply to configuration (optional)
+  configuration:
+    spark.reducer.maxSizeInFlight: 48m
+    spark.driver.extraJavaOptions: "-Divy.cache.dir=/tmp -Divy.home=/tmp"
+  # Custom Log4J Logging Levels (optional)
+  logging:
+    org.myapp: DEBUG
+    io.pravega: DEBUG
+    io.pravega.connectors: DEBUG
