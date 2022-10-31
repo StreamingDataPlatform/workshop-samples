@@ -41,7 +41,7 @@ public class EventWithTimestampWriter {
     public static ObjectNode createJSONData() {
         ObjectNode message = null;
         try {
-            String data = "{\"sensorid\":" + Math.random() + ",\"time\":" + System.currentTimeMillis() + ",\"value\":" + Math.random();
+            String data = "{\"sensorid\":" + Math.random() + ",\"time\":" + System.currentTimeMillis() + ",\"value\":" + Math.random()+"}";
             // Deserialize the JSON message.
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(data);
