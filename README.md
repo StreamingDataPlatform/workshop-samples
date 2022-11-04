@@ -25,7 +25,7 @@ Maven 3.6
 -	Go to the SDP UI and create a project workshop-samples. If you are running samples with SDP cluster.
 
 ## Configuring Standalone Pravega and running
--	Clone Pravega ([getting-started-guide](https://github.com/pravega/pravega/blob/master/documentation/src/docs/getting-started/quick-start.md)) from https://github.com/pravega/pravega.git and get required version.
+-	Clone Pravega ([getting-started-guide](https://pravega.io/docs/latest/getting-started/quick-start/)) from https://github.com/pravega/pravega.git and get required version.
 -	Get proper release version Ex: pravega-r0.12.0
 
 -	Run standalone Pravega 
