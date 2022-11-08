@@ -38,7 +38,6 @@ dependencies {
     compile "org.apache.flink:flink-streaming-java_${flinkScalaVersion}:${flinkVersion}"
     compile "org.apache.flink:flink-streaming-scala_${flinkScalaVersion}:${flinkVersion}"
     compile "org.apache.flink:flink-ml-lib_${flinkScalaVersion}:${flinkVersion}"
-    compile "org.apache.flink:flink-table-planner_${flinkScalaVersion}:${flinkVersion}"
     compile "io.pravega:pravega-client:${pravegaVersion}"
 
     // common-library dependencies

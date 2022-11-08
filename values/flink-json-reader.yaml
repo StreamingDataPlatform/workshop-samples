@@ -6,7 +6,7 @@
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 appParameters:
-  scope: workshop-samples
+  scope: workshop-sample
   input-stream: json-stream
   minNumSegments: 3
   job.checkpointInterval: 60000
