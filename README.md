@@ -116,7 +116,7 @@ OUTPUT:-
 - Use pravega-controller.host.ns.sdp.hop.lab.emc.com as **pravega controller** and 443 as **port**
 ### Adding required certificates
 ```
-kubectl get secret pravega-tls -n nautilus-pravega -o jsonpath="{.data.tls\.crt}" | base64 --decode > pravega.crt
+kubectl get secret pravega-controller-tls -n nautilus-pravega -o jsonpath="{.data.tls\.crt}" | base64 --decode > pravega.crt
 kubectl get secret keycloak-tls -n nautilus-system -o jsonpath="{.data.tls\.crt}" | base64 --decode > keycloak.crt
 ```
 

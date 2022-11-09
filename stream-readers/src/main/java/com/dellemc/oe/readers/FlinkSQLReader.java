@@ -14,23 +14,19 @@ import com.dellemc.oe.util.AbstractApp;
 import com.dellemc.oe.util.AppConfiguration;
 import io.pravega.client.stream.Stream;
 import io.pravega.connectors.flink.PravegaConfig;
-import io.pravega.connectors.flink.table.descriptors.Pravega;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.apache.flink.table.api.Table;
-import org.apache.flink.table.descriptors.ConnectTableDescriptor;
-import org.apache.flink.table.descriptors.*;
-import org.apache.flink.table.factories.StreamTableSourceFactory;
-import org.apache.flink.table.factories.TableFactoryService;
-import org.apache.flink.table.sources.TableSource;
-import org.apache.flink.table.descriptors.Schema;
+import com.dellemc.oe.model.JSONData;
+import com.dellemc.oe.serialization.JsonDeserializationSchema;
+import io.pravega.connectors.flink.FlinkPravegaReader;
+import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.types.Row;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
 
 /*
  *  This flink application demonstrates the JSON Data reading
@@ -67,32 +63,23 @@ public class FlinkSQLReader extends AbstractApp {
             // Create Stream Table Environment
             StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
 
-            // get the Schema
-            Schema   schema = EarthQuakeRecord.getSchema();
-
-            Pravega pravega = new Pravega();
-            pravega.tableSourceReaderBuilder()
-                    .forStream(stream)
-                    .withPravegaConfig(pravegaConfig);
-            // Create Table descriptor
-            ConnectTableDescriptor desc = tableEnv.connect(pravega)
-                    .withFormat(new Json().failOnMissingField(false).deriveSchema())
-                    .withSchema(schema)
-                    .inAppendMode();
-
-            // Create Table source
-            final Map<String, String> propertiesMap = desc.toProperties();
-            final TableSource<?> source = TableFactoryService.find(StreamTableSourceFactory.class, propertiesMap)
-                    .createStreamTableSource(propertiesMap);
-
+            FlinkPravegaReader<EarthQuakeRecord> flinkPravegaReader = FlinkPravegaReader.<EarthQuakeRecord>builder()
+                    .withPravegaConfig(appConfiguration.getPravegaConfig())
+                    .forStream(appConfiguration.getInputStreamConfig().getStream())
+                    .withDeserializationSchema(new JsonDeserializationSchema(JSONData.class))
+                    .build();
+            DataStream<EarthQuakeRecord> events = env
+                    .addSource(flinkPravegaReader)
+                    .name("events");
+            Table table=tableEnv.fromDataStream(events);
 
             // Register table source
-            tableEnv.registerTableSource("earthquakes", source);
+            tableEnv.registerTable("earthquakes", table);
             String sqlQuery = "SELECT DateTime as eventTime, Latitude, Longitude, Depth, Magnitude, MagType, NbStations, Gap, Distance, RMS, " +
                     "Source, EventID from earthquakes  where Magnitude > 6"; // Magnitude above 6 treated as high/severe earthquake
             Table result = tableEnv.sqlQuery(sqlQuery);
 
-            tableEnv.toAppendStream(result, Row.class).printToErr().name("stdout");
+            tableEnv.toDataStream(result, Row.class).printToErr().name("stdout");
 
             // execute within the Flink environment
             env.execute("FlinkSQL Reader");

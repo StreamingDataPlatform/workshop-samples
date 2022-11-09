@@ -11,10 +11,10 @@ appParameters:
 appParametersJson: []
 
 
-flinkVersion: 1.11.2
+flinkVersion: 1.15.2
 
 imageRef:
-  name: 1.11.2-2.11
+  name: flink-1.15.2
 
 localStorage:
   replicas: 2

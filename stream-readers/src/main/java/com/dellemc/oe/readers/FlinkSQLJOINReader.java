@@ -9,35 +9,26 @@
  */
 package com.dellemc.oe.readers;
 
-import com.dellemc.oe.readers.model.HvacData;
+import com.dellemc.oe.model.HvacData;
+import com.dellemc.oe.model.BuildingData;
+import com.dellemc.oe.model.HvacOriginalData;
 import com.dellemc.oe.readers.util.HvacRecord;
 import com.dellemc.oe.util.AbstractApp;
 import com.dellemc.oe.util.AppConfiguration;
-import io.pravega.client.stream.Stream;
-import io.pravega.connectors.flink.table.descriptors.Pravega;
-import io.pravega.connectors.flink.PravegaConfig;
 import org.apache.commons.io.IOUtils;
 import org.apache.flink.api.java.tuple.Tuple2;
-
+import com.dellemc.oe.serialization.JsonDeserializationSchema;
+import io.pravega.connectors.flink.FlinkPravegaReader;
+import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.Table;
-import org.apache.flink.table.api.DataTypes;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
-import org.apache.flink.table.descriptors.ConnectTableDescriptor;
-import org.apache.flink.table.descriptors.Json;
-import org.apache.flink.table.descriptors.Schema;
-import org.apache.flink.table.factories.StreamTableSourceFactory;
-import org.apache.flink.table.factories.TableFactoryService;
-import org.apache.flink.table.sources.CsvTableSource;
-import org.apache.flink.table.sources.TableSource;
 import org.apache.flink.types.Row;
 
 
 import java.io.*;
-import java.net.*;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,34 +56,23 @@ public class FlinkSQLJOINReader extends AbstractApp {
             // Read table as stream data
             StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
 
-            // Create client config
-            PravegaConfig pravegaConfig =  appConfiguration.getPravegaConfig();
-
             // create the Pravega input stream (if necessary)
             createStream(appConfiguration.getInputStreamConfig());
-            Stream stream = appConfiguration.getInputStreamConfig().getStream();
 
-            // get the schema
-            Schema   schema = HvacRecord.getHvacSchema();
-
-            Pravega pravega = new Pravega();
-            pravega.tableSourceReaderBuilder()
-                     .forStream(stream)
-                    .withPravegaConfig(pravegaConfig);
-
-            // Create Table descriptor
-            ConnectTableDescriptor desc = tableEnv.connect(pravega)
-                    .withFormat(new Json().failOnMissingField(false).deriveSchema())
-                    .withSchema(schema)
-                    .inAppendMode();
+            FlinkPravegaReader<HvacRecord> flinkPravegaReader = FlinkPravegaReader.<HvacRecord>builder()
+                    .withPravegaConfig(appConfiguration.getPravegaConfig())
+                    .forStream(appConfiguration.getInputStreamConfig().getStream())
+                    .withDeserializationSchema(new JsonDeserializationSchema(HvacOriginalData.class))
+                    .build();
 
             // Create Table source
-            final Map<String, String> propertiesMap = desc.toProperties();
-            final TableSource<?> source = TableFactoryService.find(StreamTableSourceFactory.class, propertiesMap)
-                    .createStreamTableSource(propertiesMap);
+            DataStream<HvacRecord> events = env
+                    .addSource(flinkPravegaReader)
+                    .name("events");
+            Table table=tableEnv.fromDataStream(events);
 
             // Register table resource
-            tableEnv.registerTableSource("hvac", source);
+            tableEnv.registerTable("hvac", table);
             // calculate and add additional params  diff, temp_range and  extreme_temp
             String sqlQuery = "SELECT DateTime, TargetTemp , ActualTemp,SystemAge,Building_ID ,  (TargetTemp - ActualTemp )  as diff , " +
                     "(CASE WHEN (TargetTemp-ActualTemp)>5 THEN 'HOT' WHEN (TargetTemp-ActualTemp)<-5 THEN 'COLD' ELSE 'NORMAL' END) AS temp_range," +
@@ -101,7 +81,6 @@ public class FlinkSQLJOINReader extends AbstractApp {
             Table result = tableEnv.sqlQuery(sqlQuery);
             //  Execute query and get DataStream Object
             DataStream<HvacData>   dataStream = tableEnv.toAppendStream(result, HvacData.class);
-            LOG.info("################## RUN 7 ################  ");
 
             // Print the data
             //dataStream.printToErr();
@@ -135,20 +114,14 @@ public class FlinkSQLJOINReader extends AbstractApp {
                 LOG.error("########## Building File ERROR  #############  " + e.getMessage());
             }
 
-            // This is a finite list of items which has an BuildingID,BuildingMgr,BuildingAge,HVACproduct,Country
-            CsvTableSource buildingSource = new CsvTableSource.Builder()
-                    .path(filePath)
-                    .ignoreParseErrors()
-                    .ignoreFirstLine()
-                    .field("BuildingID", DataTypes.INT())
-                    .field("BuildingMgr", DataTypes.STRING())
-                    .field("BuildingAge", DataTypes.INT())
-                    .field("HVACproduct", DataTypes.STRING())
-                    .field("Country", DataTypes.STRING())
-                    .build();
-
-            // Similarly, register this list of items as a table.
-            tableEnv.registerTableSource("building", buildingSource);
+            DataStream<BuildingData> buildingDataStream=env.readTextFile(filePath).map(new MapFunction<String, BuildingData>() {
+                @Override
+                public BuildingData map(String line) throws Exception {
+                    BuildingData buildingData=new BuildingData();
+                    return buildingData.getParams(line);
+                }
+            });
+            tableEnv.registerDataStream("building",buildingDataStream);
 
             // Apply a join  HVAC amd building  and store the results in a dynamic (stream table) table
             Table streamTableJoinResult = tableEnv.sqlQuery("SELECT H.DateTime,  H.TargetTemp ,  H.ActualTemp, H.SystemAge, H.Building_ID, " +
