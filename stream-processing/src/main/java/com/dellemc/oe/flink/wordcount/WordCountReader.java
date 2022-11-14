@@ -22,6 +22,7 @@ import io.pravega.connectors.flink.FlinkPravegaWriter;
 import io.pravega.connectors.flink.PravegaConfig;
 import io.pravega.connectors.flink.PravegaEventRouter;
 import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.time.Time;
@@ -63,6 +64,7 @@ public class WordCountReader extends AbstractApp {
             LOG.info("==============  stream  =============== " + streamConfig.getStream().getStreamName());
 
             StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+            env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
             // create the Pravega source to read a stream of text
             FlinkPravegaReader<String> source = FlinkPravegaReader.<String>builder()
                     .withPravegaConfig(appConfiguration.getPravegaConfig())
@@ -74,7 +76,6 @@ public class WordCountReader extends AbstractApp {
             DataStream<WordCount> dataStream = env.addSource(source).name(streamConfig.getStream().getStreamName())
                     .flatMap(new WordCountReader.Splitter())
                     .keyBy("word")
-                    .timeWindow(Time.seconds(10))
                     .sum("count");
 
             // create an output sink to print to stdout for verification

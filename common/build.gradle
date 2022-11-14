@@ -21,8 +21,8 @@ dependencies {
 	compile "com.fasterxml.jackson.core:jackson-databind:2.9.1"
  	testCompile 'junit:junit:4.11'
 	compile "io.pravega:pravega-connectors-flink-${flinkShortVersion}_${flinkScalaVersion}:${pravegaFlinkConnectorVersion}"
-	compile "org.apache.flink:flink-streaming-java_${flinkScalaVersion}:${flinkVersion}"
-	compile "org.apache.flink:flink-clients_${flinkScalaVersion}:${flinkVersion}"
+	compile "org.apache.flink:flink-streaming-java:${flinkVersion}"
+	compile "org.apache.flink:flink-clients:${flinkVersion}"
 	// MongoDB
 	// https://mvnrepository.com/artifact/org.mongodb/mongodb-driver
 	compile group: 'org.mongodb', name: 'mongodb-driver', version: '3.11.0-rc0'
